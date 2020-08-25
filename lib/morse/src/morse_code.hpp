@@ -9,20 +9,20 @@
 #include <map>
 #include <cmath>
 
+class MorseCodeListener {
+public:
+    virtual void onEmit(char character) = 0;
+
+    virtual void onCharStart() = 0;
+
+    virtual void onCharEnd(char dotOrDash, int length) = 0;
+};
+
 class MorseCodePatternMatch {
 
     enum Status {
         None,
         Tone
-    };
-
-    class MorseCodeListener {
-    public:
-        virtual void onEmit(char character) = 0;
-
-        virtual void onCharStart() = 0;
-
-        virtual void onCharEnd(char dotOrDash, int length) = 0;
     };
 
 
@@ -41,7 +41,6 @@ public:
 private:
 
     void adjustWPM();
-
 
 
     void reset();
@@ -138,7 +137,7 @@ private:
 };
 
 
-class KeyboardMorseCodeDecoder : MorseCodePatternMatch {
+class KeyboardMorseCodeDecoder : public MorseCodePatternMatch {
 
 public:
     KeyboardMorseCodeDecoder(int dotLimit, int samplePeriod)
@@ -147,6 +146,9 @@ public:
 
     }
 
+    int getSamplePeriod(){
+        return this->samplePeriod;
+    }
     KeyboardMorseCodeDecoder() : KeyboardMorseCodeDecoder(18, 25) {}
 
     void processKey(bool input) {
