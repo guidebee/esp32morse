@@ -4,7 +4,11 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_system.h"
+#include "esp_spi_flash.h"
+#include <LoRa.h>
 #include <EEPROM.h>
 #define SCK 5
 #define MISO 19
@@ -12,7 +16,7 @@
 #define SS 18
 #define RST 14
 #define DIO0 26
-
+#define BAND 915E6
 #define EEPROM_SIZE 1
 //OLED pins
 #define OLED_SDA 4
@@ -21,16 +25,36 @@
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define LED_PIN 25
+#define TONE_PERIOD 200
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RST);
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
 ezButton button(36);
 uint64_t chipid;
 bool isDown = true;
+String message="";
+char lastChar='^';
 class KeyListener : public MorseCodeListener {
     void onEmit(char character) {
-        display.print(character);
-        Serial.print(character);
-        display.display();
+
+        //Send LoRa packet to receiver
+        if(!(character==' ' and lastChar==' ')) {
+            if(character!='*') {
+                message += character;
+                display.print(character);
+                Serial.print(character);
+                display.display();
+            }
+        }
+        lastChar=character;
+        if(character=='*') {
+            LoRa.beginPacket();
+            LoRa.print(message);
+            LoRa.endPacket();
+            message="";
+            display.setCursor(0,10);
+            display.clearDisplay();
+
+        }
     }
 
     void onCharStart() {
@@ -38,9 +62,9 @@ class KeyListener : public MorseCodeListener {
     }
 
     void onCharEnd(char dotOrDash, int length) {
-        display.print(dotOrDash);
+//        display.print(dotOrDash);
         Serial.print(dotOrDash);
-        display.display();
+//        display.display();
     }
 };
 
@@ -49,9 +73,25 @@ unsigned long last_mills;
 unsigned long current_mills;
 unsigned long last_task_mills;
 unsigned long diff_mills;
+
 int samplePeriod;
 void setup() {
 // write your initialization code here
+    printf("Hello world!\n");
+    esp_chip_info_t chip_info;
+    esp_chip_info(&chip_info);
+    printf("This is %s chip with %d CPU cores, WiFi%s%s, ",
+           "esp32",
+           chip_info.cores,
+           (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
+           (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
+
+    printf("silicon revision %d, ", chip_info.revision);
+
+    printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024),
+           (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
+
+    printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
     Serial.begin(115200);
     //reset OLED display via software
     pinMode(OLED_RST, OUTPUT);
@@ -64,6 +104,21 @@ void setup() {
         Serial.println(F("SSD1306 allocation failed"));
         for(;;); // Don't proceed, loop forever
     }
+    //setup LoRa transceiver module
+    LoRa.setPins(SS, RST, DIO0);
+
+    //SPI LoRa pins
+    SPI.begin(SCK, MISO, MOSI, SS);
+    //setup LoRa transceiver module
+    LoRa.setPins(SS, RST, DIO0);
+
+    if (!LoRa.begin(BAND)) {
+        Serial.println("Starting LoRa failed!");
+        while (1);
+    }
+
+    LoRa.setSyncWord(0x34);
+    Serial.println("LoRa Initializing OK!");
     display.clearDisplay();
     display.setTextColor(WHITE);
     display.setTextSize(1);
@@ -119,10 +174,10 @@ void loop() {
 
         digitalWrite(LED_PIN, LOW);
 //        Serial.println("The button is released");
-        if (diff_mills < 250){
+        if (diff_mills < TONE_PERIOD){
 
             morseCode.processKey(false);
-        }else if(diff_mills<1000){
+        }else if(diff_mills<TONE_PERIOD*4){
 
             morseCode.processKey(true);
         }
