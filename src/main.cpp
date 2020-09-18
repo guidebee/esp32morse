@@ -1,9 +1,7 @@
 #include <Arduino.h>
 #include "morse_code.hpp"
+#include "oled_display.hpp"
 #include <ezButton.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -18,15 +16,10 @@
 #define DIO0 26
 #define BAND 915E6
 #define EEPROM_SIZE 1
-//OLED pins
-#define OLED_SDA 4
-#define OLED_SCL 15
-#define OLED_RST 16
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
 #define LED_PIN 25
 #define TONE_PERIOD 200
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RST);
+OledDisplay display;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
 ezButton button(36);
 uint64_t chipid;
@@ -93,17 +86,7 @@ void setup() {
 
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
     Serial.begin(115200);
-    //reset OLED display via software
-    pinMode(OLED_RST, OUTPUT);
-    digitalWrite(OLED_RST, LOW);
-    delay(20);
-    digitalWrite(OLED_RST, HIGH);
-    //initialize OLED
-    Wire.begin(OLED_SDA, OLED_SCL);
-    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3c, false, false)) { // Address 0x3C for 128x32
-        Serial.println(F("SSD1306 allocation failed"));
-        for(;;); // Don't proceed, loop forever
-    }
+    display.init();
     //setup LoRa transceiver module
     LoRa.setPins(SS, RST, DIO0);
 
