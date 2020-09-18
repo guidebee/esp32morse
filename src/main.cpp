@@ -2,7 +2,7 @@
 #include "morse_code.hpp"
 #include "oled_display.hpp"
 #include <ezButton.h>
-#include "freertos/FreeRTOS.h"
+#include "buzzer_tone.hpp"
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
@@ -20,6 +20,7 @@
 #define LED_PIN 25
 #define TONE_PERIOD 200
 OledDisplay display;
+BuzzerTone buzzer;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
 ezButton button(36);
 uint64_t chipid;
@@ -87,6 +88,8 @@ void setup() {
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
     Serial.begin(115200);
     display.init();
+    buzzer.init();
+    ledcWriteTone(channel,2000);
     //setup LoRa transceiver module
     LoRa.setPins(SS, RST, DIO0);
 
@@ -123,12 +126,16 @@ void setup() {
     diff_mills=0;
     samplePeriod=morseCode.getSamplePeriod();
     display.setCursor(0,10);
+    ledcWriteTone(channel,0);
 
 }
 
 void loop() {
 // write your code here
     button.loop();
+
+
+
 
     current_mills=millis();
     unsigned long diff_task_mills=current_mills-last_task_mills;
