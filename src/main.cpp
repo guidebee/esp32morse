@@ -4,7 +4,7 @@
 #include "morse_code.hpp"
 #include "oled_display.hpp"
 #include "lora_radio.hpp"
-#include <ezButton.h>
+#include "push_button.hpp"
 #include "buzzer_tone.hpp"
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -14,13 +14,13 @@
 
 #define EEPROM_SIZE 1
 
-#define LED_PIN 25
+
 #define TONE_PERIOD 200
 OledDisplay display;
 BuzzerTone buzzer;
 LoraRadioClass LoRaRadio;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
-ezButton button(36);
+PushButton button(36);
 uint64_t chipid;
 bool isDown = true;
 String message="";
@@ -112,7 +112,7 @@ void setup() {
 //        }
 //    }
     display.display();
-    pinMode(LED_PIN, OUTPUT);
+
     button.setDebounceTime(50);
     morseCode.addListener(&keyListener);
     char letter = morseCode.getMorseLetter("...");
@@ -150,7 +150,7 @@ void loop() {
 
     if (button.isPressed()) {
         last_mills=millis();
-        digitalWrite(LED_PIN, HIGH);
+
         isDown=true;
 //        Serial.println("The button is pressed");
         morseCode.setOnOff(true);
@@ -163,7 +163,7 @@ void loop() {
 
         diff_mills=millis()-last_mills;
 
-        digitalWrite(LED_PIN, LOW);
+
 //        Serial.println("The button is released");
         if (diff_mills < TONE_PERIOD){
 
