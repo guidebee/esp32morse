@@ -4,13 +4,14 @@
 
 #include "screen.hpp"
 
-Screen::Screen(OledDisplay *display, int start_page, int end_page, bool inverted_text = false) {
+Screen::Screen(OledDisplay *display, int start_page, int end_page, bool inverted_text = false,bool has_cursor) {
     _display = display;
     _start_page = start_page;
     _end_page = end_page;
     _invert_text = inverted_text;
     _old_cursor_x = OFFSET_X;
     _old_cursor_y = CHAR_HEIGHT * start_page;
+    _has_cursor=has_cursor;
 }
 
 void Screen::backspace() {
@@ -20,14 +21,17 @@ void Screen::backspace() {
     if (x > 0) {
         x -= CHAR_WIDTH;
         _display->setCursor(x, y);
-        saveCursor();
+        _old_cursor_y=y;
+        _old_cursor_x=x-CHAR_WIDTH;
         if (_invert_text) {
-            _display->fillRect(x, y, CHAR_WIDTH, CHAR_HEIGHT, WHITE);
+            _display->fillRect(x, y, CHAR_WIDTH*4, CHAR_HEIGHT, WHITE);
         } else {
-            _display->fillRect(x, y, CHAR_WIDTH, CHAR_HEIGHT, BLACK);
+            _display->fillRect(x, y, CHAR_WIDTH*4, CHAR_HEIGHT, BLACK);
         }
+        drawCursor();
 
         _display->display();
+        saveCursor();
     }
 }
 
@@ -67,9 +71,31 @@ void Screen::restoreCursor() {
     }
 }
 
+void Screen::drawCursor() {
+    if(_has_cursor){
+        if (_invert_text) {
+            _display->drawFastHLine(_old_cursor_x+CHAR_WIDTH, _old_cursor_y + CHAR_HEIGHT -2, CHAR_WIDTH, BLACK);
+        }else{
+            _display->drawFastHLine(_old_cursor_x+CHAR_WIDTH, _old_cursor_y + CHAR_HEIGHT -2, CHAR_WIDTH, WHITE);
+        }
+    };
+}
+
 void Screen::print(char c) {
     restoreCursor();
+
     _display->print(c);
+    if(c!='\n') {
+        drawCursor();
+    }else{
+        int x = _old_cursor_x;
+        int y = _old_cursor_y;
+        if (_invert_text) {
+            _display->fillRect(x, y, CHAR_WIDTH*4, CHAR_HEIGHT, WHITE);
+        } else {
+            _display->fillRect(x, y, CHAR_WIDTH*4, CHAR_HEIGHT, BLACK);
+        }
+    }
     process_char(c);
     _display->display();
     saveCursor();

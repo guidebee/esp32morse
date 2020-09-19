@@ -20,7 +20,7 @@
 OledDisplay display;
 Screen topBar(&display, 0, 1, true);
 Screen topScreen(&display, 1, 5, false);
-Screen bottomScreen(&display, 5, 7, true);
+Screen bottomScreen(&display, 5, 7, true,true);
 Screen statusBar(&display, 7, 8, false);
 BuzzerTone buzzer;
 LoraRadioClass LoRaRadio;

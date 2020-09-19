@@ -27,9 +27,11 @@ private:
     char _line[NUMBER_CHARS_ONE_LINE];
     int _old_cursor_x;
     int _old_cursor_y;
+    bool _has_cursor=false;
 
 public:
-    explicit Screen(OledDisplay *display, int start_page, int end_page, bool inverted_text);
+    explicit Screen(OledDisplay *display, int start_page, int end_page,
+                    bool inverted_text,bool has_cursor=false);
 
     void print(char c);
 
@@ -51,6 +53,8 @@ private:
     void saveCursor();
 
     void restoreCursor();
+
+    void drawCursor();
 };
 
 #endif //ESP32MORSE_SCREEN_HPP
