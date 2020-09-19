@@ -17,4 +17,5 @@ void OledDisplay::init() {
         for (;;); // Don't proceed, loop forever
     }
 
+
 }

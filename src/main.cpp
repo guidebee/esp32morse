@@ -3,6 +3,7 @@
 
 #include "morse_code.hpp"
 #include "oled_display.hpp"
+#include "screen.hpp"
 #include "lora_radio.hpp"
 #include "push_button.hpp"
 #include "buzzer_tone.hpp"
@@ -17,6 +18,7 @@
 #define LED_RECEIVER 12
 #define TONE_PERIOD 200
 OledDisplay display;
+Screen topScreen(&display,0,8,false);
 BuzzerTone buzzer;
 LoraRadioClass LoRaRadio;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
@@ -32,9 +34,9 @@ class KeyListener : public MorseCodeListener {
         if(!(character==' ' and lastChar==' ')) {
             if(character!='*') {
                 message += character;
-                display.print(character);
+                topScreen.print(character);
                 Serial.print(character);
-                display.display();
+
             }
         }
         lastChar=character;
@@ -43,8 +45,8 @@ class KeyListener : public MorseCodeListener {
             LoRaRadio.print(message);
             LoRaRadio.endPacket();
             message="";
-            display.setCursor(0,10);
-            display.clearDisplay();
+           // topScreen.backspace();
+
 
         }
     }
@@ -54,9 +56,9 @@ class KeyListener : public MorseCodeListener {
     }
 
     void onCharEnd(char dotOrDash, int length) {
-//        display.print(dotOrDash);
+
         Serial.print(dotOrDash);
-//        display.display();
+
     }
 };
 
@@ -69,7 +71,7 @@ String LoRaData;
 int samplePeriod;
 void setup() {
 // write your initialization code here
-    printf("Hello world!\n");
+
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
     printf("This is %s chip with %d CPU cores, WiFi%s%s, ",
@@ -105,13 +107,8 @@ void setup() {
     display.setTextColor(WHITE);
     display.setTextSize(1);
     display.setCursor(0,0);
-    display.print("morse walkie talkie  ");
-//    for(int k=0;k<15;k++) {
-//        for (int i = 0; i < 26; i++) {
-//            display.print((char)(i+'A'));
-//        }
-//    }
-    display.display();
+    topScreen.print("morse walkie talkie  ");
+
 
     button.setDebounceTime(50);
     morseCode.addListener(&keyListener);
@@ -126,7 +123,7 @@ void setup() {
     last_task_mills=last_mills;
     diff_mills=0;
     samplePeriod=morseCode.getSamplePeriod();
-    display.setCursor(0,10);
+
     ledcWriteTone(channel,0);
     pinMode(LED_RECEIVER, OUTPUT);
 
@@ -135,11 +132,7 @@ void setup() {
 void loop() {
 // write your code here
     button.loop();
-
-
-
-
-    current_mills=millis();
+   current_mills=millis();
     unsigned long diff_task_mills=current_mills-last_task_mills;
     if(diff_task_mills>=samplePeriod){
         if(!isDown) {
@@ -187,8 +180,8 @@ void loop() {
             LoRaData = LoRaRadio.readString();
             Serial.print(LoRaData);
         }
-        display.print(LoRaData);
-        display.display();
+        topScreen.print(LoRaData);
+
         ledcWriteTone(channel,2000);
         digitalWrite(LED_RECEIVER, HIGH);
         delay(100);
