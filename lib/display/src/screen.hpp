@@ -41,6 +41,10 @@ public:
 
     void clearScreen();
 
+    void startScrollRight();
+    void startScrollLeft();
+    void stopScroll();
+
 private:
     void process_char(char c);
 

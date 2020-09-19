@@ -18,8 +18,10 @@
 #define LED_RECEIVER 12
 #define TONE_PERIOD 200
 OledDisplay display;
-Screen topScreen(&display,0,6,false);
-Screen bottomScreen(&display,6,8,true);
+Screen topBar(&display,0,1,true);
+Screen topScreen(&display,1,5,false);
+Screen bottomScreen(&display,5,7,true);
+Screen statusBar(&display,7,8,false);
 BuzzerTone buzzer;
 LoraRadioClass LoRaRadio;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
@@ -104,13 +106,14 @@ void setup() {
     display.init();
     topScreen.clearScreen();
     bottomScreen.clearScreen();
+    topBar.clearScreen();
+    statusBar.clearScreen();
     buzzer.init();
     ledcWriteTone(channel,2000);
     LoRaRadio.init();
     Log.notice ("LoRaRadio Initializing OK!");
 
-    topScreen.print("morse walkie talkie  ");
-
+    topBar.print("morse walkie talkie");
 
     button.setDebounceTime(50);
     morseCode.addListener(&keyListener);
