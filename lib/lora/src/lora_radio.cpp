@@ -5,12 +5,12 @@
 #include "lora_radio.hpp"
 
 void LoraRadioClass::init() {
-    //setup LoRa transceiver module
-    setPins(SS, RST, DIO0);
+
 
     //SPI LoRa pins
     SPI.begin(SCK, MISO, MOSI, SS);
     //setup LoRa transceiver module
+
     setPins(SS, RST, DIO0);
 
     if (!begin(BAND)) {

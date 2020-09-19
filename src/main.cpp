@@ -14,7 +14,7 @@
 
 #define EEPROM_SIZE 1
 
-
+#define LED_RECEIVER 12
 #define TONE_PERIOD 200
 OledDisplay display;
 BuzzerTone buzzer;
@@ -65,7 +65,7 @@ unsigned long last_mills;
 unsigned long current_mills;
 unsigned long last_task_mills;
 unsigned long diff_mills;
-
+String LoRaData;
 int samplePeriod;
 void setup() {
 // write your initialization code here
@@ -128,6 +128,7 @@ void setup() {
     samplePeriod=morseCode.getSamplePeriod();
     display.setCursor(0,10);
     ledcWriteTone(channel,0);
+    pinMode(LED_RECEIVER, OUTPUT);
 
 }
 
@@ -176,5 +177,29 @@ void loop() {
         morseCode.setOnOff(false);
     }
 
+    int packetSize = LoRaRadio.parsePacket();
+    if (packetSize) {
+        //received a packet
+        Serial.print("Received packet ");
+
+        //read packet
+        while (LoRaRadio.available()) {
+            LoRaData = LoRaRadio.readString();
+            Serial.print(LoRaData);
+        }
+        display.print(LoRaData);
+        display.display();
+        ledcWriteTone(channel,2000);
+        digitalWrite(LED_RECEIVER, HIGH);
+        delay(100);
+        ledcWriteTone(channel,1000);
+        digitalWrite(LED_RECEIVER, LOW);
+        delay(100);
+        digitalWrite(LED_RECEIVER, HIGH);
+        ledcWriteTone(channel,2000);
+        delay(100);
+        digitalWrite(LED_RECEIVER, LOW);
+        ledcWriteTone(channel,0);
+    }
 
 }

@@ -19,7 +19,7 @@ public:
 
     void init() {
         ledcSetup(channel, freq, resolution);
-        ledcAttachPin(33, channel);
+        ledcAttachPin(21, channel);
     }
 };
 
