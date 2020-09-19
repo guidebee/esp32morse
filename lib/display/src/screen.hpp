@@ -16,7 +16,7 @@
 
 class Screen {
 private:
-    OledDisplay* _display;
+    OledDisplay *_display;
     int _start_page;
     int _end_page;
     int _row_no = 0;
@@ -25,36 +25,28 @@ private:
     char _buffer[MAX_LINE_NUMBER][NUMBER_CHARS_ONE_LINE];
     char _view_port[MAX_VIEW_POINT_LINE][NUMBER_CHARS_ONE_LINE];
     char _line[NUMBER_CHARS_ONE_LINE];
+    int _old_cursor_x;
+    int _old_cursor_y;
 
 public:
-    explicit Screen(OledDisplay* display, int start_page, int end_page, bool inverted_text);
+    explicit Screen(OledDisplay *display, int start_page, int end_page, bool inverted_text);
 
-    void print(char c) {
-        _display->print(c);
-        process_char(c);
-        _display->display();
-    }
+    void print(char c);
 
-    void print(const String &s) {
-        _display->print(s);
-        for(int i=0;i<s.length();i++){
-            process_char(s.charAt(i));
-        }
-        _display->display();
-    }
+    void print(const String &s);
 
-    void print(const char str[]) {
-        _display->print(str);
-        for(int i=0;i<strlen(str);i++){
-            process_char(str[i]);
-        }
-        _display->display();
-    }
+    void print(const char str[]);
 
     void backspace();
 
+    void clearScreen();
+
 private:
     void process_char(char c);
+
+    void saveCursor();
+
+    void restoreCursor();
 };
 
 #endif //ESP32MORSE_SCREEN_HPP

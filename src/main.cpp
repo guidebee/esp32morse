@@ -18,7 +18,8 @@
 #define LED_RECEIVER 12
 #define TONE_PERIOD 200
 OledDisplay display;
-Screen topScreen(&display,0,8,false);
+Screen topScreen(&display,0,6,false);
+Screen bottomScreen(&display,6,8,true);
 BuzzerTone buzzer;
 LoraRadioClass LoRaRadio;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
@@ -34,7 +35,7 @@ class KeyListener : public MorseCodeListener {
         if(!(character==' ' and lastChar==' ')) {
             if(character!='\n') {
                 message += character;
-                topScreen.print(character);
+                bottomScreen.print(character);
                 Serial.print(character);
 
             }
@@ -45,7 +46,7 @@ class KeyListener : public MorseCodeListener {
             LoRaRadio.beginPacket();
             LoRaRadio.print(message);
             LoRaRadio.endPacket();
-            topScreen.print(character);
+            bottomScreen.print(character);
             message="";
            // topScreen.backspace();
 
@@ -101,6 +102,8 @@ void setup() {
     Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 
     display.init();
+    topScreen.clearScreen();
+    bottomScreen.clearScreen();
     buzzer.init();
     ledcWriteTone(channel,2000);
     LoRaRadio.init();
