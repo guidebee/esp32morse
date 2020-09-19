@@ -1,26 +1,24 @@
 #include <Arduino.h>
+#include <ArduinoLog.h>
+
 #include "morse_code.hpp"
 #include "oled_display.hpp"
+#include "lora_radio.hpp"
 #include <ezButton.h>
 #include "buzzer_tone.hpp"
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
-#include <LoRa.h>
+
 #include <EEPROM.h>
-#define SCK 5
-#define MISO 19
-#define MOSI 27
-#define SS 18
-#define RST 14
-#define DIO0 26
-#define BAND 915E6
+
 #define EEPROM_SIZE 1
 
 #define LED_PIN 25
 #define TONE_PERIOD 200
 OledDisplay display;
 BuzzerTone buzzer;
+LoraRadioClass LoRaRadio;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
 ezButton button(36);
 uint64_t chipid;
@@ -30,7 +28,7 @@ char lastChar='^';
 class KeyListener : public MorseCodeListener {
     void onEmit(char character) {
 
-        //Send LoRa packet to receiver
+        //Send LoRaRadio packet to receiver
         if(!(character==' ' and lastChar==' ')) {
             if(character!='*') {
                 message += character;
@@ -41,9 +39,9 @@ class KeyListener : public MorseCodeListener {
         }
         lastChar=character;
         if(character=='*') {
-            LoRa.beginPacket();
-            LoRa.print(message);
-            LoRa.endPacket();
+            LoRaRadio.beginPacket();
+            LoRaRadio.print(message);
+            LoRaRadio.endPacket();
             message="";
             display.setCursor(0,10);
             display.clearDisplay();
@@ -87,29 +85,32 @@ void setup() {
 
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
     Serial.begin(115200);
+
+    while(!Serial && !Serial.available()){}
+    randomSeed(analogRead(0));
+    // Pass log level, whether to show log level, and print interface.
+    // Available levels are:
+    // LOG_LEVEL_SILENT, LOG_LEVEL_FATAL, LOG_LEVEL_ERROR, LOG_LEVEL_WARNING, LOG_LEVEL_NOTICE, LOG_LEVEL_TRACE, LOG_LEVEL_VERBOSE
+    // Note: if you want to fully remove all logging code, uncomment #define DISABLE_LOGGING in Logging.h
+    //       this will significantly reduce your project size
+
+    Log.begin(LOG_LEVEL_VERBOSE, &Serial);
+
     display.init();
     buzzer.init();
     ledcWriteTone(channel,2000);
-    //setup LoRa transceiver module
-    LoRa.setPins(SS, RST, DIO0);
-
-    //SPI LoRa pins
-    SPI.begin(SCK, MISO, MOSI, SS);
-    //setup LoRa transceiver module
-    LoRa.setPins(SS, RST, DIO0);
-
-    if (!LoRa.begin(BAND)) {
-        Serial.println("Starting LoRa failed!");
-        while (1);
-    }
-
-    LoRa.setSyncWord(0x34);
-    Serial.println("LoRa Initializing OK!");
+    LoRaRadio.init();
+    Log.notice ("LoRaRadio Initializing OK!");
     display.clearDisplay();
     display.setTextColor(WHITE);
     display.setTextSize(1);
     display.setCursor(0,0);
     display.print("morse walkie talkie  ");
+//    for(int k=0;k<15;k++) {
+//        for (int i = 0; i < 26; i++) {
+//            display.print((char)(i+'A'));
+//        }
+//    }
     display.display();
     pinMode(LED_PIN, OUTPUT);
     button.setDebounceTime(50);
@@ -118,8 +119,8 @@ void setup() {
 
     Serial.println(letter);
     chipid = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
-    Serial.printf("ESP32 Chip ID = %04X", (uint16_t) (chipid >> 32));//print High 2 bytes
-    Serial.printf("%08X\n", (uint32_t) chipid);//print Low 4bytes.
+    Log.notice("ESP32 Chip ID = %04X", (uint16_t) (chipid >> 32));//print High 2 bytes
+    Log.notice ("%08X\n", (uint32_t) chipid);//print Low 4bytes.
     last_mills=millis();
     current_mills=last_mills;
     last_task_mills=last_mills;
