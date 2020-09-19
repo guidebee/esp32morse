@@ -32,7 +32,7 @@ class KeyListener : public MorseCodeListener {
 
         //Send LoRaRadio packet to receiver
         if(!(character==' ' and lastChar==' ')) {
-            if(character!='*') {
+            if(character!='\n') {
                 message += character;
                 topScreen.print(character);
                 Serial.print(character);
@@ -40,10 +40,12 @@ class KeyListener : public MorseCodeListener {
             }
         }
         lastChar=character;
-        if(character=='*') {
+        if(character=='\n') {
+            lastChar = ' ';
             LoRaRadio.beginPacket();
             LoRaRadio.print(message);
             LoRaRadio.endPacket();
+            topScreen.print(character);
             message="";
            // topScreen.backspace();
 
@@ -103,10 +105,7 @@ void setup() {
     ledcWriteTone(channel,2000);
     LoRaRadio.init();
     Log.notice ("LoRaRadio Initializing OK!");
-    display.clearDisplay();
-    display.setTextColor(WHITE);
-    display.setTextSize(1);
-    display.setCursor(0,0);
+
     topScreen.print("morse walkie talkie  ");
 
 
@@ -180,7 +179,7 @@ void loop() {
             LoRaData = LoRaRadio.readString();
             Serial.print(LoRaData);
         }
-        topScreen.print(LoRaData);
+        topScreen.print(LoRaData+'\n');
 
         ledcWriteTone(channel,2000);
         digitalWrite(LED_RECEIVER, HIGH);

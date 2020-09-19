@@ -16,6 +16,10 @@ void OledDisplay::init() {
         Serial.println(F("SSD1306 allocation failed"));
         for (;;); // Don't proceed, loop forever
     }
-
+    clearDisplay();
+    setTextColor(WHITE);
+    setTextSize(1);
+    setCursor(0, 0);
+    display();
 
 }
