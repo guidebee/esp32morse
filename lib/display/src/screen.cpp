@@ -20,6 +20,7 @@ void Screen::backspace() {
     if (x > 0) {
         x -= CHAR_WIDTH;
         _display->setCursor(x, y);
+        saveCursor();
         if (_invert_text) {
             _display->fillRect(x, y, CHAR_WIDTH, CHAR_HEIGHT, WHITE);
         } else {

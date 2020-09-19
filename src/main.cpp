@@ -18,41 +18,46 @@
 #define LED_RECEIVER 12
 #define TONE_PERIOD 200
 OledDisplay display;
-Screen topBar(&display,0,1,true);
-Screen topScreen(&display,1,5,false);
-Screen bottomScreen(&display,5,7,true);
-Screen statusBar(&display,7,8,false);
+Screen topBar(&display, 0, 1, true);
+Screen topScreen(&display, 1, 5, false);
+Screen bottomScreen(&display, 5, 7, true);
+Screen statusBar(&display, 7, 8, false);
 BuzzerTone buzzer;
 LoraRadioClass LoRaRadio;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
 PushButton button(36);
 uint64_t chipid;
 bool isDown = true;
-String message="";
-char lastChar='^';
+String message = "";
+char lastChar = '^';
+
 class KeyListener : public MorseCodeListener {
     void onEmit(char character) {
+        if (character == '*') {
+            bottomScreen.backspace();
+            message = message.substring(0, message.length()-1);
+        } else {
+            //Send LoRaRadio packet to receiver
+            if (!(character == ' ' and lastChar == ' ')) {
+                if (character != '\n') {
+                    message += character;
+                    bottomScreen.print(character);
+                    Serial.print(character);
 
-        //Send LoRaRadio packet to receiver
-        if(!(character==' ' and lastChar==' ')) {
-            if(character!='\n') {
-                message += character;
+                }
+            }
+            lastChar = character;
+            if (character == '\n') {
+                lastChar = ' ';
+                LoRaRadio.beginPacket();
+                LoRaRadio.print(message);
+                LoRaRadio.endPacket();
                 bottomScreen.print(character);
-                Serial.print(character);
+                message = "";
+                // topScreen.backspace();
+
 
             }
-        }
-        lastChar=character;
-        if(character=='\n') {
-            lastChar = ' ';
-            LoRaRadio.beginPacket();
-            LoRaRadio.print(message);
-            LoRaRadio.endPacket();
-            bottomScreen.print(character);
-            message="";
-           // topScreen.backspace();
-
-
         }
     }
 
@@ -74,6 +79,7 @@ unsigned long last_task_mills;
 unsigned long diff_mills;
 String LoRaData;
 int samplePeriod;
+
 void setup() {
 // write your initialization code here
 
@@ -93,7 +99,7 @@ void setup() {
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
     Serial.begin(115200);
 
-    while(!Serial && !Serial.available()){}
+    while (!Serial && !Serial.available()) {}
     randomSeed(analogRead(0));
     // Pass log level, whether to show log level, and print interface.
     // Available levels are:
@@ -109,9 +115,9 @@ void setup() {
     topBar.clearScreen();
     statusBar.clearScreen();
     buzzer.init();
-    ledcWriteTone(channel,2000);
+    ledcWriteTone(channel, 2000);
     LoRaRadio.init();
-    Log.notice ("LoRaRadio Initializing OK!");
+    Log.notice("LoRaRadio Initializing OK!");
 
     topBar.print("morse walkie talkie");
 
@@ -122,14 +128,14 @@ void setup() {
     Serial.println(letter);
     chipid = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
     Log.notice("ESP32 Chip ID = %04X", (uint16_t) (chipid >> 32));//print High 2 bytes
-    Log.notice ("%08X\n", (uint32_t) chipid);//print Low 4bytes.
-    last_mills=millis();
-    current_mills=last_mills;
-    last_task_mills=last_mills;
-    diff_mills=0;
-    samplePeriod=morseCode.getSamplePeriod();
+    Log.notice("%08X\n", (uint32_t) chipid);//print Low 4bytes.
+    last_mills = millis();
+    current_mills = last_mills;
+    last_task_mills = last_mills;
+    diff_mills = 0;
+    samplePeriod = morseCode.getSamplePeriod();
 
-    ledcWriteTone(channel,0);
+    ledcWriteTone(channel, 0);
     pinMode(LED_RECEIVER, OUTPUT);
 
 }
@@ -137,20 +143,20 @@ void setup() {
 void loop() {
 // write your code here
     button.loop();
-   current_mills=millis();
-    unsigned long diff_task_mills=current_mills-last_task_mills;
-    if(diff_task_mills>=samplePeriod){
-        if(!isDown) {
+    current_mills = millis();
+    unsigned long diff_task_mills = current_mills - last_task_mills;
+    if (diff_task_mills >= samplePeriod) {
+        if (!isDown) {
             morseCode.process(false);
         }
 
-        last_task_mills=current_mills;
+        last_task_mills = current_mills;
     }
 
     if (button.isPressed()) {
-        last_mills=millis();
+        last_mills = millis();
 
-        isDown=true;
+        isDown = true;
 //        Serial.println("The button is pressed");
         morseCode.setOnOff(true);
     }
@@ -158,16 +164,16 @@ void loop() {
 //
 //
     if (button.isReleased()) {
-        isDown=false;
+        isDown = false;
 
-        diff_mills=millis()-last_mills;
+        diff_mills = millis() - last_mills;
 
 
 //        Serial.println("The button is released");
-        if (diff_mills < TONE_PERIOD){
+        if (diff_mills < TONE_PERIOD) {
 
             morseCode.processKey(false);
-        }else if(diff_mills<TONE_PERIOD*4){
+        } else if (diff_mills < TONE_PERIOD * 4) {
 
             morseCode.processKey(true);
         }
@@ -185,19 +191,19 @@ void loop() {
             LoRaData = LoRaRadio.readString();
             Serial.print(LoRaData);
         }
-        topScreen.print(LoRaData+'\n');
+        topScreen.print(LoRaData + '\n');
 
-        ledcWriteTone(channel,2000);
+        ledcWriteTone(channel, 2000);
         digitalWrite(LED_RECEIVER, HIGH);
         delay(100);
-        ledcWriteTone(channel,1000);
+        ledcWriteTone(channel, 1000);
         digitalWrite(LED_RECEIVER, LOW);
         delay(100);
         digitalWrite(LED_RECEIVER, HIGH);
-        ledcWriteTone(channel,2000);
+        ledcWriteTone(channel, 2000);
         delay(100);
         digitalWrite(LED_RECEIVER, LOW);
-        ledcWriteTone(channel,0);
+        ledcWriteTone(channel, 0);
     }
 
 }
