@@ -17,7 +17,7 @@
 
 class LoraRadioClass :public LoRaClass{
 public:
-    void init() ;
+    void setup() ;
 };
 
 

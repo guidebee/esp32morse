@@ -4,7 +4,7 @@
 
 #include "lora_radio.hpp"
 
-void LoraRadioClass::init() {
+void LoraRadioClass::setup() {
 
 
     //SPI LoRa pins

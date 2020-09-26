@@ -6,21 +6,38 @@
 #define ESP32MORSE_BUZZER_TONE_HPP
 
 #include <Arduino.h>
+#include <list>
 
-int freq = 2000;
-int channel = 0;
-int resolution = 8;
+
+
+struct Tone{
+    int frequency;
+    int period;
+};
 
 class BuzzerTone {
+
+private:
+    const int default_frequency=2000;
+    unsigned long _last_time;
+    int _remaining_period;
+    std::list<Tone> _tones=std::list<Tone>();
+
+
 public:
-    explicit BuzzerTone() {
+    explicit BuzzerTone();
 
-    }
+    void setup();
 
-    void init() {
-        ledcSetup(channel, freq, resolution);
-        ledcAttachPin(21, channel);
-    }
+    void stop();
+
+    void loop();
+
+    void playTone(int freq,int period);
+
+    void playDefaultTone(int period);
+
+    void playMessageReceived();
 };
 
 #endif //ESP32MORSE_BUZZER_TONE_HPP

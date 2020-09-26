@@ -4,7 +4,7 @@
 
 #include "oled_display.hpp"
 
-void OledDisplay::init() {
+void OledDisplay::setup() {
     //reset OLED display via software
     pinMode(OLED_RST, OUTPUT);
     digitalWrite(OLED_RST, LOW);

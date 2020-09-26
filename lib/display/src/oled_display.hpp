@@ -22,7 +22,7 @@ private:
 public:
     explicit OledDisplay() : Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RST) {}
 
-    void init();
+    void setup();
 
 
 

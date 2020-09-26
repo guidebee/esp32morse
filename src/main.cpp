@@ -12,15 +12,17 @@
 #include "esp_spi_flash.h"
 
 #include <EEPROM.h>
+#include <receiver_led.hpp>
 
 #define EEPROM_SIZE 1
 
-#define LED_RECEIVER 12
+
 #define TONE_PERIOD 200
 OledDisplay display;
+ReceiverLed receiverLed;
 Screen topBar(&display, 0, 1, true);
 Screen topScreen(&display, 1, 5, false);
-Screen bottomScreen(&display, 5, 7, true,true);
+Screen bottomScreen(&display, 5, 7, true, true);
 Screen statusBar(&display, 7, 8, false);
 BuzzerTone buzzer;
 LoraRadioClass LoRaRadio;
@@ -35,7 +37,7 @@ class KeyListener : public MorseCodeListener {
     void onEmit(char character) {
         if (character == '*') {
             bottomScreen.backspace();
-            message = message.substring(0, message.length()-1);
+            message = message.substring(0, message.length() - 1);
         } else {
             //Send LoRaRadio packet to receiver
             if (!(character == ' ' and lastChar == ' ')) {
@@ -109,14 +111,15 @@ void setup() {
 
     Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 
-    display.init();
+    display.setup();
     topScreen.clearScreen();
     bottomScreen.clearScreen();
     topBar.clearScreen();
     statusBar.clearScreen();
-    buzzer.init();
-    ledcWriteTone(channel, 2000);
-    LoRaRadio.init();
+    buzzer.setup();
+    receiverLed.setup();
+    buzzer.playDefaultTone(100);
+    LoRaRadio.setup();
     Log.notice("LoRaRadio Initializing OK!");
 
     topBar.print("morse walkie talkie");
@@ -127,22 +130,22 @@ void setup() {
 
     Serial.println(letter);
     chipid = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
-    Log.notice("ESP32 Chip ID = %04X", (uint16_t) (chipid >> 32));//print High 2 bytes
-    Log.notice("%08X\n", (uint32_t) chipid);//print Low 4bytes.
+    printf("ESP32 Chip ID = %04X", (uint16_t) (chipid >> 32));//print High 2 bytes
+    printf("%08X\n", (uint32_t) chipid);//print Low 4bytes.
     last_mills = millis();
     current_mills = last_mills;
     last_task_mills = last_mills;
     diff_mills = 0;
     samplePeriod = morseCode.getSamplePeriod();
 
-    ledcWriteTone(channel, 0);
-    pinMode(LED_RECEIVER, OUTPUT);
 
 }
 
 void loop() {
 // write your code here
     button.loop();
+    buzzer.loop();
+    receiverLed.loop();
     current_mills = millis();
     unsigned long diff_task_mills = current_mills - last_task_mills;
     if (diff_task_mills >= samplePeriod) {
@@ -193,17 +196,10 @@ void loop() {
         }
         topScreen.print(LoRaData + '\n');
 
-        ledcWriteTone(channel, 2000);
-        digitalWrite(LED_RECEIVER, HIGH);
-        delay(100);
-        ledcWriteTone(channel, 1000);
-        digitalWrite(LED_RECEIVER, LOW);
-        delay(100);
-        digitalWrite(LED_RECEIVER, HIGH);
-        ledcWriteTone(channel, 2000);
-        delay(100);
-        digitalWrite(LED_RECEIVER, LOW);
-        ledcWriteTone(channel, 0);
+        buzzer.playMessageReceived();
+        receiverLed.signalMessageReceived();
+
+
     }
 
 }
