@@ -27,9 +27,9 @@ void ReceiverLed::loop() {
         if (!_periods.empty()) {
             auto led_signal = _periods.front();
             _periods.pop_front();
-            if(led_signal.on){
+            if (led_signal.on) {
                 digitalWrite(LED_RECEIVER, HIGH);
-            }else{
+            } else {
                 digitalWrite(LED_RECEIVER, LOW);
             }
             _remaining_period = led_signal.period;
@@ -47,13 +47,65 @@ void ReceiverLed::stop() {
 }
 
 
-void ReceiverLed::signal(bool on,int period) {
-    _periods.push_back(LedSignal{on,period});
+void ReceiverLed::signal(bool on, int period) {
+    _periods.push_back(LedSignal{on, period});
 }
 
-void ReceiverLed::signalMessageReceived(){
-    signal(true,100);
-    signal(false,100);
-    signal(true,100);
-    signal(false,100);
+
+void ReceiverLed::signalMorse(std::string rawCode) {
+
+    if (rawCode != " ") {
+        for (char &c : rawCode) {
+            if (c == '.') {
+                signal(true, tonePeriod );
+            } else {
+                signal(true, tonePeriod * 3);
+            }
+            signal(false, tonePeriod );
+        }
+    }
+
+}
+
+
+void ReceiverLed::signalMorseText(std::string text) {
+    if (text != " ") {
+        for (char &c : text) {
+            switch (c) {
+                case '.':
+                    signal(true, tonePeriod);
+                    break;
+                case '-':
+                    signal(true, tonePeriod * 3);
+                case '<':
+                    signal(false, tonePeriod * 3);
+                    break;
+                case '^':
+                    signal(false, tonePeriod);
+                    break;
+                case '>':
+                    signal(false, tonePeriod * 7);
+                    break;
+                default:
+                    break;
+
+            }
+
+        }
+    }
+}
+
+
+void ReceiverLed::signalMessageReceived() {
+    signal(true, 100);
+    signal(false, 100);
+    signal(true, 100);
+    signal(false, 100);
+}
+
+void ReceiverLed::signalMessageSent() {
+    signal(true, 200);
+    signal(false, 100);
+    signal(true, 2);
+    signal(false, 100);
 }

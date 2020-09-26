@@ -7,17 +7,14 @@
 #include "lora_radio.hpp"
 #include "push_button.hpp"
 #include "buzzer_tone.hpp"
+#include "receiver_led.hpp"
+
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 
-#include <EEPROM.h>
-#include <receiver_led.hpp>
 
-#define EEPROM_SIZE 1
-
-
-#define TONE_PERIOD 200
+#define TONE_PERIOD 150
 OledDisplay display;
 ReceiverLed receiverLed;
 Screen topBar(&display, 0, 1, true);
@@ -30,21 +27,23 @@ KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
 PushButton button(36);
 uint64_t chipid;
 bool isDown = true;
-String message = "";
+std::string message = "";
 char lastChar = '^';
 
 class KeyListener : public MorseCodeListener {
-    void onEmit(char character) {
+    void onEmit(char character, std::string raw) {
         if (character == '*') {
             bottomScreen.backspace();
-            message = message.substring(0, message.length() - 1);
+            message = message.substr(0, message.length() - 1);
         } else {
             //Send LoRaRadio packet to receiver
             if (!(character == ' ' and lastChar == ' ')) {
                 if (character != '\n') {
                     message += character;
                     bottomScreen.print(character);
-                    Serial.print(character);
+                    //Serial.print(raw.c_str());
+                    //buzzer.playMorse(raw);
+                    receiverLed.signalMorse(raw);
 
                 }
             }
@@ -52,9 +51,14 @@ class KeyListener : public MorseCodeListener {
             if (character == '\n') {
                 lastChar = ' ';
                 LoRaRadio.beginPacket();
-                LoRaRadio.print(message);
+                LoRaRadio.print(message.c_str());
                 LoRaRadio.endPacket();
                 bottomScreen.print(character);
+                auto morseText = morseCode.generateDitDashString(message);
+                Serial.print(morseText.c_str());
+                buzzer.playMessageSent();
+                receiverLed.signalMessageSent();
+
                 message = "";
                 // topScreen.backspace();
 
@@ -64,13 +68,14 @@ class KeyListener : public MorseCodeListener {
     }
 
     void onCharStart() {
-//        Serial.print("onCharStart");
     }
 
     void onCharEnd(char dotOrDash, int length) {
-
-        Serial.print(dotOrDash);
-
+        if (dotOrDash == '.') {
+            buzzer.playDi();
+        } else if (dotOrDash == '-') {
+            buzzer.playDah();
+        }
     }
 };
 
@@ -118,11 +123,15 @@ void setup() {
     statusBar.clearScreen();
     buzzer.setup();
     receiverLed.setup();
-    buzzer.playDefaultTone(100);
+
     LoRaRadio.setup();
     Log.notice("LoRaRadio Initializing OK!");
 
-    topBar.print("morse walkie talkie");
+    std::string app_name = "sos";
+    topBar.print( "morse walkie talkie");
+    auto morseText = morseCode.generateDitDashString(app_name);
+    buzzer.playMorseText(morseText);
+    receiverLed.signalMorseText(morseText);
 
     button.setDebounceTime(50);
     morseCode.addListener(&keyListener);

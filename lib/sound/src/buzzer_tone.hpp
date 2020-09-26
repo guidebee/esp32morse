@@ -18,6 +18,10 @@ struct Tone{
 class BuzzerTone {
 
 private:
+    const int tonePeriod=100;
+    const int keyTonePeriod=100;
+    const int keyToneFrequency=800;
+    const int toneFrequency=800;
     const int default_frequency=2000;
     unsigned long _last_time;
     int _remaining_period;
@@ -38,6 +42,18 @@ public:
     void playDefaultTone(int period);
 
     void playMessageReceived();
+
+    void playMessageSent();
+
+    void playDi();
+
+    void playDah();
+
+    void playNote(note_t note,uint8_t octave,int period);
+
+    void playMorse(std::string rawCode);
+
+    void playMorseText(std::string text);
 };
 
 #endif //ESP32MORSE_BUZZER_TONE_HPP

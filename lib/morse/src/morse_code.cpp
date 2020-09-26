@@ -82,7 +82,7 @@ void MorseCodePatternMatch::process(bool isTone) {
         //can output
         if (morseMsg.length() > 0) {
             if (morseCodeListener != nullptr) {
-                morseCodeListener->onEmit(getMorseLetter(morseMsg));
+                morseCodeListener->onEmit(getMorseLetter(morseMsg), morseMsg);
                 noCharDetectedCounter = 0;
             }
             reset();
@@ -91,7 +91,7 @@ void MorseCodePatternMatch::process(bool isTone) {
 
     if (spaceCounter > wordLimit) {
         if (morseCodeListener != nullptr) {
-            morseCodeListener->onEmit(' ');
+            morseCodeListener->onEmit(' ', " ");
         }
         reset();
     }
@@ -109,6 +109,35 @@ char MorseCodePatternMatch::getMorseLetter(std::string morseMsg) {
         return morseCodeData[morseMsg];
     }
     return INVALID_SYMBOL;
+}
+
+
+std::string MorseCodePatternMatch::getMorseString(char ch) {
+    if (morseCodeReverseData.count(ch) > 0) {
+        return morseCodeReverseData[ch];
+    }
+    return "";
+}
+
+
+std::string MorseCodePatternMatch::generateDitDashString(std::string text) {
+    std::string ret = "";
+    for (char &c:text) {
+        if (c != ' ') {
+            auto morseText = morseCodeReverseData[c];
+
+            for (char &c1:morseText) {
+                ret += c1;
+                ret += '^';
+            }
+
+            ret += '<';
+
+        } else {
+            ret += '>';
+        }
+    }
+    return ret;
 }
 
 void MorseCodePatternMatch::reset() {

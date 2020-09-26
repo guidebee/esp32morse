@@ -11,7 +11,7 @@
 
 class MorseCodeListener {
 public:
-    virtual void onEmit(char character) = 0;
+    virtual void onEmit(char character, std::string raw) = 0;
 
     virtual void onCharStart() = 0;
 
@@ -37,6 +37,10 @@ public:
     void process(bool isTone);
 
     char getMorseLetter(std::string morseMsg);
+
+    std::string getMorseString(char ch);
+
+    std::string generateDitDashString(std::string text);
 
 private:
 
@@ -130,7 +134,67 @@ private:
              {".--.-.",  '@'},
              {".-.-.",   '\t'},
              {".-.-",    '\n'},
-             {"......",   '*'},};
+             {"......",  '*'},};
+
+    std::map<char, std::string> morseCodeReverseData = {
+            {'a',  ".-"},
+            {'b',  "-..."},
+            {'c',  "-.-."},
+            {'d',  "-.."},
+            {'e',  "."},
+            {'f',  "..-."},
+            {'g',  "--."},
+            {'h',  "...."},
+            {'i',  ".."},
+            {'j',  ".---"},
+            {'k',  "-.-"},
+            {'l',  ".-.."},
+            {'m',  "--"},
+            {'n',  "-."},
+            {'o',  "---"},
+            {'p',  ".--."},
+            {'q',  "--.-"},
+            {'r',  ".-."},
+            {'s',  "..."},
+            {'t',  "-"},
+            {'u',  "..-"},
+            {'v',  "...-"},
+            {'w',  ".--"},
+            {'x',  "-..-"},
+            {'y',  "-.--"},
+            {'z',  "--.."},
+
+            {'0',  "-----"},
+            {'1',  ".----"},
+            {'2',  "..---"},
+            {'3',  "...--"},
+            {'4',  "....-"},
+            {'5',  "....."},
+            {'6',  "-...."},
+            {'7',  "--..."},
+            {'8',  "---.."},
+            {'9',  "----."},
+
+
+            {'.',  ".-.-.-"},
+            {',',  "--..--"},
+            {'?',  "..--.."},
+            {'\'', ".----."},
+            {'!',  "-.-.--"},
+            {'/',  "-..-."},
+            {'(',  "-.--."},
+            {')',  "-.--.-"},
+            {'&',  ".-..."},
+            {':',  "---..."},
+            {';',  "-.-.-."},
+            {'=',  "-...-"},
+            {'+',  ".-.-."},
+            {'-',  "-....-"},
+            {'_',  "..--.-"},
+            {'\"', ".-..-."},
+            {'$',  "...-..-"},
+            {'@',  ".--.-."},
+    };
 
 private:
     Status decodeDataState;
@@ -147,9 +211,10 @@ public:
 
     }
 
-    int getSamplePeriod(){
+    int getSamplePeriod() {
         return this->samplePeriod;
     }
+
     KeyboardMorseCodeDecoder() : KeyboardMorseCodeDecoder(18, 25) {}
 
     void processKey(bool input) {
