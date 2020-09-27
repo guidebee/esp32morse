@@ -45,6 +45,8 @@ public:
 
     void playMessageSent();
 
+    void playError();
+
     void playDi();
 
     void playDah();

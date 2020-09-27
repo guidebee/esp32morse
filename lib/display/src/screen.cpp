@@ -18,7 +18,7 @@ void Screen::backspace() {
     int x = _display->getCursorX();
     int y = _display->getCursorY();
 
-    if (x > 0) {
+    if (x > 0 && (y>=_start_page*CHAR_HEIGHT && y<_end_page*CHAR_HEIGHT)) {
         x -= CHAR_WIDTH;
         _display->setCursor(x, y);
         _old_cursor_y = y;
@@ -89,7 +89,7 @@ void Screen::clearScreenIfNeeded() {
         _old_cursor_x = OFFSET_X;
         _display->setCursor(_old_cursor_x, _old_cursor_y);
     }
-    if (y >= _end_page - 1) {
+    if (y >= (_end_page - 1)*CHAR_HEIGHT) {
 
         if (x > CHAR_WIDTH * NUMBER_CHARS_ONE_LINE) {
             clearScreen();

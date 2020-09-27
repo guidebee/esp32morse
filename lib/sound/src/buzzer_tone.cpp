@@ -47,36 +47,50 @@ void BuzzerTone::playDefaultTone(int period) {
 }
 
 void BuzzerTone::playMessageReceived() {
-    playDefaultTone(100);
-    playTone(1000, 100);
-    playDefaultTone(100);
-    playTone(1000, 100);
+    for (int i = 0; i < 3; i++) {
+        playDefaultTone(80);
+        playTone(0, 20);
+        playTone(1000, 80);
+        playTone(0, 20);
+    }
+
 }
 
 void BuzzerTone::playMessageSent() {
 
-    playNote(NOTE_C,4,200);
-    playTone(0,100);
-    playNote(NOTE_D,4,200);
-    playTone(0,100);
-    playNote(NOTE_E,4,200);
-    playTone(0,100);
+    playNote(NOTE_C, 7, 80);
+    playTone(0, 20);
+    playNote(NOTE_D, 7, 80);
+    playTone(0, 20);
+    playNote(NOTE_E, 7, 80);
+    playTone(0, 20);
+    playNote(NOTE_G, 7, 80);
+    playTone(0, 20);
+    playNote(NOTE_G, 7, 80);
+    playTone(0, 20);
+}
 
-
+void BuzzerTone::playError() {
+    for (int i = 0; i < 3; i++) {
+        playNote(NOTE_B, 7, 80);
+        playTone(0, 20);
+        playNote(NOTE_E, 7, 80);
+        playTone(0, 20);
+    }
 
 }
 
-void BuzzerTone::playNote(note_t note,uint8_t octave,int period){
+void BuzzerTone::playNote(note_t note, uint8_t octave, int period) {
     const uint16_t noteFrequencyBase[12] = {
             //   C        C#       D        Eb       E        F       F#        G       G#        A       Bb        B
-            4186,    4435,    4699,    4978,    5274,    5588,    5920,    6272,    6645,    7040,    7459,    7902
+            4186, 4435, 4699, 4978, 5274, 5588, 5920, 6272, 6645, 7040, 7459, 7902
     };
 
-    if(octave > 8 || note >= NOTE_MAX){
+    if (octave > 8 || note >= NOTE_MAX) {
         return;
     }
-    double noteFreq =  (double)noteFrequencyBase[note] / (double)(1 << (8-octave));
-    playTone(static_cast<int>(noteFreq),period);
+    double noteFreq = (double) noteFrequencyBase[note] / (double) (1 << (8 - octave));
+    playTone(static_cast<int>(noteFreq), period);
 }
 
 void BuzzerTone::playMorse(std::string rawCode) {
@@ -88,7 +102,7 @@ void BuzzerTone::playMorse(std::string rawCode) {
             } else {
                 playTone(toneFrequency, tonePeriod * 3);
             }
-            playTone(0, tonePeriod );
+            playTone(0, tonePeriod);
         }
     }
 
@@ -106,13 +120,13 @@ void BuzzerTone::playMorseText(std::string text) {
                 case '-':
                     playTone(toneFrequency, tonePeriod * 3);
                 case '<':
-                    playTone(0, tonePeriod*3);
+                    playTone(0, tonePeriod * 3);
                     break;
                 case '^':
                     playTone(0, tonePeriod);
                     break;
                 case '>':
-                    playTone(0, tonePeriod *7);
+                    playTone(0, tonePeriod * 7);
                     break;
                 default:
                     break;
@@ -123,7 +137,6 @@ void BuzzerTone::playMorseText(std::string text) {
     }
 
 }
-
 
 
 void BuzzerTone::playDi() {

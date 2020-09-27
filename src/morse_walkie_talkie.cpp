@@ -28,28 +28,29 @@ void MorseWalkieTalkie::deleteLastKey() {
 
 
 void MorseWalkieTalkie::onEmit(char character, std::string raw) {
-    if (character == '*') {
-        deleteLastKey();
-    } else {
-        //Send LoRaRadio packet to receiver
-        if (!(character == ' ' and lastChar == ' ')) {
-            if (character != '\n') {
-                message += character;
-                bottomScreen.print(character);
-                //Serial.print(raw.c_str());
-                //buzzer.playMorse(raw);
-                receiverLed.signalMorse(raw);
 
+    switch (character) {
+        case '*':
+            deleteLastKey();
+            break;
+        case '^':
+            buzzer.playError();
+            break;
+        default:
+            if (!(character == ' ' and lastChar == ' ')) {
+                if (character != '\n') {
+                    message += character;
+                    bottomScreen.print(character);
+                    receiverLed.signalMorse(raw);
+                }
             }
-        }
-        lastChar = character;
-        if (character == '\n') {
-            sendMessage(character);
-            // topScreen.backspace();
-
-
-        }
+            lastChar = character;
+            if (character == '\n') {
+                sendMessage(character);
+            }
+            break;
     }
+
 }
 
 void MorseWalkieTalkie::onCharStart() {
@@ -209,7 +210,8 @@ void MorseWalkieTalkie::onRightPressed() {
 }
 
 void MorseWalkieTalkie::onRightReleased() {
-    receiverLed.signalMessageSent();
+    message += ' ';
+    bottomScreen.print(' ');
 }
 
 void MorseWalkieTalkie::onOkPressed() {
