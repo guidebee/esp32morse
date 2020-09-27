@@ -10,6 +10,8 @@
 class PushButton : public ezButton {
 public:
     explicit PushButton(int pin) : ezButton(pin) {}
+
+    void setup();
 };
 
 #endif //ESP32MORSE_PUSH_BUTTON_HPP

@@ -8,7 +8,7 @@
 #include "push_button.hpp"
 #include "buzzer_tone.hpp"
 #include "signal_led.hpp"
-
+#include "keypad.hpp"
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
@@ -27,13 +27,18 @@ Screen statusBar(&display, 7, 8, false);
 BuzzerTone buzzer;
 LoraRadioClass LoRaRadio;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
-PushButton button(36);
+
+Keypad keypad;
+PushButton mainButton(36);
+PushButton leftButton(34);
+PushButton okButton(23);
+PushButton rightButton(35);
 uint64_t chipid;
 bool isDown = true;
 std::string message = "";
 char lastChar = '^';
 
-class KeyListener : public MorseCodeListener {
+class MorseKeyListener : public MorseCodeListener {
     void onEmit(char character, std::string raw) {
         if (character == '*') {
             bottomScreen.backspace();
@@ -82,7 +87,46 @@ class KeyListener : public MorseCodeListener {
     }
 };
 
-KeyListener keyListener;
+MorseKeyListener morseKeyListener;
+
+class KeyInputListener: public KeypadListener{
+public:
+    void onMainPressed() override {
+
+    }
+
+    void onLeftPressed() override {
+
+    }
+
+    void onMainReleased() override {
+
+    }
+
+    void onLeftReleased() override {
+
+    }
+
+    void onRightPressed() override {
+
+    }
+
+    void onRightReleased() override {
+
+    }
+
+    void onOkPressed() override {
+
+    }
+
+    void onOkReleased() override {
+
+    }
+
+};
+
+KeyInputListener keyInputListener;
+
 unsigned long last_mills;
 unsigned long current_mills;
 unsigned long last_task_mills;
@@ -138,8 +182,11 @@ void setup() {
     receiverLed.signalMorseText(morseText);
     blueToothLed.signalMorseText(morseText);
 
-    button.setDebounceTime(50);
-    morseCode.addListener(&keyListener);
+    mainButton.setup();
+    leftButton.setup();
+    rightButton.setup();
+    okButton.setup();
+    morseCode.addListener(&morseKeyListener);
     char letter = morseCode.getMorseLetter("...");
 
     Serial.println(letter);
@@ -157,7 +204,10 @@ void setup() {
 
 void loop() {
 // write your code here
-    button.loop();
+    mainButton.loop();
+    leftButton.loop();
+    okButton.loop();
+    rightButton.loop();
     buzzer.loop();
     receiverLed.loop();
     blueToothLed.loop();
@@ -171,7 +221,19 @@ void loop() {
         last_task_mills = current_mills;
     }
 
-    if (button.isPressed()) {
+    if(leftButton.isPressed()){
+        blueToothLed.signalMessageSent();
+    }
+
+    if(okButton.isPressed()){
+        receiverLed.signalMessageSent();
+    }
+
+    if(rightButton.isPressed()){
+        blueToothLed.signalMessageSent();
+    }
+
+    if (mainButton.isPressed()) {
         last_mills = millis();
 
         isDown = true;
@@ -181,7 +243,7 @@ void loop() {
 
 //
 //
-    if (button.isReleased()) {
+    if (mainButton.isReleased()) {
         isDown = false;
 
         diff_mills = millis() - last_mills;

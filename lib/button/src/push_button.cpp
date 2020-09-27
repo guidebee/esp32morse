@@ -3,3 +3,7 @@
 //
 
 #include "push_button.hpp"
+
+void PushButton::setup() {
+    setDebounceTime(50);
+}
