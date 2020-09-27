@@ -182,7 +182,7 @@ void MorseWalkieTalkie::onMainReleased() {
 
     diff_mills = millis() - last_mills;
 
-    if (diff_mills < KEY_INTERVAL) {
+    if (diff_mills <= KEY_INTERVAL) {
 
         morseCode.processKey(false);
     } else if (diff_mills < KEY_INTERVAL * 4) {
@@ -194,22 +194,22 @@ void MorseWalkieTalkie::onMainReleased() {
 }
 
 void MorseWalkieTalkie::onLeftPressed() {
-    deleteLastKey();
+
 
 }
 
 
 void MorseWalkieTalkie::onLeftReleased() {
-
+    deleteLastKey();
 }
 
 void MorseWalkieTalkie::onRightPressed() {
-    receiverLed.signalMessageSent();
+
 
 }
 
 void MorseWalkieTalkie::onRightReleased() {
-
+    receiverLed.signalMessageSent();
 }
 
 void MorseWalkieTalkie::onOkPressed() {

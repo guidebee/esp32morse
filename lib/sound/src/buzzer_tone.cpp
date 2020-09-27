@@ -127,11 +127,13 @@ void BuzzerTone::playMorseText(std::string text) {
 
 
 void BuzzerTone::playDi() {
+    stop();
     playTone(keyToneFrequency, keyTonePeriod);
 
 
 }
 
 void BuzzerTone::playDah() {
+    stop();
     playTone(keyToneFrequency, keyTonePeriod * 3);
 }

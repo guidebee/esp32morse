@@ -24,7 +24,7 @@
 
 #define RECEIVER_LED 12
 #define BLUETOOTH_LED 13
-#define KEY_INTERVAL 100
+#define KEY_INTERVAL 150
 
 
 class MorseWalkieTalkie : public MorseCodeListener, public KeypadListener {
