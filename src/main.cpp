@@ -38,6 +38,23 @@ bool isDown = true;
 std::string message = "";
 char lastChar = '^';
 
+
+void sendMessage(char character) {
+    if (message != "") {
+        lastChar = ' ';
+        LoRaRadio.beginPacket();
+        LoRaRadio.print(message.c_str());
+        LoRaRadio.endPacket();
+        bottomScreen.print(character);
+        auto morseText = morseCode.generateDitDashString(message);
+        Serial.print(morseText.c_str());
+        buzzer.playMessageSent();
+        receiverLed.signalMessageSent();
+
+        message = "";
+    }
+}
+
 class MorseKeyListener : public MorseCodeListener {
     void onEmit(char character, std::string raw) {
         if (character == '*') {
@@ -57,17 +74,7 @@ class MorseKeyListener : public MorseCodeListener {
             }
             lastChar = character;
             if (character == '\n') {
-                lastChar = ' ';
-                LoRaRadio.beginPacket();
-                LoRaRadio.print(message.c_str());
-                LoRaRadio.endPacket();
-                bottomScreen.print(character);
-                auto morseText = morseCode.generateDitDashString(message);
-                Serial.print(morseText.c_str());
-                buzzer.playMessageSent();
-                receiverLed.signalMessageSent();
-
-                message = "";
+                sendMessage(character);
                 // topScreen.backspace();
 
 
@@ -133,7 +140,7 @@ public:
     }
 
     void onOkPressed() override {
-
+        sendMessage('\n');
     }
 
     void onOkReleased() override {
