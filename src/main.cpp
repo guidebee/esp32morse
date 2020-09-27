@@ -13,10 +13,13 @@
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 
+#define RECEIVER_LED 12
+#define BLUETOOTH_LED 13
 
 #define TONE_PERIOD 150
 OledDisplay display;
-SignalLed receiverLed;
+SignalLed receiverLed(RECEIVER_LED);
+SignalLed blueToothLed(BLUETOOTH_LED);
 Screen topBar(&display, 0, 1, true);
 Screen topScreen(&display, 1, 5, false);
 Screen bottomScreen(&display, 5, 7, true, true);
@@ -123,15 +126,17 @@ void setup() {
     statusBar.clearScreen();
     buzzer.setup();
     receiverLed.setup();
+    blueToothLed.setup();
 
     LoRaRadio.setup();
     Log.notice("LoRaRadio Initializing OK!");
 
     std::string app_name = "sos";
-    topBar.print( "morse walkie talkie");
+    topBar.print("morse walkie talkie");
     auto morseText = morseCode.generateDitDashString(app_name);
     buzzer.playMorseText(morseText);
     receiverLed.signalMorseText(morseText);
+    blueToothLed.signalMorseText(morseText);
 
     button.setDebounceTime(50);
     morseCode.addListener(&keyListener);
@@ -155,6 +160,7 @@ void loop() {
     button.loop();
     buzzer.loop();
     receiverLed.loop();
+    blueToothLed.loop();
     current_mills = millis();
     unsigned long diff_task_mills = current_mills - last_task_mills;
     if (diff_task_mills >= samplePeriod) {

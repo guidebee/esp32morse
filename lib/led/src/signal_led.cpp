@@ -3,21 +3,16 @@
 //
 
 #include "signal_led.hpp"
-
-
-//
-// Created by Jing SHEN on 18/9/20.
-//
-
 #include "buzzer_tone.hpp"
 
-SignalLed::SignalLed() {
+SignalLed::SignalLed(int pin) {
+    _led_pin = pin;
     _last_time = millis();
     _remaining_period = 0;
 }
 
 void SignalLed::setup() {
-    pinMode(LED_RECEIVER, OUTPUT);
+    pinMode(_led_pin, OUTPUT);
 }
 
 void SignalLed::loop() {
@@ -28,9 +23,9 @@ void SignalLed::loop() {
             auto led_signal = _periods.front();
             _periods.pop_front();
             if (led_signal.on) {
-                digitalWrite(LED_RECEIVER, HIGH);
+                digitalWrite(_led_pin, HIGH);
             } else {
-                digitalWrite(LED_RECEIVER, LOW);
+                digitalWrite(_led_pin, LOW);
             }
             _remaining_period = led_signal.period;
         } else {
@@ -42,7 +37,7 @@ void SignalLed::loop() {
 }
 
 void SignalLed::stop() {
-    digitalWrite(LED_RECEIVER, LOW);
+    digitalWrite(_led_pin, LOW);
     _periods.clear();
 }
 
@@ -57,11 +52,11 @@ void SignalLed::signalMorse(std::string rawCode) {
     if (rawCode != " ") {
         for (char &c : rawCode) {
             if (c == '.') {
-                signal(true, tonePeriod );
+                signal(true, tonePeriod);
             } else {
                 signal(true, tonePeriod * 3);
             }
-            signal(false, tonePeriod );
+            signal(false, tonePeriod);
         }
     }
 

@@ -5,7 +5,7 @@
 #ifndef ESP32MORSE_RECEIVER_LED_HPP
 #define ESP32MORSE_RECEIVER_LED_HPP
 
-#define LED_RECEIVER 12
+
 #include <string>
 #include <list>
 
@@ -16,13 +16,14 @@ struct LedSignal{
 
 class SignalLed {
 private:
+    int _led_pin=12;
     const int tonePeriod=100;
     unsigned long _last_time;
     int _remaining_period;
     std::list<LedSignal> _periods = std::list<LedSignal>();
 
 public:
-    explicit SignalLed();
+    explicit SignalLed(int pin);
 
     void setup();
 
