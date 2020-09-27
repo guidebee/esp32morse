@@ -152,10 +152,11 @@ void Screen::stopScroll() {
 
 }
 
-void DynamicScreen::displayText(std::string text, std::list<int> pattern) {
+void DynamicScreen::displayText(std::string text, std::list<int> pattern,bool reload) {
     _displayMessage=text;
     _stored_pattern=std::list<int>(pattern);
     _periods.clear();
+    _reload=reload;
     for(int& p:_stored_pattern){
         _periods.push_back(p);
     }
@@ -177,8 +178,10 @@ void DynamicScreen::loop() {
             }
             _remaining_period = period;
         } else {
-            for(int& p:_stored_pattern){
-                _periods.push_back(p);
+            if(_reload) {
+                for (int &p:_stored_pattern) {
+                    _periods.push_back(p);
+                }
             }
         }
     }

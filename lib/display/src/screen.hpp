@@ -70,6 +70,7 @@ private:
     std::list<int> _periods = std::list<int>();
     std::list<int> _stored_pattern;
     bool _show=false;
+    bool _reload = true;
 
 public:
     explicit DynamicScreen(OledDisplay *display, int start_page, int end_page,
@@ -80,7 +81,7 @@ public:
 
     void loop();
 
-    void displayText(std::string text,std::list<int> pattern);
+    void displayText(std::string text,std::list<int> pattern,bool reload=true);
 
 };
 

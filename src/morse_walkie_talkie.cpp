@@ -125,6 +125,7 @@ void MorseWalkieTalkie::setup() {
 
     std::string app_name = "sos";
     topBar.displayText("Morse Walkie Talkie",topBarPattern);
+    statusBar.displayText("     Guidebee IT",statusBarPattern,false);
     auto morseText = morseCode.generateDitDashString(app_name);
     buzzer.playMorseText(morseText);
     receiverLed.signalMorseText(morseText);

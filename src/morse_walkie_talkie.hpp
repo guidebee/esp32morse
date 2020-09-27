@@ -52,8 +52,8 @@ private:
     int samplePeriod;
     bool muteSound = false;
 
-    std::list<int> topBarPattern = std::list<int>{1000, 300};
-    std::list<int> statusBarPattern = std::list<int>{1000, 500};
+    std::list<int> topBarPattern = std::list<int>{9500, 500};
+    std::list<int> statusBarPattern = std::list<int>{500,500,500,500,2500, 500};
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
