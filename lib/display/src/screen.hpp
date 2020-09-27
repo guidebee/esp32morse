@@ -55,6 +55,8 @@ private:
     void restoreCursor();
 
     void drawCursor();
+
+    void clearScreenIfNeeded();
 };
 
 #endif //ESP32MORSE_SCREEN_HPP

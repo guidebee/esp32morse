@@ -4,14 +4,14 @@
 
 #include "screen.hpp"
 
-Screen::Screen(OledDisplay *display, int start_page, int end_page, bool inverted_text = false,bool has_cursor) {
+Screen::Screen(OledDisplay *display, int start_page, int end_page, bool inverted_text = false, bool has_cursor) {
     _display = display;
     _start_page = start_page;
     _end_page = end_page;
     _invert_text = inverted_text;
     _old_cursor_x = OFFSET_X;
     _old_cursor_y = CHAR_HEIGHT * start_page;
-    _has_cursor=has_cursor;
+    _has_cursor = has_cursor;
 }
 
 void Screen::backspace() {
@@ -21,12 +21,12 @@ void Screen::backspace() {
     if (x > 0) {
         x -= CHAR_WIDTH;
         _display->setCursor(x, y);
-        _old_cursor_y=y;
-        _old_cursor_x=x-CHAR_WIDTH;
+        _old_cursor_y = y;
+        _old_cursor_x = x - CHAR_WIDTH;
         if (_invert_text) {
-            _display->fillRect(x, y, CHAR_WIDTH*4, CHAR_HEIGHT, WHITE);
+            _display->fillRect(x, y, CHAR_WIDTH * 4, CHAR_HEIGHT, WHITE);
         } else {
-            _display->fillRect(x, y, CHAR_WIDTH*4, CHAR_HEIGHT, BLACK);
+            _display->fillRect(x, y, CHAR_WIDTH * 4, CHAR_HEIGHT, BLACK);
         }
         drawCursor();
 
@@ -42,9 +42,9 @@ void Screen::clearScreen() {
     int y = _old_cursor_y;
     _display->setCursor(x, y);
     if (_invert_text) {
-        _display->fillRect(0, y, SCREEN_WIDTH, CHAR_HEIGHT * (_end_page - _start_page ), WHITE);
+        _display->fillRect(0, y, SCREEN_WIDTH, CHAR_HEIGHT * (_end_page - _start_page), WHITE);
     } else {
-        _display->fillRect(0, y, SCREEN_WIDTH, CHAR_HEIGHT * (_end_page - _start_page ), BLACK);
+        _display->fillRect(0, y, SCREEN_WIDTH, CHAR_HEIGHT * (_end_page - _start_page), BLACK);
     }
     _display->display();
 }
@@ -60,7 +60,7 @@ void Screen::saveCursor() {
 }
 
 void Screen::restoreCursor() {
-    if(_old_cursor_y>=_end_page*CHAR_HEIGHT){
+    if (_old_cursor_y >= _end_page * CHAR_HEIGHT) {
         clearScreen();
     }
     _display->setCursor(_old_cursor_x, _old_cursor_y);
@@ -72,28 +72,45 @@ void Screen::restoreCursor() {
 }
 
 void Screen::drawCursor() {
-    if(_has_cursor){
+    if (_has_cursor) {
         if (_invert_text) {
-            _display->drawFastHLine(_old_cursor_x+CHAR_WIDTH, _old_cursor_y + CHAR_HEIGHT -2, CHAR_WIDTH, BLACK);
-        }else{
-            _display->drawFastHLine(_old_cursor_x+CHAR_WIDTH, _old_cursor_y + CHAR_HEIGHT -2, CHAR_WIDTH, WHITE);
+            _display->drawFastHLine(_old_cursor_x + CHAR_WIDTH, _old_cursor_y + CHAR_HEIGHT - 2, CHAR_WIDTH, BLACK);
+        } else {
+            _display->drawFastHLine(_old_cursor_x + CHAR_WIDTH, _old_cursor_y + CHAR_HEIGHT - 2, CHAR_WIDTH, WHITE);
         }
     };
 }
 
+
+void Screen::clearScreenIfNeeded() {
+    int y = _display->getCursorY();
+    int x = _display->getCursorX();
+    if (x < OFFSET_X) {
+        _old_cursor_x = OFFSET_X;
+        _display->setCursor(_old_cursor_x, _old_cursor_y);
+    }
+    if (y >= _end_page - 1) {
+
+        if (x > CHAR_WIDTH * NUMBER_CHARS_ONE_LINE) {
+            clearScreen();
+        }
+    }
+
+}
+
 void Screen::print(char c) {
     restoreCursor();
-
+    clearScreenIfNeeded();
     _display->print(c);
-    if(c!='\n') {
+    if (c != '\n') {
         drawCursor();
-    }else{
+    } else {
         int x = _old_cursor_x;
         int y = _old_cursor_y;
         if (_invert_text) {
-            _display->fillRect(x, y, CHAR_WIDTH*4, CHAR_HEIGHT, WHITE);
+            _display->fillRect(x, y, CHAR_WIDTH * 4, CHAR_HEIGHT, WHITE);
         } else {
-            _display->fillRect(x, y, CHAR_WIDTH*4, CHAR_HEIGHT, BLACK);
+            _display->fillRect(x, y, CHAR_WIDTH * 4, CHAR_HEIGHT, BLACK);
         }
     }
     process_char(c);
@@ -122,13 +139,15 @@ void Screen::print(const char str[]) {
 }
 
 
-void Screen::startScrollRight(){
-    _display->startscrollright(_start_page,_end_page-1);
+void Screen::startScrollRight() {
+    _display->startscrollright(_start_page, _end_page - 1);
 }
-void Screen::startScrollLeft(){
-    _display->startscrollleft(_start_page,_end_page-1);
+
+void Screen::startScrollLeft() {
+    _display->startscrollleft(_start_page, _end_page - 1);
 }
-void Screen::stopScroll(){
+
+void Screen::stopScroll() {
     _display->stopscroll();
 
 }
