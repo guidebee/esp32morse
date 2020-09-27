@@ -1,0 +1,94 @@
+//
+// Created by Jing SHEN on 27/9/20.
+//
+
+#ifndef ESP32MORSE_MORSE_WALKIE_TALKIE_HPP
+#define ESP32MORSE_MORSE_WALKIE_TALKIE_HPP
+
+#include <Arduino.h>
+#include <ArduinoLog.h>
+
+#include "morse_code.hpp"
+#include "oled_display.hpp"
+#include "screen.hpp"
+#include "lora_radio.hpp"
+
+#include "buzzer_tone.hpp"
+#include "signal_led.hpp"
+#include "keypad.hpp"
+#include "freertos/task.h"
+#include "esp_system.h"
+#include "esp_spi_flash.h"
+
+
+#define RECEIVER_LED 12
+#define BLUETOOTH_LED 13
+#define TONE_PERIOD 150
+
+
+class MorseWalkieTalkie :public MorseCodeListener,public KeypadListener {
+private:
+    unsigned long last_mills;
+    unsigned long current_mills;
+    unsigned long last_task_mills;
+    unsigned long diff_mills;
+    OledDisplay display;
+    SignalLed receiverLed;
+    SignalLed blueToothLed;
+    Screen topBar;
+    Screen topScreen;
+    Screen bottomScreen;
+    Screen statusBar;
+    BuzzerTone buzzer;
+    LoraRadioClass LoRaRadio;
+    KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
+
+    Keypad keypad;
+
+    uint64_t chipid;
+    bool isDown = true;
+    std::string message = "";
+    char lastChar = '^';
+    String LoRaData;
+    int samplePeriod;
+
+public:
+    explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
+                                   blueToothLed(SignalLed(BLUETOOTH_LED)),
+                                   topBar(Screen(&display, 0, 1, true)),
+                                   topScreen(Screen(&display, 1, 5, false)),
+                                   bottomScreen(Screen(&display, 5, 7, true, true)),
+                                   statusBar(Screen(&display, 7, 8, false)) {}
+
+    void setup();
+
+    void loop();
+
+    void onEmit(char character, std::string raw) override;
+
+    void onCharStart() override;
+
+    void onCharEnd(char dotOrDash, int length) override;
+
+    void onMainPressed() override;
+
+    void onMainReleased() override;
+
+    void onLeftPressed() override;
+
+    void onLeftReleased() override;
+
+    void onRightPressed() override;
+
+    void onRightReleased() override;
+
+    void onOkPressed() override;
+
+    void onOkReleased() override;
+
+private:
+    void sendMessage(char character);
+    void deleteLastKey();
+};
+
+#endif //ESP32MORSE_MORSE_WALKIE_TALKIE_HPP

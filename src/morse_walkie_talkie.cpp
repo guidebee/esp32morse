@@ -1,45 +1,10 @@
-#include <Arduino.h>
-#include <ArduinoLog.h>
+//
+// Created by Jing SHEN on 27/9/20.
+//
 
-#include "morse_code.hpp"
-#include "oled_display.hpp"
-#include "screen.hpp"
-#include "lora_radio.hpp"
+#include "morse_walkie_talkie.hpp"
 
-#include "buzzer_tone.hpp"
-#include "signal_led.hpp"
-#include "keypad.hpp"
-#include "freertos/task.h"
-#include "esp_system.h"
-#include "esp_spi_flash.h"
-
-#define RECEIVER_LED 12
-#define BLUETOOTH_LED 13
-unsigned long last_mills;
-unsigned long current_mills;
-unsigned long last_task_mills;
-unsigned long diff_mills;
-#define TONE_PERIOD 150
-OledDisplay display;
-SignalLed receiverLed(RECEIVER_LED);
-SignalLed blueToothLed(BLUETOOTH_LED);
-Screen topBar(&display, 0, 1, true);
-Screen topScreen(&display, 1, 5, false);
-Screen bottomScreen(&display, 5, 7, true, true);
-Screen statusBar(&display, 7, 8, false);
-BuzzerTone buzzer;
-LoraRadioClass LoRaRadio;
-KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
-
-Keypad keypad;
-
-uint64_t chipid;
-bool isDown = true;
-std::string message = "";
-char lastChar = '^';
-
-
-void sendMessage(char character) {
+void MorseWalkieTalkie::sendMessage(char character) {
     if (message != "") {
         lastChar = ' ';
         LoRaRadio.beginPacket();
@@ -56,111 +21,60 @@ void sendMessage(char character) {
 }
 
 
-void deleteLastKey(){
+void MorseWalkieTalkie::deleteLastKey() {
     bottomScreen.backspace();
     message = message.substr(0, message.length() - 1);
 }
 
-class MorseKeyListener : public MorseCodeListener {
-    void onEmit(char character, std::string raw) {
-        if (character == '*') {
-            deleteLastKey();
-        } else {
-            //Send LoRaRadio packet to receiver
-            if (!(character == ' ' and lastChar == ' ')) {
-                if (character != '\n') {
-                    message += character;
-                    bottomScreen.print(character);
-                    //Serial.print(raw.c_str());
-                    //buzzer.playMorse(raw);
-                    receiverLed.signalMorse(raw);
 
-                }
-            }
-            lastChar = character;
-            if (character == '\n') {
-                sendMessage(character);
-                // topScreen.backspace();
-
-
-            }
-        }
-    }
-
-    void onCharStart() {
-    }
-
-    void onCharEnd(char dotOrDash, int length) {
-        if (dotOrDash == '.') {
-            buzzer.playDi();
-        } else if (dotOrDash == '-') {
-            buzzer.playDah();
-        }
-    }
-};
-
-MorseKeyListener morseKeyListener;
-
-class KeyInputListener : public KeypadListener {
-public:
-    void onMainPressed() override {
-        last_mills = millis();
-
-        isDown = true;
-
-        morseCode.setOnOff(true);
-    }
-
-    void onMainReleased() override {
-        isDown = false;
-
-        diff_mills = millis() - last_mills;
-
-        if (diff_mills < TONE_PERIOD) {
-
-            morseCode.processKey(false);
-        } else if (diff_mills < TONE_PERIOD * 4) {
-
-            morseCode.processKey(true);
-        }
-
-        morseCode.setOnOff(false);
-    }
-
-    void onLeftPressed() override {
+void MorseWalkieTalkie::onEmit(char character, std::string raw) {
+    if (character == '*') {
         deleteLastKey();
+    } else {
+        //Send LoRaRadio packet to receiver
+        if (!(character == ' ' and lastChar == ' ')) {
+            if (character != '\n') {
+                message += character;
+                bottomScreen.print(character);
+                //Serial.print(raw.c_str());
+                //buzzer.playMorse(raw);
+                receiverLed.signalMorse(raw);
+
+            }
+        }
+        lastChar = character;
+        if (character == '\n') {
+            sendMessage(character);
+            // topScreen.backspace();
+
+
+        }
     }
+}
 
+void MorseWalkieTalkie::onCharStart() {
 
-    void onLeftReleased() override {
+}
 
+void MorseWalkieTalkie::onCharEnd(char dotOrDash, int length) {
+    if (dotOrDash == '.') {
+        buzzer.playDi();
+    } else if (dotOrDash == '-') {
+        buzzer.playDah();
     }
-
-    void onRightPressed() override {
-        receiverLed.signalMessageSent();
-    }
-
-    void onRightReleased() override {
-
-    }
-
-    void onOkPressed() override {
-        sendMessage('\n');
-    }
-
-    void onOkReleased() override {
-
-    }
-
-};
-
-KeyInputListener keyInputListener;
+}
 
 
-String LoRaData;
-int samplePeriod;
+void MorseWalkieTalkie::onMainPressed() {
+    last_mills = millis();
 
-void setup() {
+    isDown = true;
+
+    morseCode.setOnOff(true);
+}
+
+
+void MorseWalkieTalkie::setup() {
 // write your initialization code here
 
     esp_chip_info_t chip_info;
@@ -209,8 +123,8 @@ void setup() {
     blueToothLed.signalMorseText(morseText);
 
     keypad.setup();
-    morseCode.addListener(&morseKeyListener);
-    keypad.addListener(&keyInputListener);
+    morseCode.addListener(this);
+    keypad.addListener(this);
     char letter = morseCode.getMorseLetter("...");
 
     Serial.println(letter);
@@ -226,7 +140,7 @@ void setup() {
 
 }
 
-void loop() {
+void MorseWalkieTalkie::loop() {
 // write your code here
     keypad.loop();
     buzzer.loop();
@@ -260,5 +174,48 @@ void loop() {
 
 
     }
+
+}
+
+void MorseWalkieTalkie::onMainReleased() {
+    isDown = false;
+
+    diff_mills = millis() - last_mills;
+
+    if (diff_mills < TONE_PERIOD) {
+
+        morseCode.processKey(false);
+    } else if (diff_mills < TONE_PERIOD * 4) {
+
+        morseCode.processKey(true);
+    }
+
+    morseCode.setOnOff(false);
+}
+
+void MorseWalkieTalkie::onLeftPressed() {
+    deleteLastKey();
+
+}
+
+
+void MorseWalkieTalkie::onLeftReleased() {
+
+}
+
+void MorseWalkieTalkie::onRightPressed() {
+    receiverLed.signalMessageSent();
+
+}
+
+void MorseWalkieTalkie::onRightReleased() {
+
+}
+
+void MorseWalkieTalkie::onOkPressed() {
+    sendMessage('\n');
+}
+
+void MorseWalkieTalkie::onOkReleased() {
 
 }
