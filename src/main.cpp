@@ -5,7 +5,7 @@
 #include "oled_display.hpp"
 #include "screen.hpp"
 #include "lora_radio.hpp"
-#include "push_button.hpp"
+
 #include "buzzer_tone.hpp"
 #include "signal_led.hpp"
 #include "keypad.hpp"
@@ -15,7 +15,10 @@
 
 #define RECEIVER_LED 12
 #define BLUETOOTH_LED 13
-
+unsigned long last_mills;
+unsigned long current_mills;
+unsigned long last_task_mills;
+unsigned long diff_mills;
 #define TONE_PERIOD 150
 OledDisplay display;
 SignalLed receiverLed(RECEIVER_LED);
@@ -29,10 +32,7 @@ LoraRadioClass LoRaRadio;
 KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
 
 Keypad keypad;
-PushButton mainButton(36);
-PushButton leftButton(34);
-PushButton okButton(23);
-PushButton rightButton(35);
+
 uint64_t chipid;
 bool isDown = true;
 std::string message = "";
@@ -89,19 +89,36 @@ class MorseKeyListener : public MorseCodeListener {
 
 MorseKeyListener morseKeyListener;
 
-class KeyInputListener: public KeypadListener{
+class KeyInputListener : public KeypadListener {
 public:
     void onMainPressed() override {
+        last_mills = millis();
 
+        isDown = true;
+
+        morseCode.setOnOff(true);
+    }
+
+    void onMainReleased() override {
+        isDown = false;
+
+        diff_mills = millis() - last_mills;
+
+        if (diff_mills < TONE_PERIOD) {
+
+            morseCode.processKey(false);
+        } else if (diff_mills < TONE_PERIOD * 4) {
+
+            morseCode.processKey(true);
+        }
+
+        morseCode.setOnOff(false);
     }
 
     void onLeftPressed() override {
 
     }
 
-    void onMainReleased() override {
-
-    }
 
     void onLeftReleased() override {
 
@@ -127,10 +144,7 @@ public:
 
 KeyInputListener keyInputListener;
 
-unsigned long last_mills;
-unsigned long current_mills;
-unsigned long last_task_mills;
-unsigned long diff_mills;
+
 String LoRaData;
 int samplePeriod;
 
@@ -182,11 +196,9 @@ void setup() {
     receiverLed.signalMorseText(morseText);
     blueToothLed.signalMorseText(morseText);
 
-    mainButton.setup();
-    leftButton.setup();
-    rightButton.setup();
-    okButton.setup();
+    keypad.setup();
     morseCode.addListener(&morseKeyListener);
+    keypad.addListener(&keyInputListener);
     char letter = morseCode.getMorseLetter("...");
 
     Serial.println(letter);
@@ -204,10 +216,7 @@ void setup() {
 
 void loop() {
 // write your code here
-    mainButton.loop();
-    leftButton.loop();
-    okButton.loop();
-    rightButton.loop();
+    keypad.loop();
     buzzer.loop();
     receiverLed.loop();
     blueToothLed.loop();
@@ -221,45 +230,6 @@ void loop() {
         last_task_mills = current_mills;
     }
 
-    if(leftButton.isPressed()){
-        blueToothLed.signalMessageSent();
-    }
-
-    if(okButton.isPressed()){
-        receiverLed.signalMessageSent();
-    }
-
-    if(rightButton.isPressed()){
-        blueToothLed.signalMessageSent();
-    }
-
-    if (mainButton.isPressed()) {
-        last_mills = millis();
-
-        isDown = true;
-//        Serial.println("The button is pressed");
-        morseCode.setOnOff(true);
-    }
-
-//
-//
-    if (mainButton.isReleased()) {
-        isDown = false;
-
-        diff_mills = millis() - last_mills;
-
-
-//        Serial.println("The button is released");
-        if (diff_mills < TONE_PERIOD) {
-
-            morseCode.processKey(false);
-        } else if (diff_mills < TONE_PERIOD * 4) {
-
-            morseCode.processKey(true);
-        }
-
-        morseCode.setOnOff(false);
-    }
 
     int packetSize = LoRaRadio.parsePacket();
     if (packetSize) {
