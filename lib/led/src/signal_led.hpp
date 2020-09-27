@@ -14,7 +14,7 @@ struct LedSignal{
     int period;
 };
 
-class ReceiverLed {
+class SignalLed {
 private:
     const int tonePeriod=100;
     unsigned long _last_time;
@@ -22,7 +22,7 @@ private:
     std::list<LedSignal> _periods = std::list<LedSignal>();
 
 public:
-    explicit ReceiverLed();
+    explicit SignalLed();
 
     void setup();
 

@@ -7,7 +7,7 @@
 #include "lora_radio.hpp"
 #include "push_button.hpp"
 #include "buzzer_tone.hpp"
-#include "receiver_led.hpp"
+#include "signal_led.hpp"
 
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -16,7 +16,7 @@
 
 #define TONE_PERIOD 150
 OledDisplay display;
-ReceiverLed receiverLed;
+SignalLed receiverLed;
 Screen topBar(&display, 0, 1, true);
 Screen topScreen(&display, 1, 5, false);
 Screen bottomScreen(&display, 5, 7, true, true);
