@@ -12,10 +12,11 @@
 #include "oled_display.hpp"
 #include "screen.hpp"
 #include "lora_radio.hpp"
-
 #include "buzzer_tone.hpp"
 #include "signal_led.hpp"
 #include "keypad.hpp"
+
+
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
@@ -23,10 +24,10 @@
 
 #define RECEIVER_LED 12
 #define BLUETOOTH_LED 13
-#define TONE_PERIOD 150
+#define KEY_INTERVAL 100
 
 
-class MorseWalkieTalkie :public MorseCodeListener,public KeypadListener {
+class MorseWalkieTalkie : public MorseCodeListener, public KeypadListener {
 private:
     unsigned long last_mills;
     unsigned long current_mills;
@@ -41,13 +42,11 @@ private:
     Screen statusBar;
     BuzzerTone buzzer;
     LoraRadioClass LoRaRadio;
-    KeyboardMorseCodeDecoder morseCode = KeyboardMorseCodeDecoder();
-
+    KeyboardMorseCodeDecoder morseCode;
     Keypad keypad;
-
-    uint64_t chipid;
+    uint64_t chipId;
     bool isDown = true;
-    std::string message = "";
+    std::string message;
     char lastChar = '^';
     String LoRaData;
     int samplePeriod;
@@ -88,6 +87,7 @@ public:
 
 private:
     void sendMessage(char character);
+
     void deleteLastKey();
 };
 

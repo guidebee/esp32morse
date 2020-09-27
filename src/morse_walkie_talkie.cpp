@@ -128,9 +128,9 @@ void MorseWalkieTalkie::setup() {
     char letter = morseCode.getMorseLetter("...");
 
     Serial.println(letter);
-    chipid = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
-    printf("ESP32 Chip ID = %04X", (uint16_t) (chipid >> 32));//print High 2 bytes
-    printf("%08X\n", (uint32_t) chipid);//print Low 4bytes.
+    chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
+    printf("ESP32 Chip ID = %04X", (uint16_t) (chipId >> 32));//print High 2 bytes
+    printf("%08X\n", (uint32_t) chipId);//print Low 4bytes.
     last_mills = millis();
     current_mills = last_mills;
     last_task_mills = last_mills;
@@ -182,10 +182,10 @@ void MorseWalkieTalkie::onMainReleased() {
 
     diff_mills = millis() - last_mills;
 
-    if (diff_mills < TONE_PERIOD) {
+    if (diff_mills < KEY_INTERVAL) {
 
         morseCode.processKey(false);
-    } else if (diff_mills < TONE_PERIOD * 4) {
+    } else if (diff_mills < KEY_INTERVAL * 4) {
 
         morseCode.processKey(true);
     }
