@@ -13,7 +13,9 @@ void MorseWalkieTalkie::sendMessage(char character) {
         bottomScreen.print(character);
         auto morseText = morseCode.generateDitDashString(message);
         Serial.print(morseText.c_str());
-        buzzer.playMessageSent();
+        if (!muteSound) {
+            buzzer.playMessageSent();
+        }
         receiverLed.signalMessageSent();
 
         message = "";
@@ -34,7 +36,10 @@ void MorseWalkieTalkie::onEmit(char character, std::string raw) {
             deleteLastKey();
             break;
         case '^':
-            buzzer.playError();
+            if (!muteSound) {
+                buzzer.playError();
+            }
+            receiverLed.signalError();
             break;
         default:
             if (!(character == ' ' and lastChar == ' ')) {
@@ -58,10 +63,12 @@ void MorseWalkieTalkie::onCharStart() {
 }
 
 void MorseWalkieTalkie::onCharEnd(char dotOrDash, int length) {
-    if (dotOrDash == '.') {
-        buzzer.playDi();
-    } else if (dotOrDash == '-') {
-        buzzer.playDah();
+    if (!muteSound) {
+        if (dotOrDash == '.') {
+            buzzer.playDi();
+        } else if (dotOrDash == '-') {
+            buzzer.playDah();
+        }
     }
 }
 
@@ -153,10 +160,8 @@ void MorseWalkieTalkie::loop() {
         if (!isDown) {
             morseCode.process(false);
         }
-
         last_task_mills = current_mills;
     }
-
 
     int packetSize = LoRaRadio.parsePacket();
     if (packetSize) {
@@ -169,11 +174,8 @@ void MorseWalkieTalkie::loop() {
             Serial.print(LoRaData);
         }
         topScreen.print(LoRaData + '\n');
-
         buzzer.playMessageReceived();
         receiverLed.signalMessageReceived();
-
-
     }
 
 }

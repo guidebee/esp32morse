@@ -50,6 +50,7 @@ private:
     char lastChar = '^';
     String LoRaData;
     int samplePeriod;
+    bool muteSound = false;
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),

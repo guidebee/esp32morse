@@ -98,9 +98,17 @@ void SignalLed::signalMessageReceived() {
     signal(false, 100);
 }
 
+
+void SignalLed::signalError() {
+    for(int i=0;i<3;i++){
+        signal(true, 80);
+        signal(false, 80);
+    }
+}
+
 void SignalLed::signalMessageSent() {
     signal(true, 200);
     signal(false, 100);
-    signal(true, 2);
+    signal(true, 200);
     signal(false, 100);
 }

@@ -37,6 +37,8 @@ public:
 
     void signalMessageReceived();
 
+    void signalError();
+
     void signalMorse(std::string raw);
 
     void signalMessageSent();
