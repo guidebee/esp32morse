@@ -36,10 +36,10 @@ private:
     OledDisplay display;
     SignalLed receiverLed;
     SignalLed blueToothLed;
-    Screen topBar;
+    DynamicScreen topBar;
     Screen topScreen;
     Screen bottomScreen;
-    Screen statusBar;
+    DynamicScreen statusBar;
     BuzzerTone buzzer;
     LoraRadioClass LoRaRadio;
     KeyboardMorseCodeDecoder morseCode;
@@ -52,13 +52,16 @@ private:
     int samplePeriod;
     bool muteSound = false;
 
+    std::list<int> topBarPattern = std::list<int>{1000, 300};
+    std::list<int> statusBarPattern = std::list<int>{1000, 500};
+
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
                                    blueToothLed(SignalLed(BLUETOOTH_LED)),
-                                   topBar(Screen(&display, 0, 1, true)),
+                                   topBar(DynamicScreen(&display, 0, 1, true)),
                                    topScreen(Screen(&display, 1, 5, false)),
                                    bottomScreen(Screen(&display, 5, 7, true, true)),
-                                   statusBar(Screen(&display, 7, 8, false)) {}
+                                   statusBar(DynamicScreen(&display, 7, 8, false)) {}
 
     void setup();
 

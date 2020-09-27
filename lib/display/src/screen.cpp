@@ -151,3 +151,37 @@ void Screen::stopScroll() {
     _display->stopscroll();
 
 }
+
+void DynamicScreen::displayText(std::string text, std::list<int> pattern) {
+    _displayMessage=text;
+    _stored_pattern=std::list<int>(pattern);
+    _periods.clear();
+    for(int& p:_stored_pattern){
+        _periods.push_back(p);
+    }
+
+}
+
+void DynamicScreen::loop() {
+    auto current_mills = millis();
+    _remaining_period -= static_cast<int>(current_mills - _last_time);
+    if (_remaining_period < 10) {
+        if (!_periods.empty()) {
+            _show=!_show;
+            auto period = _periods.front();
+            _periods.pop_front();
+            if(_show){
+                print(_displayMessage.c_str());
+            }else{
+                clearScreen();
+            }
+            _remaining_period = period;
+        } else {
+            for(int& p:_stored_pattern){
+                _periods.push_back(p);
+            }
+        }
+    }
+    _last_time = current_mills;
+    if (_remaining_period < 0) _remaining_period = 0;
+}

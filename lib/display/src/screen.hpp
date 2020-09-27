@@ -6,6 +6,7 @@
 #define ESP32MORSE_SCREEN_HPP
 
 #include "oled_display.hpp"
+#include <list>
 
 #define MAX_LINE_NUMBER 50
 #define NUMBER_CHARS_ONE_LINE 20
@@ -27,11 +28,11 @@ private:
     char _line[NUMBER_CHARS_ONE_LINE];
     int _old_cursor_x;
     int _old_cursor_y;
-    bool _has_cursor=false;
+    bool _has_cursor = false;
 
 public:
     explicit Screen(OledDisplay *display, int start_page, int end_page,
-                    bool inverted_text,bool has_cursor=false);
+                    bool inverted_text, bool has_cursor = false);
 
     void print(char c);
 
@@ -44,7 +45,9 @@ public:
     void clearScreen();
 
     void startScrollRight();
+
     void startScrollLeft();
+
     void stopScroll();
 
 private:
@@ -57,6 +60,28 @@ private:
     void drawCursor();
 
     void clearScreenIfNeeded();
+};
+
+class DynamicScreen : public Screen {
+private:
+    std::string _displayMessage;
+    unsigned long _last_time;
+    int _remaining_period;
+    std::list<int> _periods = std::list<int>();
+    std::list<int> _stored_pattern;
+    bool _show=false;
+
+public:
+    explicit DynamicScreen(OledDisplay *display, int start_page, int end_page,
+                           bool inverted_text) : Screen(display, start_page, end_page, inverted_text) {
+        _last_time = millis();
+        _remaining_period = 0;
+    }
+
+    void loop();
+
+    void displayText(std::string text,std::list<int> pattern);
+
 };
 
 #endif //ESP32MORSE_SCREEN_HPP

@@ -124,7 +124,7 @@ void MorseWalkieTalkie::setup() {
     Log.notice("LoRaRadio Initializing OK!");
 
     std::string app_name = "sos";
-    topBar.print("morse walkie talkie");
+    topBar.displayText("Morse Walkie Talkie",topBarPattern);
     auto morseText = morseCode.generateDitDashString(app_name);
     buzzer.playMorseText(morseText);
     receiverLed.signalMorseText(morseText);
@@ -154,6 +154,8 @@ void MorseWalkieTalkie::loop() {
     buzzer.loop();
     receiverLed.loop();
     blueToothLed.loop();
+    topBar.loop();
+    statusBar.loop();
     current_mills = millis();
     unsigned long diff_task_mills = current_mills - last_task_mills;
     if (diff_task_mills >= samplePeriod) {
