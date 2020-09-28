@@ -108,7 +108,7 @@ void MorseWalkieTalkie::readConfiguration() {
     globalConfiguration.chipId = buffer;
     sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
     globalConfiguration.chipId += buffer;
-    saveConfiguration();
+    //saveConfiguration();
     preferences.begin("guidebeeit", false);
     globalConfiguration.deviceName=preferences.getString("deviceName").c_str();
     globalConfiguration.playSound=preferences.getBool("playSound",true);
@@ -118,7 +118,7 @@ void MorseWalkieTalkie::readConfiguration() {
     preferences.end();
     Serial.printf("%s\n",globalConfiguration.deviceName.c_str());
 
-    sprintf(globalConfiguration.encryptionKey, "GUIDEBEEIT202010");
+    sprintf(globalConfiguration.encryptionKey, "guidebeeit202010");
     printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
 }
 
