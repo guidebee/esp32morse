@@ -76,10 +76,10 @@ void LoraRadioClass::sendMessage(std::string message, int type) {
     std::string encrypted = encryptPayload(message);
     std::string encodedMessage = encodeMessage(type, encrypted);
     print(encodedMessage.c_str());
-//    std::string encrypted=encryptPayload(message);
-    std::string decrypted = decryptPayload(encrypted);
-    Serial.printf("encrypted:%s\n", encrypted.c_str());
-    Serial.printf("decrypted:%s\n", decrypted.c_str());
+////    std::string encrypted=encryptPayload(message);
+//    std::string decrypted = decryptPayload(encrypted);
+//    Serial.printf("encrypted:%s\n", encrypted.c_str());
+//    Serial.printf("decrypted:%s\n", decrypted.c_str());
     endPacket();
 
 }
@@ -125,12 +125,16 @@ void LoraRadioClass::decodeMessage(std::string message) {
             std::string messageLength = message.substr(38, 2);
             std::string reserved = message.substr(40, 8);
             std::string payload = message.substr(48, len - 48);
-            std::string::size_type sz;
             int c = std::atoi(counter.c_str());
             int type = std::atoi(messageType.c_str());
             int len = std::atoi(messageLength.c_str());
 
-            std::string decrypted = decryptPayload(payload);
+            std::string decrypted = payload;
+            try{
+                decrypted=decryptPayload(payload);
+            } catch (std::exception ) {
+
+            }
             _loraMessage.payload = decrypted;
             _loraMessage.messageType = type;
             _loraMessage.length = len;
