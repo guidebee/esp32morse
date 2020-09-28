@@ -92,8 +92,7 @@ void MorseWalkieTalkie::readConfiguration() {
     sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
     globalConfiguration.chipId += buffer;
     globalConfiguration.channelId = "<1234>";
-    globalConfiguration.deviceName = "James";
-    globalConfiguration.encryptMessage=true;
+    globalConfiguration.deviceName = "Harry";
     sprintf(globalConfiguration.encryptionKey, "GUIDEBEEIT202010");
     printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
 }

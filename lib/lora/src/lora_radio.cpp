@@ -148,33 +148,25 @@ void LoraRadioClass::decodeMessage(std::string message) {
 
 
 std::string LoraRadioClass::encryptPayload(std::string payload) {
-    if (globalConfiguration.encryptMessage) {
-        unsigned char cipherTextOutput[128];
-        for (unsigned char & i : cipherTextOutput) i = 0;
-        ::encrypt(const_cast<char *>(payload.c_str()), globalConfiguration.encryptionKey, cipherTextOutput);
-        size_t outputLength;
-        unsigned char *encoded = base64_encode((const unsigned char *) cipherTextOutput, strlen(
-                reinterpret_cast<const char *>(cipherTextOutput)), &outputLength);
-        sprintf(reinterpret_cast<char *>(cipherTextOutput), "%.*s", outputLength, encoded);
-        free(encoded);
-        return reinterpret_cast<const char *>(cipherTextOutput);
-    } else {
-        return payload;
-    }
+    unsigned char cipherTextOutput[128];
+    for (unsigned char & i : cipherTextOutput) i = 0;
+    ::encrypt(const_cast<char *>(payload.c_str()), globalConfiguration.encryptionKey, cipherTextOutput);
+    size_t outputLength;
+    unsigned char *encoded = base64_encode((const unsigned char *) cipherTextOutput, strlen(
+            reinterpret_cast<const char *>(cipherTextOutput)), &outputLength);
+    sprintf(reinterpret_cast<char *>(cipherTextOutput), "%.*s", outputLength, encoded);
+    free(encoded);
+    return reinterpret_cast<const char *>(cipherTextOutput);
 }
 
 std::string LoraRadioClass::decryptPayload(std::string payload) {
-    if (globalConfiguration.encryptMessage) {
-        size_t outputLength;
-        unsigned char cipherTextOutput[128];
-        for (unsigned char & i : cipherTextOutput) i = 0;
-        auto encrypted = reinterpret_cast<const unsigned char *>(payload.c_str());
-        unsigned char *decoded = base64_decode((const unsigned char *) encrypted, strlen(
-                reinterpret_cast<const char *>(encrypted)), &outputLength);
-        ::decrypt(decoded, globalConfiguration.encryptionKey, cipherTextOutput);
-        free(decoded);
-        return reinterpret_cast<const char *>(cipherTextOutput);
-    } else {
-        return payload;
-    }
+    size_t outputLength;
+    unsigned char cipherTextOutput[128];
+    for (unsigned char & i : cipherTextOutput) i = 0;
+    auto encrypted = reinterpret_cast<const unsigned char *>(payload.c_str());
+    unsigned char *decoded = base64_decode((const unsigned char *) encrypted, strlen(
+            reinterpret_cast<const char *>(encrypted)), &outputLength);
+    ::decrypt(decoded, globalConfiguration.encryptionKey, cipherTextOutput);
+    free(decoded);
+    return reinterpret_cast<const char *>(cipherTextOutput);
 }

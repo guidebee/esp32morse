@@ -3,7 +3,7 @@
 //
 #include <string>
 
-struct Configuration{
+struct Configuration {
     std::string channelId;
     std::string chipId;
     std::string deviceName;
@@ -12,7 +12,7 @@ struct Configuration{
     bool keyFastSpeed; //true or false
     std::string loraFrequency;
     char encryptionKey[16];
-    bool encryptMessage;
+
 };
 
 extern Configuration globalConfiguration;
