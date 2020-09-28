@@ -172,7 +172,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             char buffer[16];
             sprintf(buffer, "%d", userInfo.index);
             std::string deviceIndex = buffer;
-            statusBar.displayText(deviceIndex + ":" + userInfo.deviceName + " online",
+            statusBar.displayText(deviceIndex + ":" + userInfo.deviceName,
                                   statusBarPattern, false);
         }
             break;
@@ -183,7 +183,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
                 char buffer[16];
                 sprintf(buffer, "%d", userInfo.index);
                 deviceIndex = buffer;
-                statusBar.displayText(deviceIndex + ":" + userInfo.deviceName + " online",
+                statusBar.displayText(deviceIndex + ":" + userInfo.deviceName,
                                       statusBarPattern, false);
                 userInfo.counter = message.counter;
             }
