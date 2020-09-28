@@ -142,13 +142,13 @@ void MorseWalkieTalkie::setup() {
     Serial.println(letter);
     chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
     char buffer[64];
-    sprintf(buffer,"%04X", (uint16_t) (chipId >> 32));//print High 2 bytes
-    globalConfiguration.chipId=buffer;
-    sprintf(buffer,"%08X", (uint32_t) chipId);//print Low 4bytes.
-    globalConfiguration.chipId+=buffer;
-    globalConfiguration.channelId="<1234>";
-    globalConfiguration.deviceName="Harry";
-    printf("Chip Id=%s\n",globalConfiguration.chipId.c_str());
+    sprintf(buffer, "%04X", (uint16_t) (chipId >> 32));//print High 2 bytes
+    globalConfiguration.chipId = buffer;
+    sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
+    globalConfiguration.chipId += buffer;
+    globalConfiguration.channelId = "<1234>";
+    globalConfiguration.deviceName = "James";
+    printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
     last_mills = millis();
     current_mills = last_mills;
     last_task_mills = last_mills;
@@ -157,11 +157,20 @@ void MorseWalkieTalkie::setup() {
 }
 
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
-    String loRaData = message.payload.c_str();
-    Serial.print(loRaData);
-    topScreen.print(loRaData + '\n');
-    buzzer.playMessageReceived();
-    receiverLed.signalMessageReceived();
+    switch (message.messageType) {
+        case MESSAGE_TYPE_HELLO:
+            statusBar.displayText(message.payload, statusBarPattern, false);
+            break;
+        default: {
+            String loRaData = message.payload.c_str();
+            Serial.print(loRaData);
+            topScreen.print(loRaData + '\n');
+            buzzer.playMessageReceived();
+            receiverLed.signalMessageReceived();
+        }
+            break;
+    }
+
 }
 
 

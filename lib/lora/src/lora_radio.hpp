@@ -25,7 +25,7 @@ struct LoraMessage {
     std::string chipId;//12 bytes
     std::string repeaterId;//12 bytes or other uses if not for repeater
     int counter;//6 bytes
-    std::string messageType;//2 bytes
+    int messageType;//2 bytes
     int length;//2 bytes
     std::string reserved;//8 bytes
     std::string payload;//max 80 bytes
