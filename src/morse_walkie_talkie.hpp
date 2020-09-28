@@ -46,7 +46,7 @@ private:
     LoraRadioClass loRaRadio;
     KeyboardMorseCodeDecoder morseCode;
     Keypad keypad;
-    uint64_t chipId;
+
     bool isDown = true;
     std::string message;
     char lastChar = '^';
@@ -96,6 +96,9 @@ private:
     void sendMessage(char character);
 
     void deleteLastKey();
+
+    void readConfiguration();
+
 };
 
 #endif //ESP32MORSE_MORSE_WALKIE_TALKIE_HPP

@@ -67,6 +67,9 @@ private:
     std::string encodeMessage(int type,std::string message);
     void decodeMessage(std::string message);
 
+    std::string encryptPayload(std::string payload);
+    std::string decryptPayload(std::string payload);
+
 };
 
 

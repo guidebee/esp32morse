@@ -11,6 +11,8 @@ struct Configuration{
     bool playSound;
     bool keyFastSpeed; //true or false
     std::string loraFrequency;
+    char encryptionKey[16];
+    bool encryptMessage;
 };
 
 extern Configuration globalConfiguration;

@@ -3,11 +3,35 @@
 //
 
 #include "lora_radio.hpp"
-
+#include "mbedtls/aes.h"
 #include "configuration.hpp"
 #include <string>
 
+extern "C" {
+#include "crypto/base64.h"
+}
+
 #define SEND_HELLO_PERIOD 15000
+
+void encrypt(char *plainText, char *key, unsigned char *outputBuffer) {
+
+    mbedtls_aes_context aes;
+
+    mbedtls_aes_init(&aes);
+    mbedtls_aes_setkey_enc(&aes, (const unsigned char *) key, strlen(key) * 8);
+    mbedtls_aes_crypt_ecb(&aes, MBEDTLS_AES_ENCRYPT, (const unsigned char *) plainText, outputBuffer);
+    mbedtls_aes_free(&aes);
+}
+
+void decrypt(unsigned char *cipherText, char *key, unsigned char *outputBuffer) {
+
+    mbedtls_aes_context aes;
+
+    mbedtls_aes_init(&aes);
+    mbedtls_aes_setkey_dec(&aes, (const unsigned char *) key, strlen(key) * 8);
+    mbedtls_aes_crypt_ecb(&aes, MBEDTLS_AES_DECRYPT, (const unsigned char *) cipherText, outputBuffer);
+    mbedtls_aes_free(&aes);
+}
 
 void LoraRadioClass::setup() {
     //SPI LoRa pins
@@ -33,7 +57,7 @@ void LoraRadioClass::loop() {
             loRaData += readString();
         }
         if (loraMessageListener != nullptr) {
-            printf("%s", loRaData.c_str());
+
             decodeMessage(loRaData.c_str());
             loraMessageListener->onMessageReceived(_loraMessage);
         }
@@ -49,8 +73,13 @@ void LoraRadioClass::loop() {
 
 void LoraRadioClass::sendMessage(std::string message, int type) {
     beginPacket();
-    std::string encodedMessage = encodeMessage(type, message);
+    std::string encrypted = encryptPayload(message);
+    std::string encodedMessage = encodeMessage(type, encrypted);
     print(encodedMessage.c_str());
+//    std::string encrypted=encryptPayload(message);
+    std::string decrypted = decryptPayload(encrypted);
+    Serial.printf("encrypted:%s\n", encrypted.c_str());
+    Serial.printf("decrypted:%s\n", decrypted.c_str());
     endPacket();
 
 }
@@ -101,7 +130,8 @@ void LoraRadioClass::decodeMessage(std::string message) {
             int type = std::atoi(messageType.c_str());
             int len = std::atoi(messageLength.c_str());
 
-            _loraMessage.payload = payload;
+            std::string decrypted = decryptPayload(payload);
+            _loraMessage.payload = decrypted;
             _loraMessage.messageType = type;
             _loraMessage.length = len;
             _loraMessage.channelId = channelId;
@@ -113,4 +143,38 @@ void LoraRadioClass::decodeMessage(std::string message) {
         }
     }
 
+
+}
+
+
+std::string LoraRadioClass::encryptPayload(std::string payload) {
+    if (globalConfiguration.encryptMessage) {
+        unsigned char cipherTextOutput[128];
+        for (unsigned char & i : cipherTextOutput) i = 0;
+        ::encrypt(const_cast<char *>(payload.c_str()), globalConfiguration.encryptionKey, cipherTextOutput);
+        size_t outputLength;
+        unsigned char *encoded = base64_encode((const unsigned char *) cipherTextOutput, strlen(
+                reinterpret_cast<const char *>(cipherTextOutput)), &outputLength);
+        sprintf(reinterpret_cast<char *>(cipherTextOutput), "%.*s", outputLength, encoded);
+        free(encoded);
+        return reinterpret_cast<const char *>(cipherTextOutput);
+    } else {
+        return payload;
+    }
+}
+
+std::string LoraRadioClass::decryptPayload(std::string payload) {
+    if (globalConfiguration.encryptMessage) {
+        size_t outputLength;
+        unsigned char cipherTextOutput[128];
+        for (unsigned char & i : cipherTextOutput) i = 0;
+        auto encrypted = reinterpret_cast<const unsigned char *>(payload.c_str());
+        unsigned char *decoded = base64_decode((const unsigned char *) encrypted, strlen(
+                reinterpret_cast<const char *>(encrypted)), &outputLength);
+        ::decrypt(decoded, globalConfiguration.encryptionKey, cipherTextOutput);
+        free(decoded);
+        return reinterpret_cast<const char *>(cipherTextOutput);
+    } else {
+        return payload;
+    }
 }

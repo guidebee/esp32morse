@@ -84,6 +84,20 @@ void MorseWalkieTalkie::onMainPressed() {
 }
 
 
+void MorseWalkieTalkie::readConfiguration() {
+    uint64_t chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
+    char buffer[64];
+    sprintf(buffer, "%04X", (uint16_t) (chipId >> 32));//print High 2 bytes
+    globalConfiguration.chipId = buffer;
+    sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
+    globalConfiguration.chipId += buffer;
+    globalConfiguration.channelId = "<1234>";
+    globalConfiguration.deviceName = "James";
+    globalConfiguration.encryptMessage=true;
+    sprintf(globalConfiguration.encryptionKey, "GUIDEBEEIT202010");
+    printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
+}
+
 void MorseWalkieTalkie::setup() {
 // write your initialization code here
 
@@ -140,15 +154,7 @@ void MorseWalkieTalkie::setup() {
     char letter = morseCode.getMorseLetter("...");
 
     Serial.println(letter);
-    chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
-    char buffer[64];
-    sprintf(buffer, "%04X", (uint16_t) (chipId >> 32));//print High 2 bytes
-    globalConfiguration.chipId = buffer;
-    sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
-    globalConfiguration.chipId += buffer;
-    globalConfiguration.channelId = "<1234>";
-    globalConfiguration.deviceName = "Harry";
-    printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
+    readConfiguration();
     last_mills = millis();
     current_mills = last_mills;
     last_task_mills = last_mills;
