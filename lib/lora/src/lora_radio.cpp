@@ -59,7 +59,9 @@ void LoraRadioClass::loop() {
         if (loraMessageListener != nullptr) {
 
             decodeMessage(loRaData.c_str());
-            loraMessageListener->onMessageReceived(_loraMessage);
+            if(_loraMessage.valid) {
+                loraMessageListener->onMessageReceived(_loraMessage);
+            }
         }
     }
     auto current_mills = millis();
@@ -76,7 +78,7 @@ void LoraRadioClass::sendMessage(std::string message, int type) {
     std::string encrypted = encryptPayload(message);
     std::string encodedMessage = encodeMessage(type, encrypted);
     print(encodedMessage.c_str());
-////    std::string encrypted=encryptPayload(message);
+//    std::string encrypted=encryptPayload(message);
 //    std::string decrypted = decryptPayload(encrypted);
 //    Serial.printf("encrypted:%s\n", encrypted.c_str());
 //    Serial.printf("decrypted:%s\n", decrypted.c_str());
@@ -115,6 +117,7 @@ std::string LoraRadioClass::encodeMessage(int type, std::string message) {
 void LoraRadioClass::decodeMessage(std::string message) {
 
     int len = message.length();
+    _loraMessage.valid=false;
     if (len > 48) {
         if (message[0] == '<' && message[5] == '>') {
             std::string channelId = message.substr(0, 6);
@@ -143,6 +146,7 @@ void LoraRadioClass::decodeMessage(std::string message) {
             _loraMessage.repeaterId = repeaterId;
             _loraMessage.counter = c;
             _loraMessage.reserved = reserved;
+            _loraMessage.valid=true;
 
         }
     }
