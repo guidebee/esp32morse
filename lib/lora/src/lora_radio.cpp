@@ -175,13 +175,17 @@ std::string LoraRadioClass::encryptPayload(std::string payload) {
 }
 
 std::string LoraRadioClass::decryptPayload(std::string payload) {
-    size_t outputLength;
-    unsigned char cipherTextOutput[128];
-    for (unsigned char &i : cipherTextOutput) i = 0;
-    auto encrypted = reinterpret_cast<const unsigned char *>(payload.c_str());
-    unsigned char *decoded = base64_decode((const unsigned char *) encrypted, strlen(
-            reinterpret_cast<const char *>(encrypted)), &outputLength);
-    ::decrypt(decoded, globalConfiguration.encryptionKey, cipherTextOutput);
-    free(decoded);
-    return reinterpret_cast<const char *>(cipherTextOutput);
+    try {
+        size_t outputLength;
+        unsigned char cipherTextOutput[128];
+        for (unsigned char &i : cipherTextOutput) i = 0;
+        auto encrypted = reinterpret_cast<const unsigned char *>(payload.c_str());
+        unsigned char *decoded = base64_decode((const unsigned char *) encrypted, strlen(
+                reinterpret_cast<const char *>(encrypted)), &outputLength);
+        ::decrypt(decoded, globalConfiguration.encryptionKey, cipherTextOutput);
+        free(decoded);
+        return reinterpret_cast<const char *>(cipherTextOutput);
+    } catch (std::exception) {
+        return payload;
+    }
 }
