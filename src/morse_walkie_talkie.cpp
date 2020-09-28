@@ -5,11 +5,9 @@
 #include "morse_walkie_talkie.hpp"
 
 void MorseWalkieTalkie::sendMessage(char character) {
-    if (message != "") {
+    if (!message.empty()) {
         lastChar = ' ';
-        LoRaRadio.beginPacket();
-        LoRaRadio.print(message.c_str());
-        LoRaRadio.endPacket();
+        loRaRadio.sendMessage(message);
         bottomScreen.print(character);
         auto morseText = morseCode.generateDitDashString(message);
         Serial.print(morseText.c_str());
@@ -120,12 +118,12 @@ void MorseWalkieTalkie::setup() {
     receiverLed.setup();
     blueToothLed.setup();
 
-    LoRaRadio.setup();
+    loRaRadio.setup();
     Log.notice("LoRaRadio Initializing OK!");
 
     std::string app_name = "sos";
-    topBar.displayText("Morse Walkie Talkie",topBarPattern);
-    statusBar.displayText("     Guidebee IT",statusBarPattern,false);
+    topBar.displayText("Morse Walkie Talkie", topBarPattern);
+    statusBar.displayText("     Guidebee IT", statusBarPattern, false);
     auto morseText = morseCode.generateDitDashString(app_name);
     buzzer.playMorseText(morseText);
     receiverLed.signalMorseText(morseText);
@@ -166,17 +164,17 @@ void MorseWalkieTalkie::loop() {
         last_task_mills = current_mills;
     }
 
-    int packetSize = LoRaRadio.parsePacket();
+    int packetSize = loRaRadio.parsePacket();
     if (packetSize) {
         //received a packet
         Serial.print("Received packet ");
 
         //read packet
-        while (LoRaRadio.available()) {
-            LoRaData = LoRaRadio.readString();
-            Serial.print(LoRaData);
+        while (loRaRadio.available()) {
+            loRaData = loRaRadio.readString();
+            Serial.print(loRaData);
         }
-        topScreen.print(LoRaData + '\n');
+        topScreen.print(loRaData + '\n');
         buzzer.playMessageReceived();
         receiverLed.signalMessageReceived();
     }

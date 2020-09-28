@@ -5,8 +5,6 @@
 #include "lora_radio.hpp"
 
 void LoraRadioClass::setup() {
-
-
     //SPI LoRa pins
     SPI.begin(SCK, MISO, MOSI, SS);
     //setup LoRa transceiver module
@@ -15,8 +13,24 @@ void LoraRadioClass::setup() {
 
     if (!begin(BAND)) {
         Serial.println("Starting LoRa failed!");
-        while (1);
+        while (true);
     }
 
-    setSyncWord(0x34);
+    setSyncWord(_syncWord);
+}
+
+void LoraRadioClass::loop() {
+
+}
+
+
+void LoraRadioClass::sendMessage(std::string message) {
+    beginPacket();
+    print(message.c_str());
+    endPacket();
+
+}
+
+void LoraRadioClass::addListener(LoraMessageListener *listener) {
+    loraMessageListener = listener;
 }

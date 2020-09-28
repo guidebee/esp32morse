@@ -41,14 +41,14 @@ private:
     Screen bottomScreen;
     DynamicScreen statusBar;
     BuzzerTone buzzer;
-    LoraRadioClass LoRaRadio;
+    LoraRadioClass loRaRadio;
     KeyboardMorseCodeDecoder morseCode;
     Keypad keypad;
     uint64_t chipId;
     bool isDown = true;
     std::string message;
     char lastChar = '^';
-    String LoRaData;
+    String loRaData;
     int samplePeriod;
     bool muteSound = false;
 
