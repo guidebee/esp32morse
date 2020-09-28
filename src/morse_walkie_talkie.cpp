@@ -1,11 +1,12 @@
 //
 // Created by Jing SHEN on 27/9/20.
 //
-
+#include <string>
 #include "morse_walkie_talkie.hpp"
 
-#include "../lib/config/src/configuration.hpp"
+#include "configuration.hpp"
 
+#define MAX_MESSAGE_LENGTH 36
 Configuration globalConfiguration;
 
 void MorseWalkieTalkie::sendMessage(char character) {
@@ -54,6 +55,9 @@ void MorseWalkieTalkie::onEmit(char character, std::string raw) {
             lastChar = character;
             if (character == '\n') {
                 sendMessage(character);
+            }
+            if (message.length() >= MAX_MESSAGE_LENGTH) {
+                sendMessage('-');
             }
             break;
     }
@@ -163,11 +167,27 @@ void MorseWalkieTalkie::setup() {
 
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
     switch (message.messageType) {
-        case MESSAGE_TYPE_HELLO:
-            statusBar.displayText(message.payload + " online", statusBarPattern, false);
+        case MESSAGE_TYPE_HELLO: {
+            auto userInfo = addUser(message.chipId, message.payload);
+            char buffer[16];
+            sprintf(buffer, "%d", userInfo.index);
+            std::string deviceIndex = buffer;
+            statusBar.displayText(deviceIndex + ":" + userInfo.deviceName + " online",
+                                  statusBarPattern, false);
+        }
             break;
         default: {
-            String loRaData = message.payload.c_str();
+            auto userInfo = getUser(message.chipId);
+            std::string deviceIndex = "";
+            if (userInfo.index > 0) {
+                char buffer[16];
+                sprintf(buffer, "%d", userInfo.index);
+                deviceIndex = buffer;
+                statusBar.displayText(deviceIndex + ":" + userInfo.deviceName + " online",
+                                      statusBarPattern, false);
+                userInfo.counter = message.counter;
+            }
+            String loRaData = (deviceIndex + ":" + message.payload).c_str();
             Serial.print(loRaData);
             topScreen.print(loRaData + '\n');
             buzzer.playMessageReceived();
@@ -243,5 +263,30 @@ void MorseWalkieTalkie::onOkPressed() {
 
 void MorseWalkieTalkie::onOkReleased() {
 
+}
+
+UserInfo MorseWalkieTalkie::getUser(std::string chipId) {
+    if (users.count(chipId) > 0) {
+        return users[chipId];
+    }
+    return UserInfo();
+}
+
+UserInfo MorseWalkieTalkie::addUser(std::string chipId, std::string deviceName) {
+    if (users.count(chipId) == 0) {
+        UserInfo userInfo;
+        userInfo.deviceName = deviceName;
+        userInfo.counter = 0;
+        userInfo.index = ++userIndex;
+        users[chipId] = userInfo;
+    }
+    return users[chipId];
+
+}
+
+void MorseWalkieTalkie::updateUserCounter(std::string chipId, int counter) {
+    if (users.count(chipId) > 0) {
+        users[chipId].counter = counter;
+    }
 }
 

@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 #include <ArduinoLog.h>
-
+#include <map>
 #include "morse_code.hpp"
 #include "oled_display.hpp"
 #include "screen.hpp"
@@ -25,6 +25,12 @@
 #define RECEIVER_LED 12
 #define BLUETOOTH_LED 13
 #define KEY_INTERVAL 150
+
+struct UserInfo{
+    int index;
+    std::string deviceName;
+    int counter;
+};
 
 
 class MorseWalkieTalkie : public MorseCodeListener,
@@ -52,7 +58,9 @@ private:
     char lastChar = '^';
     int samplePeriod;
     bool muteSound = false;
+    int userIndex=0;
 
+    std::map<std::string, UserInfo> users;
     std::list<int> topBarPattern = std::list<int>{9500, 500};
     std::list<int> statusBarPattern = std::list<int>{500, 500, 500, 500, 2500, 500};
 
@@ -98,6 +106,12 @@ private:
     void deleteLastKey();
 
     void readConfiguration();
+
+    UserInfo addUser(std::string chipId,std::string deviceName);
+
+    UserInfo getUser(std::string chipId);
+
+    void updateUserCounter(std::string chipId,int counter);
 
 };
 
