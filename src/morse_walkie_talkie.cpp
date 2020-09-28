@@ -7,6 +7,7 @@
 #include "configuration.hpp"
 
 #define MAX_MESSAGE_LENGTH 36
+
 Configuration globalConfiguration;
 
 void MorseWalkieTalkie::sendMessage(char character) {
@@ -88,6 +89,18 @@ void MorseWalkieTalkie::onMainPressed() {
 }
 
 
+void MorseWalkieTalkie::saveConfiguration() {
+    preferences.begin("guidebeeit", false);
+    preferences.putString("deviceName","Harry");
+    preferences.putString("channelId","<1234>");
+    preferences.putBool("keyFastSpeed",false);
+    preferences.putUChar("syncWord",0x34);
+    preferences.putBool("playSound",true);
+    preferences.end();
+}
+
+
+
 void MorseWalkieTalkie::readConfiguration() {
     uint64_t chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
     char buffer[64];
@@ -95,8 +108,16 @@ void MorseWalkieTalkie::readConfiguration() {
     globalConfiguration.chipId = buffer;
     sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
     globalConfiguration.chipId += buffer;
-    globalConfiguration.channelId = "<1234>";
-    globalConfiguration.deviceName = "James";
+    saveConfiguration();
+    preferences.begin("guidebeeit", false);
+    globalConfiguration.deviceName=preferences.getString("deviceName").c_str();
+    globalConfiguration.playSound=preferences.getBool("playSound",true);
+    globalConfiguration.keyFastSpeed=preferences.getBool("keyFastSpeed",false);
+    globalConfiguration.channelId=preferences.getString("channelId","<1234>").c_str();
+    globalConfiguration.syncWord=preferences.getUChar("syncWord",0x34);
+    preferences.end();
+    Serial.printf("%s\n",globalConfiguration.deviceName.c_str());
+
     sprintf(globalConfiguration.encryptionKey, "GUIDEBEEIT202010");
     printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
 }
@@ -279,6 +300,8 @@ UserInfo MorseWalkieTalkie::addUser(std::string chipId, std::string deviceName) 
         userInfo.counter = 0;
         userInfo.index = ++userIndex;
         users[chipId] = userInfo;
+    }else{
+        users[chipId].deviceName=deviceName;
     }
     return users[chipId];
 
@@ -289,4 +312,5 @@ void MorseWalkieTalkie::updateUserCounter(std::string chipId, int counter) {
         users[chipId].counter = counter;
     }
 }
+
 

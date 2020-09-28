@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 #include <map>
+#include <Preferences.h>
 #include "morse_code.hpp"
 #include "oled_display.hpp"
 #include "screen.hpp"
@@ -59,7 +60,7 @@ private:
     int samplePeriod;
     bool muteSound = false;
     int userIndex=0;
-
+    Preferences preferences;
     std::map<std::string, UserInfo> users;
     std::list<int> topBarPattern = std::list<int>{9500, 500};
     std::list<int> statusBarPattern = std::list<int>{500, 500, 500, 500, 2500, 500};
@@ -106,6 +107,8 @@ private:
     void deleteLastKey();
 
     void readConfiguration();
+
+    void saveConfiguration();
 
     UserInfo addUser(std::string chipId,std::string deviceName);
 
