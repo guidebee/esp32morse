@@ -16,21 +16,20 @@
 #define DIO0 26
 #define BAND 915E6
 
+#define MESSAGE_TYPE_HELLO 0
+#define MESSAGE_TYPE_TEXT 1
+
 struct LoraMessage {
     //header: 48 bytes
     std::string channelId; //6 bytes
-    std::string chipId;//6 bytes
-    std::string repeaterId;//6 bytes
+    std::string chipId;//12 bytes
+    std::string repeaterId;//12 bytes or other uses if not for repeater
     int counter;//6 bytes
     std::string messageType;//2 bytes
     int length;//2 bytes
-    std::string reserved1;//4 bytes
-    std::string reserved2;//8 bytes
-    std::string reserved3;//8 bytes
+    std::string reserved;//8 bytes
     std::string payload;//max 80 bytes
-
     bool valid; //invalid message
-
 };
 
 
@@ -43,23 +42,30 @@ class LoraRadioClass : public LoRaClass {
 
 private:
     byte _syncWord;
+    int _counter;
     LoraMessage _loraMessage;
+    unsigned long _last_time;
 public:
 
     explicit LoraRadioClass(byte syncWord = 0x34) : _syncWord(syncWord) {
-
+        _last_time = millis();
     }
 
     void setup();
 
     void loop();
 
-    void sendMessage(std::string message);
+    void sendMessage(std::string message,int type=MESSAGE_TYPE_TEXT);
 
     void addListener(LoraMessageListener *listener);
 
 private:
     LoraMessageListener *loraMessageListener = nullptr;
+
+    void sendHello();
+
+    std::string encodeMessage(int type,std::string message);
+    void decodeMessage(std::string message);
 
 };
 

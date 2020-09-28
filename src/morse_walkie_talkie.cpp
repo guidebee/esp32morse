@@ -4,6 +4,10 @@
 
 #include "morse_walkie_talkie.hpp"
 
+#include "../lib/config/src/configuration.hpp"
+
+Configuration globalConfiguration;
+
 void MorseWalkieTalkie::sendMessage(char character) {
     if (!message.empty()) {
         lastChar = ' ';
@@ -137,8 +141,14 @@ void MorseWalkieTalkie::setup() {
 
     Serial.println(letter);
     chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
-    printf("ESP32 Chip ID = %04X", (uint16_t) (chipId >> 32));//print High 2 bytes
-    printf("%08X\n", (uint32_t) chipId);//print Low 4bytes.
+    char buffer[64];
+    sprintf(buffer,"%04X", (uint16_t) (chipId >> 32));//print High 2 bytes
+    globalConfiguration.chipId=buffer;
+    sprintf(buffer,"%08X", (uint32_t) chipId);//print Low 4bytes.
+    globalConfiguration.chipId+=buffer;
+    globalConfiguration.channelId="<1234>";
+    globalConfiguration.deviceName="Harry";
+    printf("Chip Id=%s\n",globalConfiguration.chipId.c_str());
     last_mills = millis();
     current_mills = last_mills;
     last_task_mills = last_mills;
