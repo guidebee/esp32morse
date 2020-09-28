@@ -147,7 +147,7 @@ void MorseWalkieTalkie::setup() {
     sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
     globalConfiguration.chipId += buffer;
     globalConfiguration.channelId = "<1234>";
-    globalConfiguration.deviceName = "James";
+    globalConfiguration.deviceName = "Harry";
     printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
     last_mills = millis();
     current_mills = last_mills;
@@ -159,7 +159,7 @@ void MorseWalkieTalkie::setup() {
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
     switch (message.messageType) {
         case MESSAGE_TYPE_HELLO:
-            statusBar.displayText(message.payload, statusBarPattern, false);
+            statusBar.displayText(message.payload + " online", statusBarPattern, false);
             break;
         default: {
             String loRaData = message.payload.c_str();
