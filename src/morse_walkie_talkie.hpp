@@ -63,7 +63,7 @@ private:
     Preferences preferences;
     std::map<std::string, UserInfo> users;
     std::list<int> topBarPattern = std::list<int>{9500, 500};
-    std::list<int> statusBarPattern = std::list<int>{500, 500, 500, 500, 2500, 500};
+    std::list<int> statusBarPattern = std::list<int>{300, 200, 300, 200, 1500, 500};
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),

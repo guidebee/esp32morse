@@ -195,6 +195,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex + ":" + userInfo.deviceName,
                                   statusBarPattern, false);
+            receiverLed.signalMessageReceived();
         }
             break;
         default: {
