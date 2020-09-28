@@ -43,6 +43,7 @@ class LoraRadioClass : public LoRaClass {
 
 private:
     byte _syncWord;
+    LoraMessage _loraMessage;
 public:
 
     explicit LoraRadioClass(byte syncWord = 0x34) : _syncWord(syncWord) {

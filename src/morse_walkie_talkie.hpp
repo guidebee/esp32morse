@@ -27,7 +27,9 @@
 #define KEY_INTERVAL 150
 
 
-class MorseWalkieTalkie : public MorseCodeListener, public KeypadListener {
+class MorseWalkieTalkie : public MorseCodeListener,
+                          public KeypadListener,
+                          public LoraMessageListener {
 private:
     unsigned long last_mills;
     unsigned long current_mills;
@@ -48,12 +50,11 @@ private:
     bool isDown = true;
     std::string message;
     char lastChar = '^';
-    String loRaData;
     int samplePeriod;
     bool muteSound = false;
 
     std::list<int> topBarPattern = std::list<int>{9500, 500};
-    std::list<int> statusBarPattern = std::list<int>{500,500,500,500,2500, 500};
+    std::list<int> statusBarPattern = std::list<int>{500, 500, 500, 500, 2500, 500};
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
@@ -88,6 +89,8 @@ public:
     void onOkPressed() override;
 
     void onOkReleased() override;
+
+    void onMessageReceived(LoraMessage message) override;
 
 private:
     void sendMessage(char character);

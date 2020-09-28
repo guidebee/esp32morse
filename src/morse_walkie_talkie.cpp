@@ -132,6 +132,7 @@ void MorseWalkieTalkie::setup() {
     keypad.setup();
     morseCode.addListener(this);
     keypad.addListener(this);
+    loRaRadio.addListener(this);
     char letter = morseCode.getMorseLetter("...");
 
     Serial.println(letter);
@@ -143,9 +144,16 @@ void MorseWalkieTalkie::setup() {
     last_task_mills = last_mills;
     diff_mills = 0;
     samplePeriod = morseCode.getSamplePeriod();
-
-
 }
+
+void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
+    String loRaData = message.payload.c_str();
+    Serial.print(loRaData);
+    topScreen.print(loRaData + '\n');
+    buzzer.playMessageReceived();
+    receiverLed.signalMessageReceived();
+}
+
 
 void MorseWalkieTalkie::loop() {
 // write your code here
@@ -155,6 +163,7 @@ void MorseWalkieTalkie::loop() {
     blueToothLed.loop();
     topBar.loop();
     statusBar.loop();
+
     current_mills = millis();
     unsigned long diff_task_mills = current_mills - last_task_mills;
     if (diff_task_mills >= samplePeriod) {
@@ -163,21 +172,8 @@ void MorseWalkieTalkie::loop() {
         }
         last_task_mills = current_mills;
     }
+    loRaRadio.loop();
 
-    int packetSize = loRaRadio.parsePacket();
-    if (packetSize) {
-        //received a packet
-        Serial.print("Received packet ");
-
-        //read packet
-        while (loRaRadio.available()) {
-            loRaData = loRaRadio.readString();
-            Serial.print(loRaData);
-        }
-        topScreen.print(loRaData + '\n');
-        buzzer.playMessageReceived();
-        receiverLed.signalMessageReceived();
-    }
 
 }
 
@@ -224,3 +220,4 @@ void MorseWalkieTalkie::onOkPressed() {
 void MorseWalkieTalkie::onOkReleased() {
 
 }
+

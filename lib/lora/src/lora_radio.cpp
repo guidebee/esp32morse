@@ -20,7 +20,18 @@ void LoraRadioClass::setup() {
 }
 
 void LoraRadioClass::loop() {
-
+    int packetSize = parsePacket();
+    String loRaData;
+    if (packetSize) {
+        //read packet
+        while (available()) {
+            loRaData += readString();
+        }
+        if(loraMessageListener!= nullptr){
+            _loraMessage.payload=loRaData.c_str();
+            loraMessageListener->onMessageReceived(_loraMessage);
+        }
+    }
 }
 
 
