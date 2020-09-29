@@ -50,7 +50,7 @@ private:
 public:
 
     explicit LoraRadioClass(byte syncWord = 0x34) : _syncWord(syncWord) {
-        _last_time = millis();
+        _last_time = 0;
     }
 
     void setup();
