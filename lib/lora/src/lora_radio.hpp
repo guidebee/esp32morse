@@ -69,7 +69,7 @@ private:
     void sendAck();
 
     std::string encodeMessage(int type,std::string message);
-    void decodeMessage(std::string message);
+    void decodeMessage(String message);
 
     std::string encryptPayload(std::string payload);
     std::string decryptPayload(std::string payload);

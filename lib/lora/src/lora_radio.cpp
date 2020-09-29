@@ -120,11 +120,12 @@ std::string LoraRadioClass::encodeMessage(int type, std::string message) {
 
 }
 
-void LoraRadioClass::decodeMessage(std::string message) {
+void LoraRadioClass::decodeMessage(String rawMessage) {
 
-    int len = message.length();
+    int len = rawMessage.length();
     _loraMessage.valid = false;
     if (len > 48) {
+        std::string message=rawMessage.c_str();
         if (message[0] == '<' && message[5] == '>') {
             std::string channelId = message.substr(0, 6);
             std::string messageLength = message.substr(38, 2);
