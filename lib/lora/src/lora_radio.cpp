@@ -12,6 +12,7 @@ extern "C" {
 }
 
 #define SEND_HELLO_PERIOD 15000
+#define BUFFER_SIZE 256
 
 void encrypt(char *plainText, char *key, unsigned char *outputBuffer) {
 
@@ -100,7 +101,7 @@ void LoraRadioClass::addListener(LoraMessageListener *listener) {
 }
 
 std::string LoraRadioClass::encodeMessage(int type, std::string message) {
-    char buffer[128];
+    char buffer[BUFFER_SIZE];
     int len = message.length();
     sprintf(buffer, "%6s%12s%12s%06d%02d%02d%8s%s",
             globalConfiguration.channelId.c_str(),
@@ -162,7 +163,7 @@ void LoraRadioClass::decodeMessage(std::string message) {
 
 
 std::string LoraRadioClass::encryptPayload(std::string payload) {
-    unsigned char cipherTextOutput[128];
+    unsigned char cipherTextOutput[BUFFER_SIZE];
     for (unsigned char &i : cipherTextOutput) i = 0;
     ::encrypt(const_cast<char *>(payload.c_str()), globalConfiguration.encryptionKey, cipherTextOutput);
     size_t outputLength;
@@ -183,7 +184,7 @@ std::string LoraRadioClass::encryptPayload(std::string payload) {
 std::string LoraRadioClass::decryptPayload(std::string payload) {
     try {
         size_t outputLength;
-        unsigned char cipherTextOutput[128];
+        unsigned char cipherTextOutput[BUFFER_SIZE];
         for (unsigned char &i : cipherTextOutput) i = 0;
         auto encrypted = reinterpret_cast<const unsigned char *>(payload.c_str());
         unsigned char *decoded = base64_decode((const unsigned char *) encrypted, strlen(
