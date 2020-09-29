@@ -182,8 +182,9 @@ std::string LoraRadioClass::encryptPayload(std::string payload) {
 
 }
 
-std::string LoraRadioClass::decryptPayload(std::string payload) {
+std::string LoraRadioClass::decryptPayload(std::string rawPayload) {
     try {
+        std::string payload=rawPayload.erase(rawPayload.find_last_not_of(" \n\r\t")+1);
         size_t outputLength;
         unsigned char cipherTextOutput[BUFFER_SIZE];
         for (unsigned char &i : cipherTextOutput) i = 0;
@@ -194,7 +195,7 @@ std::string LoraRadioClass::decryptPayload(std::string payload) {
         free(decoded);
         return reinterpret_cast<const char *>(cipherTextOutput);
     } catch (std::exception) {
-        return payload;
+        return rawPayload;
     }
 }
 

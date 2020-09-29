@@ -189,10 +189,11 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
     switch (message.messageType) {
         case MESSAGE_TYPE_HELLO: {
             auto userInfo = addUser(message.chipId, message.payload);
-            char buffer[16];
-            sprintf(buffer, "%d", userInfo.index);
+            char buffer[64];
+            int relativeRssi=(int)((message.rssi+200)/40);
+            sprintf(buffer, "%d:%s %.*s", userInfo.index,userInfo.deviceName.c_str(),relativeRssi,"-----");
             std::string deviceIndex = buffer;
-            statusBar.displayText(deviceIndex + ":" + userInfo.deviceName,
+            statusBar.displayText(deviceIndex,
                                   statusBarPattern, false);
             receiverLed.signalMessageReceived();
         }
