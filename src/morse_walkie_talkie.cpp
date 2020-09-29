@@ -91,14 +91,13 @@ void MorseWalkieTalkie::onMainPressed() {
 
 void MorseWalkieTalkie::saveConfiguration() {
     preferences.begin("guidebeeit", false);
-    preferences.putString("deviceName","Harry");
-    preferences.putString("channelId","<1234>");
-    preferences.putBool("keyFastSpeed",false);
-    preferences.putUChar("syncWord",0x34);
-    preferences.putBool("playSound",true);
+    preferences.putString("deviceName", "Harry");
+    preferences.putString("channelId", "<1234>");
+    preferences.putBool("keyFastSpeed", false);
+    preferences.putUChar("syncWord", 0x34);
+    preferences.putBool("playSound", true);
     preferences.end();
 }
-
 
 
 void MorseWalkieTalkie::readConfiguration() {
@@ -110,13 +109,13 @@ void MorseWalkieTalkie::readConfiguration() {
     globalConfiguration.chipId += buffer;
     //saveConfiguration();
     preferences.begin("guidebeeit", false);
-    globalConfiguration.deviceName=preferences.getString("deviceName").c_str();
-    globalConfiguration.playSound=preferences.getBool("playSound",true);
-    globalConfiguration.keyFastSpeed=preferences.getBool("keyFastSpeed",false);
-    globalConfiguration.channelId=preferences.getString("channelId","<1234>").c_str();
-    globalConfiguration.syncWord=preferences.getUChar("syncWord",0x34);
+    globalConfiguration.deviceName = preferences.getString("deviceName").c_str();
+    globalConfiguration.playSound = preferences.getBool("playSound", true);
+    globalConfiguration.keyFastSpeed = preferences.getBool("keyFastSpeed", false);
+    globalConfiguration.channelId = preferences.getString("channelId", "<1234>").c_str();
+    globalConfiguration.syncWord = preferences.getUChar("syncWord", 0x34);
     preferences.end();
-    Serial.printf("%s\n",globalConfiguration.deviceName.c_str());
+    Serial.printf("%s\n", globalConfiguration.deviceName.c_str());
 
     sprintf(globalConfiguration.encryptionKey, "guidebeeit202010");
     printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
@@ -194,6 +193,16 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             sprintf(buffer, "%d", userInfo.index);
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex + ":" + userInfo.deviceName,
+                                  statusBarPattern, false);
+            receiverLed.signalMessageReceived();
+        }
+            break;
+        case MESSAGE_TYPE_TEXT_ACK: {
+            auto userInfo = addUser(message.chipId, message.payload);
+            char buffer[16];
+            sprintf(buffer, "%d", userInfo.index);
+            std::string deviceIndex = buffer;
+            statusBar.displayText(deviceIndex + ":" + userInfo.deviceName + " OK",
                                   statusBarPattern, false);
             receiverLed.signalMessageReceived();
         }
@@ -284,10 +293,10 @@ void MorseWalkieTalkie::onOkPressed() {
 }
 
 void MorseWalkieTalkie::onOkReleased() {
-    if(!message.empty()) {
+    if (!message.empty()) {
         sendMessage('\n');
-    }else{
-        statusBar.displayText("Menu",statusBarPattern,false);
+    } else {
+        statusBar.displayText("Menu", statusBarPattern, false);
     }
 }
 
@@ -305,8 +314,8 @@ UserInfo MorseWalkieTalkie::addUser(std::string chipId, std::string deviceName) 
         userInfo.counter = 0;
         userInfo.index = ++userIndex;
         users[chipId] = userInfo;
-    }else{
-        users[chipId].deviceName=deviceName;
+    } else {
+        users[chipId].deviceName = deviceName;
     }
     return users[chipId];
 

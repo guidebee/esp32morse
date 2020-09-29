@@ -60,8 +60,11 @@ void LoraRadioClass::loop() {
         if (loraMessageListener != nullptr) {
 
             decodeMessage(loRaData.c_str());
-            if(_loraMessage.valid) {
+            if (_loraMessage.valid) {
                 loraMessageListener->onMessageReceived(_loraMessage);
+                if (_loraMessage.messageType == MESSAGE_TYPE_TEXT) {
+                    sendAck();
+                }
             }
         }
     }
@@ -118,11 +121,11 @@ std::string LoraRadioClass::encodeMessage(int type, std::string message) {
 void LoraRadioClass::decodeMessage(std::string message) {
 
     int len = message.length();
-    _loraMessage.valid=false;
+    _loraMessage.valid = false;
     if (len > 48) {
         if (message[0] == '<' && message[5] == '>') {
             std::string channelId = message.substr(0, 6);
-            if (channelId.compare(globalConfiguration.channelId)==0) {
+            if (channelId.compare(globalConfiguration.channelId) == 0) {
                 std::string chipId = message.substr(6, 12);
                 std::string repeaterId = message.substr(18, 12);
                 std::string counter = message.substr(30, 6);
@@ -168,10 +171,10 @@ std::string LoraRadioClass::encryptPayload(std::string payload) {
     sprintf(reinterpret_cast<char *>(cipherTextOutput), "%.*s", outputLength, encoded);
     free(encoded);
     std::string output = reinterpret_cast<const char *>(cipherTextOutput);
-    std::string decrypted=decryptPayload(output);
-    if(decrypted.compare(payload)==0){
+    std::string decrypted = decryptPayload(output);
+    if (decrypted.compare(payload) == 0) {
         return output;
-    }else {
+    } else {
         return payload;
     }
 
@@ -191,4 +194,8 @@ std::string LoraRadioClass::decryptPayload(std::string payload) {
     } catch (std::exception) {
         return payload;
     }
+}
+
+void LoraRadioClass::sendAck() {
+    sendMessage(globalConfiguration.deviceName, MESSAGE_TYPE_TEXT_ACK);
 }

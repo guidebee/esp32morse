@@ -18,6 +18,7 @@
 
 #define MESSAGE_TYPE_HELLO 0
 #define MESSAGE_TYPE_TEXT 1
+#define MESSAGE_TYPE_TEXT_ACK 2
 
 struct LoraMessage {
     //header: 48 bytes
@@ -63,6 +64,8 @@ private:
     LoraMessageListener *loraMessageListener = nullptr;
 
     void sendHello();
+
+    void sendAck();
 
     std::string encodeMessage(int type,std::string message);
     void decodeMessage(std::string message);
