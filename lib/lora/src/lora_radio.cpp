@@ -46,6 +46,7 @@ void LoraRadioClass::setup() {
     }
 
     setSyncWord(_syncWord);
+    sendHello();
 }
 
 void LoraRadioClass::loop() {

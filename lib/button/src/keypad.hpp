@@ -6,8 +6,8 @@
 #define ESP32MORSE_KEYPAD_HPP
 
 #define MAIN_BUTTON_PIN 36
-#define LEFT_BUTTON_PIN 34
-#define RIGHT_BUTTON_PIN 35
+#define LEFT_BUTTON_PIN 39
+#define RIGHT_BUTTON_PIN 34
 #define OK_BUTTON_PIN 23
 
 #include "push_button.hpp"
