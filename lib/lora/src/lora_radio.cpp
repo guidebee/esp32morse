@@ -122,32 +122,34 @@ void LoraRadioClass::decodeMessage(std::string message) {
     if (len > 48) {
         if (message[0] == '<' && message[5] == '>') {
             std::string channelId = message.substr(0, 6);
-            std::string chipId = message.substr(6, 12);
-            std::string repeaterId = message.substr(18, 12);
-            std::string counter = message.substr(30, 6);
-            std::string messageType = message.substr(36, 2);
-            std::string messageLength = message.substr(38, 2);
-            std::string reserved = message.substr(40, 8);
-            std::string payload = message.substr(48, len - 48);
-            int c = std::atoi(counter.c_str());
-            int type = std::atoi(messageType.c_str());
-            int len = std::atoi(messageLength.c_str());
+            if (channelId.compare(globalConfiguration.channelId)==0) {
+                std::string chipId = message.substr(6, 12);
+                std::string repeaterId = message.substr(18, 12);
+                std::string counter = message.substr(30, 6);
+                std::string messageType = message.substr(36, 2);
+                std::string messageLength = message.substr(38, 2);
+                std::string reserved = message.substr(40, 8);
+                std::string payload = message.substr(48, len - 48);
+                int c = std::atoi(counter.c_str());
+                int type = std::atoi(messageType.c_str());
+                int len = std::atoi(messageLength.c_str());
 
-            std::string decrypted = payload;
-            try {
-                decrypted = decryptPayload(payload);
-            } catch (std::exception) {
+                std::string decrypted = payload;
+                try {
+                    decrypted = decryptPayload(payload);
+                } catch (std::exception) {
 
+                }
+                _loraMessage.payload = decrypted;
+                _loraMessage.messageType = type;
+                _loraMessage.length = len;
+                _loraMessage.channelId = channelId;
+                _loraMessage.chipId = chipId;
+                _loraMessage.repeaterId = repeaterId;
+                _loraMessage.counter = c;
+                _loraMessage.reserved = reserved;
+                _loraMessage.valid = true;
             }
-            _loraMessage.payload = decrypted;
-            _loraMessage.messageType = type;
-            _loraMessage.length = len;
-            _loraMessage.channelId = channelId;
-            _loraMessage.chipId = chipId;
-            _loraMessage.repeaterId = repeaterId;
-            _loraMessage.counter = c;
-            _loraMessage.reserved = reserved;
-            _loraMessage.valid=true;
 
         }
     }
