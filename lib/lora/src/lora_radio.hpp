@@ -31,6 +31,7 @@ struct LoraMessage {
     std::string reserved;//8 bytes
     std::string payload;//max 80 bytes
     bool valid; //invalid message
+    int rssi;
 };
 
 

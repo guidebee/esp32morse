@@ -59,7 +59,8 @@ void LoraRadioClass::loop() {
             loRaData += readString();
         }
         if (loraMessageListener != nullptr) {
-
+            int rssi = packetRssi();
+            _loraMessage.rssi = rssi;
             decodeMessage(loRaData.c_str());
             if (_loraMessage.valid) {
                 loraMessageListener->onMessageReceived(_loraMessage);
@@ -126,18 +127,18 @@ void LoraRadioClass::decodeMessage(std::string message) {
     if (len > 48) {
         if (message[0] == '<' && message[5] == '>') {
             std::string channelId = message.substr(0, 6);
-            if (channelId.compare(globalConfiguration.channelId) == 0) {
+            std::string messageLength = message.substr(38, 2);
+            std::string payload = message.substr(48, len - 48);
+            int len = std::atoi(messageLength.c_str());
+            if (channelId.compare(globalConfiguration.channelId) == 0 && len == payload.length()) {
                 std::string chipId = message.substr(6, 12);
                 std::string repeaterId = message.substr(18, 12);
                 std::string counter = message.substr(30, 6);
                 std::string messageType = message.substr(36, 2);
-                std::string messageLength = message.substr(38, 2);
                 std::string reserved = message.substr(40, 8);
-                std::string payload = message.substr(48, len - 48);
+
                 int c = std::atoi(counter.c_str());
                 int type = std::atoi(messageType.c_str());
-                int len = std::atoi(messageLength.c_str());
-
                 std::string decrypted = payload;
                 try {
                     decrypted = decryptPayload(payload);

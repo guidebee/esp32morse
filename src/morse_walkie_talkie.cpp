@@ -162,7 +162,7 @@ void MorseWalkieTalkie::setup() {
     loRaRadio.setup();
     Log.notice("LoRaRadio Initializing OK!");
 
-    std::string app_name = "sos";
+    std::string app_name = "hi";
     topBar.displayText("Morse Walkie Talkie", topBarPattern);
     statusBar.displayText("     Guidebee IT", statusBarPattern, false);
     auto morseText = morseCode.generateDitDashString(app_name);
