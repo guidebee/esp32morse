@@ -280,11 +280,15 @@ void MorseWalkieTalkie::onRightReleased() {
 }
 
 void MorseWalkieTalkie::onOkPressed() {
-    sendMessage('\n');
+
 }
 
 void MorseWalkieTalkie::onOkReleased() {
-
+    if(!message.empty()) {
+        sendMessage('\n');
+    }else{
+        statusBar.displayText("Menu",statusBarPattern,false);
+    }
 }
 
 UserInfo MorseWalkieTalkie::getUser(std::string chipId) {
