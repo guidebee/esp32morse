@@ -109,7 +109,7 @@ void MorseWalkieTalkie::readConfiguration() {
     globalConfiguration.chipId += buffer;
     //saveConfiguration();
     preferences.begin("guidebeeit", false);
-    globalConfiguration.deviceName = preferences.getString("deviceName","Morse").c_str();
+    globalConfiguration.deviceName = preferences.getString("deviceName", "Morse").c_str();
     globalConfiguration.playSound = preferences.getBool("playSound", true);
     globalConfiguration.keyFastSpeed = preferences.getBool("keyFastSpeed", false);
     globalConfiguration.channelId = preferences.getString("channelId", "<1234>").c_str();
@@ -190,8 +190,8 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
         case MESSAGE_TYPE_HELLO: {
             auto userInfo = addUser(message.chipId, message.payload);
             char buffer[64];
-            int relativeRssi=(int)((message.rssi+200)/40);
-            sprintf(buffer, "%d:%s %.*s", userInfo.index,userInfo.deviceName.c_str(),relativeRssi,"-----");
+            int relativeRssi = (int) ((message.rssi + 200) / 40);
+            sprintf(buffer, "%d:%s %.*s", userInfo.index, userInfo.deviceName.c_str(), relativeRssi, "-----");
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex,
                                   statusBarPattern, false);
@@ -211,6 +211,9 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
         default: {
             auto userInfo = getUser(message.chipId);
             std::string deviceIndex = "";
+            if (userInfo.index == 0) {
+                userInfo = addUser(message.chipId, "morse user");
+            }
             if (userInfo.index > 0) {
                 char buffer[16];
                 sprintf(buffer, "%d", userInfo.index);

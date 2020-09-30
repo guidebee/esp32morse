@@ -12,7 +12,7 @@ extern "C" {
 }
 
 #define SEND_HELLO_PERIOD 15000
-#define BUFFER_SIZE 256
+#define BUFFER_SIZE 200
 
 void encrypt(char *plainText, char *key, unsigned char *outputBuffer) {
 
@@ -93,9 +93,20 @@ void LoraRadioClass::sendMessage(std::string message, int type) {
 }
 
 void LoraRadioClass::sendHello() {
+    if (globalConfiguration.deviceName.empty()) {
+        globalConfiguration.deviceName = "morse";
+    }
     sendMessage(globalConfiguration.deviceName, MESSAGE_TYPE_HELLO);
 
 }
+
+void LoraRadioClass::sendAck() {
+    if (globalConfiguration.deviceName.empty()) {
+        globalConfiguration.deviceName = "morse";
+    }
+    sendMessage(globalConfiguration.deviceName, MESSAGE_TYPE_TEXT_ACK);
+}
+
 
 void LoraRadioClass::addListener(LoraMessageListener *listener) {
     loraMessageListener = listener;
@@ -125,7 +136,7 @@ void LoraRadioClass::decodeMessage(String rawMessage) {
     int len = rawMessage.length();
     _loraMessage.valid = false;
     if (len > 48) {
-        std::string message=rawMessage.c_str();
+        std::string message = rawMessage.c_str();
         if (message[0] == '<' && message[5] == '>') {
             std::string channelId = message.substr(0, 6);
             std::string messageLength = message.substr(38, 2);
@@ -185,7 +196,7 @@ std::string LoraRadioClass::encryptPayload(std::string payload) {
 
 std::string LoraRadioClass::decryptPayload(std::string rawPayload) {
     try {
-        std::string payload=rawPayload.erase(rawPayload.find_last_not_of(" \n\r\t")+1);
+        std::string payload = rawPayload.erase(rawPayload.find_last_not_of(" \n\r\t") + 1);
         size_t outputLength;
         unsigned char cipherTextOutput[BUFFER_SIZE];
         for (unsigned char &i : cipherTextOutput) i = 0;
@@ -200,6 +211,3 @@ std::string LoraRadioClass::decryptPayload(std::string rawPayload) {
     }
 }
 
-void LoraRadioClass::sendAck() {
-    sendMessage(globalConfiguration.deviceName, MESSAGE_TYPE_TEXT_ACK);
-}
