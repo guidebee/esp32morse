@@ -69,7 +69,7 @@ public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
                                    blueToothLed(SignalLed(BLUETOOTH_LED)),
                                    topBar(DynamicScreen(&display, 0, 1, true)),
-                                   topScreen(Screen(&display, 1, 5, false)),
+                                   topScreen(Screen(&display, 1, 5, false,false,0)),
                                    bottomScreen(Screen(&display, 5, 7, true, true)),
                                    statusBar(DynamicScreen(&display, 7, 8, false)) {}
 

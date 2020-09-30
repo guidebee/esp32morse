@@ -4,14 +4,15 @@
 
 #include "screen.hpp"
 
-Screen::Screen(OledDisplay *display, int start_page, int end_page, bool inverted_text = false, bool has_cursor) {
+Screen::Screen(OledDisplay *display, int start_page, int end_page, bool inverted_text , bool has_cursor,int offset_x) {
     _display = display;
     _start_page = start_page;
     _end_page = end_page;
     _invert_text = inverted_text;
-    _old_cursor_x = OFFSET_X;
+    _old_cursor_x = offset_x;
     _old_cursor_y = CHAR_HEIGHT * start_page;
     _has_cursor = has_cursor;
+    _offset_x=offset_x;
 }
 
 void Screen::backspace() {
@@ -36,7 +37,7 @@ void Screen::backspace() {
 }
 
 void Screen::clearScreen() {
-    _old_cursor_x = OFFSET_X;
+    _old_cursor_x = _offset_x;
     _old_cursor_y = CHAR_HEIGHT * _start_page;
     int x = _old_cursor_x;
     int y = _old_cursor_y;
@@ -85,8 +86,8 @@ void Screen::drawCursor() {
 void Screen::clearScreenIfNeeded() {
     int y = _display->getCursorY();
     int x = _display->getCursorX();
-    if (x < OFFSET_X) {
-        _old_cursor_x = OFFSET_X;
+    if (x < _offset_x) {
+        _old_cursor_x = _offset_x;
         _display->setCursor(_old_cursor_x, _old_cursor_y);
     }
     if (y >= (_end_page - 1)*CHAR_HEIGHT) {

@@ -29,10 +29,11 @@ private:
     int _old_cursor_x;
     int _old_cursor_y;
     bool _has_cursor = false;
+    int _offset_x=OFFSET_X;
 
 public:
     explicit Screen(OledDisplay *display, int start_page, int end_page,
-                    bool inverted_text, bool has_cursor = false);
+                    bool inverted_text, bool has_cursor = false,int offset_x=OFFSET_X);
 
     void print(char c);
 
