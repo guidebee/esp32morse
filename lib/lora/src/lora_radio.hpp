@@ -25,13 +25,15 @@ struct LoraMessage {
     std::string channelId; //6 bytes
     std::string chipId;//12 bytes
     std::string repeaterId;//12 bytes or other uses if not for repeater
-    int counter;//6 bytes
+    int counter;//5 bytes
+    bool encrypted; //1 byte
     int messageType;//2 bytes
     int length;//2 bytes
     std::string reserved;//8 bytes
     std::string payload;//max 80 bytes
     bool valid; //invalid message
     int rssi;
+
 };
 
 
@@ -57,7 +59,7 @@ public:
 
     void loop();
 
-    void sendMessage(std::string message,int type=MESSAGE_TYPE_TEXT);
+    void sendMessage(std::string message, int type = MESSAGE_TYPE_TEXT,bool encrypted=true);
 
     void addListener(LoraMessageListener *listener);
 
@@ -68,10 +70,12 @@ private:
 
     void sendAck();
 
-    std::string encodeMessage(int type,std::string message);
+    std::string encodeMessage(int type, std::string message,bool encrypted=true);
+
     void decodeMessage(String message);
 
     std::string encryptPayload(std::string payload);
+
     std::string decryptPayload(std::string payload);
 
 };
