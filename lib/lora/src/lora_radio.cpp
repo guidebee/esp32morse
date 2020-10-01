@@ -93,7 +93,7 @@ void LoraRadioClass::sendMessage(std::string message, int type, bool encrypted) 
 
 void LoraRadioClass::sendHello() {
     if (globalConfiguration.deviceName.empty()) {
-        globalConfiguration.deviceName = "morse";
+        globalConfiguration.deviceName = DEFAULT_DEVICE_NAME;
     }
     sendMessage(globalConfiguration.deviceName, MESSAGE_TYPE_HELLO, false);
 
@@ -101,7 +101,7 @@ void LoraRadioClass::sendHello() {
 
 void LoraRadioClass::sendAck() {
     if (globalConfiguration.deviceName.empty()) {
-        globalConfiguration.deviceName = "morse";
+        globalConfiguration.deviceName = DEFAULT_DEVICE_NAME;
     }
     sendMessage(globalConfiguration.deviceName, MESSAGE_TYPE_TEXT_ACK, false);
 }

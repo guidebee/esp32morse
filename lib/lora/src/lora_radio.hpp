@@ -20,6 +20,8 @@
 #define MESSAGE_TYPE_TEXT 1
 #define MESSAGE_TYPE_TEXT_ACK 2
 
+#define DEFAULT_DEVICE_NAME "Morse User"
+
 struct LoraMessage {
     //header: 48 bytes
     std::string channelId; //6 bytes

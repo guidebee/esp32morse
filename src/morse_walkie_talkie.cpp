@@ -212,7 +212,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             auto userInfo = getUser(message.chipId);
             std::string deviceIndex = "";
             if (userInfo.index == 0) {
-                userInfo = addUser(message.chipId, "morse user");
+                userInfo = addUser(message.chipId, DEFAULT_DEVICE_NAME);
             }
             if (userInfo.index > 0) {
                 char buffer[16];
