@@ -24,11 +24,11 @@ protected:
 
 public:
 
-    explicit BaseView() : topBar(DynamicScreen(&display, 0, 1, true)) {}
+    explicit BaseView() : topBar(DynamicScreen(&display, 0, 1, false)) {}
 
-    void setup();
+    virtual void setup();
 
-    void loop();
+    virtual void loop();
 
 
     void onMainPressed() override;

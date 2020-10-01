@@ -305,9 +305,9 @@ void MorseWalkieTalkie::onOkReleased() {
         sendMessage('\n');
     } else {
         if (++enterMenuCounter >= ENTER_MENU_COUNT) {
-            statusBar.displayText("Menu", statusBarPattern, false);
             isOptionMode = true;
             enterMenuCounter = 0;
+            optionMenu.drawOptionMenus();
         }
 
     }

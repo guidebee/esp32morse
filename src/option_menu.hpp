@@ -10,21 +10,11 @@
 #include "screen.hpp"
 #include "base_view.hpp"
 #include "signal_led.hpp"
+#include <cstring>
 
 #define RECEIVER_LED 12
 #define BLUETOOTH_LED 13
 
-enum MenuOption {
-    root,
-    deviceName,
-    playSound,
-    inputSpeed,
-    channelId,
-    syncWord,
-    bluetooth,
-    back
-
-};
 
 
 class OptionMenu : public BaseView {
@@ -34,16 +24,31 @@ private:
     SignalLed receiverLed;
     SignalLed blueToothLed;
 
+    Screen optionScreen;
+    int currentSelect = 6;
+    std::string options[7];
+
 
 public:
 
-    void setup();
+    void setup() override;
 
-    void loop();
+    void loop() override;
 
     explicit OptionMenu() : receiverLed(SignalLed(RECEIVER_LED)),
-                            blueToothLed(SignalLed(BLUETOOTH_LED)) {}
+                            blueToothLed(SignalLed(BLUETOOTH_LED)),
+                            optionScreen(Screen(&display, 1, 8, false, false, 0)) {
+        options[0] = "Device Name";
+        options[1] = "Play Sound";
+        options[2] = "Bluetooth";
+        options[3] = "Channel Id";
+        options[4] = "Sync Word";
+        options[5] = "Input Speed";
+        options[6] = "Exit";
+    }
 
+
+    void drawOptionMenus();
 
     void onMainReleased() override;
 
