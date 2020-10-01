@@ -7,7 +7,7 @@
 #include "configuration.hpp"
 
 #define MAX_MESSAGE_LENGTH 36
-
+extern bool isOptionMode;
 Configuration globalConfiguration;
 
 void MorseWalkieTalkie::sendMessage(char character) {
@@ -234,23 +234,24 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
 
 
 void MorseWalkieTalkie::loop() {
-// write your code here
-    keypad.loop();
-    buzzer.loop();
-    receiverLed.loop();
-    blueToothLed.loop();
-    topBar.loop();
-    statusBar.loop();
+    if (!isOptionMode) {
+        keypad.loop();
+        buzzer.loop();
+        receiverLed.loop();
+        blueToothLed.loop();
+        topBar.loop();
+        statusBar.loop();
 
-    current_mills = millis();
-    unsigned long diff_task_mills = current_mills - last_task_mills;
-    if (diff_task_mills >= samplePeriod) {
-        if (!isDown) {
-            morseCode.process(false);
+        current_mills = millis();
+        unsigned long diff_task_mills = current_mills - last_task_mills;
+        if (diff_task_mills >= samplePeriod) {
+            if (!isDown) {
+                morseCode.process(false);
+            }
+            last_task_mills = current_mills;
         }
-        last_task_mills = current_mills;
+        loRaRadio.loop();
     }
-    loRaRadio.loop();
 
 
 }
@@ -297,9 +298,15 @@ void MorseWalkieTalkie::onOkPressed() {
 
 void MorseWalkieTalkie::onOkReleased() {
     if (!message.empty()) {
+        enterMenuCounter = 0;
         sendMessage('\n');
     } else {
-        statusBar.displayText("Menu", statusBarPattern, false);
+        if (++enterMenuCounter >= ENTER_MENU_COUNT) {
+            statusBar.displayText("Menu", statusBarPattern, false);
+            isOptionMode = true;
+            enterMenuCounter = 0;
+        }
+
     }
 }
 

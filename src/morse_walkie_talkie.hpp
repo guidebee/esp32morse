@@ -27,6 +27,8 @@
 #define BLUETOOTH_LED 13
 #define KEY_INTERVAL 150
 
+#define ENTER_MENU_COUNT 3
+
 struct UserInfo{
     int index;
     std::string deviceName;
@@ -53,6 +55,8 @@ private:
     LoraRadioClass loRaRadio;
     KeyboardMorseCodeDecoder morseCode;
     Keypad keypad;
+    int enterMenuCounter=0;
+
 
     bool isDown = true;
     std::string message;
