@@ -7,7 +7,7 @@
 #include "configuration.hpp"
 
 #define MAX_MESSAGE_LENGTH 36
-extern bool isOptionMode;
+bool isOptionMode = false;
 Configuration globalConfiguration;
 
 void MorseWalkieTalkie::sendMessage(char character) {
@@ -182,6 +182,7 @@ void MorseWalkieTalkie::setup() {
     last_task_mills = last_mills;
     diff_mills = 0;
     samplePeriod = morseCode.getSamplePeriod();
+    optionMenu.setup();
 }
 
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
@@ -251,6 +252,8 @@ void MorseWalkieTalkie::loop() {
             last_task_mills = current_mills;
         }
         loRaRadio.loop();
+    } else {
+        optionMenu.loop();
     }
 
 

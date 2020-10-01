@@ -14,13 +14,25 @@
 #define RECEIVER_LED 12
 #define BLUETOOTH_LED 13
 
+enum MenuOption {
+    root,
+    deviceName,
+    playSound,
+    inputSpeed,
+    channelId,
+    syncWord,
+    bluetooth,
+    back
+
+};
+
+
 class OptionMenu : public BaseView {
 
 private:
 
     SignalLed receiverLed;
     SignalLed blueToothLed;
-
 
 
 public:

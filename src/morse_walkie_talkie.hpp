@@ -16,7 +16,7 @@
 #include "buzzer_tone.hpp"
 #include "signal_led.hpp"
 #include "keypad.hpp"
-
+#include "option_menu.hpp"
 
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -68,6 +68,8 @@ private:
     std::map<std::string, UserInfo> users;
     std::list<int> topBarPattern = std::list<int>{9500, 500};
     std::list<int> statusBarPattern = std::list<int>{300, 200, 300, 200, 500, 10};
+
+    OptionMenu optionMenu;
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
