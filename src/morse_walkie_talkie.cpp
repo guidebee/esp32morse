@@ -21,7 +21,6 @@ void MorseWalkieTalkie::sendMessage(char character) {
             buzzer.playMessageSent();
         }
         receiverLed.signalMessageSent();
-
         message = "";
     }
 }
