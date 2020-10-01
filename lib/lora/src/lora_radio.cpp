@@ -81,13 +81,15 @@ void LoraRadioClass::loop() {
 
 void LoraRadioClass::sendMessage(std::string message, int type) {
     beginPacket();
-    std::string encrypted = encryptPayload(message);
+
+    std::string encrypted;
+    if (type == MESSAGE_TYPE_TEXT) {
+        encrypted = encryptPayload(message);
+    } else {
+        encrypted = message;
+    }
     std::string encodedMessage = encodeMessage(type, encrypted);
     print(encodedMessage.c_str());
-//    std::string encrypted=encryptPayload(message);
-//    std::string decrypted = decryptPayload(encrypted);
-//    Serial.printf("encrypted:%s\n", encrypted.c_str());
-//    Serial.printf("decrypted:%s\n", decrypted.c_str());
     endPacket();
 
 }
@@ -153,7 +155,9 @@ void LoraRadioClass::decodeMessage(String rawMessage) {
                 int type = std::atoi(messageType.c_str());
                 std::string decrypted = payload;
                 try {
-                    decrypted = decryptPayload(payload);
+                    if (type == MESSAGE_TYPE_TEXT) {
+                        decrypted = decryptPayload(payload);
+                    }
                 } catch (std::exception) {
 
                 }
@@ -167,10 +171,8 @@ void LoraRadioClass::decodeMessage(String rawMessage) {
                 _loraMessage.reserved = reserved;
                 _loraMessage.valid = true;
             }
-
         }
     }
-
 
 }
 
