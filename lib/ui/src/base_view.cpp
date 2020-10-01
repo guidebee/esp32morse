@@ -57,3 +57,12 @@ void BaseView::onOkPressed() {
 void BaseView::onOkReleased() {
 
 }
+
+void BaseView::clearClient() {
+
+    int x = 0;
+    int y = CHAR_HEIGHT;
+    display.setCursor(x, y);
+    display.fillRect(0, y, SCREEN_WIDTH, CHAR_HEIGHT * 7, BLACK);
+    display.display();
+}

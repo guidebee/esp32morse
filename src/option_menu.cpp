@@ -13,20 +13,20 @@ void OptionMenu::onMainReleased() {
 
 
 void OptionMenu::onLeftReleased() {
-    currentSelect-=1;
-    if(currentSelect<0) currentSelect=0;
+    currentSelect -= 1;
+    if (currentSelect < 0) currentSelect = 0;
     drawOptionMenus();
 }
 
 void OptionMenu::onRightReleased() {
-    currentSelect+=1;
-    if(currentSelect>6) currentSelect= 6;
+    currentSelect += 1;
+    if (currentSelect > 6) currentSelect = 6;
     drawOptionMenus();
 }
 
 
 void OptionMenu::onOkReleased() {
-    switch(currentSelect){
+    switch (currentSelect) {
         case 0:
             break;
         case 1:
@@ -40,7 +40,7 @@ void OptionMenu::onOkReleased() {
         case 5:
             break;
         case 6:
-            isOptionMode=false;
+            isOptionMode = false;
             break;
     }
 }
@@ -66,11 +66,10 @@ void OptionMenu::loop() {
         last_task_mills = current_mills;
     }
 
-
 }
 
 void OptionMenu::drawOptionMenus() {
-    optionScreen.clearScreen();
+    clearClient();
     for (int i = 0; i < options->size(); i++) {
         int x = 0;
         int y = (i + 1) * CHAR_HEIGHT;
@@ -82,7 +81,7 @@ void OptionMenu::drawOptionMenus() {
             display.setTextColor(WHITE);
         }
         display.setCursor(x, y);
-        display.print((options[i]+"\n").c_str());
+        display.print((options[i] + "\n").c_str());
     }
     display.display();
 

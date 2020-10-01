@@ -30,6 +30,8 @@ public:
 
     virtual void loop();
 
+    void clearClient();
+
 
     void onMainPressed() override;
 

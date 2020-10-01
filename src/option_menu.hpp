@@ -16,7 +16,6 @@
 #define BLUETOOTH_LED 13
 
 
-
 class OptionMenu : public BaseView {
 
 private:
@@ -24,7 +23,7 @@ private:
     SignalLed receiverLed;
     SignalLed blueToothLed;
 
-    Screen optionScreen;
+
     int currentSelect = 6;
     std::string options[7];
 
@@ -36,8 +35,7 @@ public:
     void loop() override;
 
     explicit OptionMenu() : receiverLed(SignalLed(RECEIVER_LED)),
-                            blueToothLed(SignalLed(BLUETOOTH_LED)),
-                            optionScreen(Screen(&display, 1, 8, false, false, 0)) {
+                            blueToothLed(SignalLed(BLUETOOTH_LED)) {
         options[0] = "Device Name";
         options[1] = "Play Sound";
         options[2] = "Bluetooth";
