@@ -86,7 +86,7 @@ void OptionMenu::setup() {
     deviceName = globalConfiguration.deviceName;
     playSound = globalConfiguration.playSound;
     bluetooth = globalConfiguration.bluetooth;
-    inputSpeed = globalConfiguration.keyFastSpeed;
+    inputSpeed = globalConfiguration.inputSpeed;
     channelId = globalConfiguration.channelIdValue;
     syncWord = globalConfiguration.syncWord;
 
@@ -137,11 +137,6 @@ void OptionMenu::drawClientArea() {
             options[0] = "On";
             options[1] = "Off";
             upperMenuIndex = 1;
-            if (playSound) {
-                currentSelect = 0;
-            } else {
-                currentSelect = 1;
-            }
             extraOffsetY = CHAR_HEIGHT;
             upperMenuIndex = 1;
             drawOptionMenus(extraOffsetY);
@@ -152,11 +147,6 @@ void OptionMenu::drawClientArea() {
             options[0] = "On";
             options[1] = "Off";
             upperMenuIndex = 1;
-            if (bluetooth) {
-                currentSelect = 0;
-            } else {
-                currentSelect = 1;
-            }
             extraOffsetY = CHAR_HEIGHT;
             upperMenuIndex = 1;
             drawOptionMenus(extraOffsetY);
@@ -164,12 +154,6 @@ void OptionMenu::drawClientArea() {
         case 5:
             options[0] = "Fast";
             options[1] = "Normal";
-
-            if (inputSpeed) {
-                currentSelect = 0;
-            } else {
-                currentSelect = 1;
-            }
             extraOffsetY = CHAR_HEIGHT;
             upperMenuIndex = 1;
             drawOptionMenus(extraOffsetY);
@@ -290,6 +274,31 @@ void OptionMenu::handleToggleRight() {
 
 void OptionMenu::handleToggleOk() {
     //save boolean options
+    switch (menuOption) {
+        case 1: //play sound
+            playSound = currentSelect == 0;
+            globalConfiguration.playSound = playSound;
+            preferences.begin("guidebeeit", false);
+            preferences.putBool("playSound", playSound);
+            preferences.end();
+            break;
+        case 2: //bluetooth
+            bluetooth = currentSelect == 0;
+            globalConfiguration.bluetooth = bluetooth;
+            preferences.begin("guidebeeit", false);
+            preferences.putBool("bluetooth", bluetooth);
+            preferences.end();
+            break;
+        case 3:
+
+            inputSpeed = currentSelect == 0;
+            globalConfiguration.inputSpeed = inputSpeed;
+            preferences.begin("guidebeeit", false);
+            preferences.putBool("inputSpeed", inputSpeed);
+            preferences.end();
+            break;
+
+    }
     menuOption = -1;
     drawClientArea();
 }
@@ -530,14 +539,14 @@ void OptionMenu::handleMainMenuOk() {
         case 1:
             menuOption = 1;
             topBar.displayText("    Play Sound", topBarPattern);
-            currentSelect = 0;
+
             drawClientArea();
 
             break;
         case 2:
             menuOption = 2;
             topBar.displayText("    Bluetooth", topBarPattern);
-            currentSelect = 1;
+
             drawClientArea();
             break;
         case 3:
@@ -552,8 +561,6 @@ void OptionMenu::handleMainMenuOk() {
             break;
         case 5:
             topBar.displayText("   Input Speed", topBarPattern);
-            currentSelect = 1;
-
             menuOption = 5;
             drawClientArea();
 

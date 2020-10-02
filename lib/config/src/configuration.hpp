@@ -10,7 +10,7 @@ struct Configuration {
     int channelIdValue;
     byte syncWord;
     bool playSound;
-    bool keyFastSpeed; //true or false
+    bool inputSpeed; //true or false
     std::string loraFrequency;
     char encryptionKey[16];
     bool bluetooth;

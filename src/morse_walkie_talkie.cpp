@@ -17,7 +17,7 @@ void MorseWalkieTalkie::sendMessage(char character) {
         bottomScreen.print(character);
         auto morseText = morseCode.generateDitDashString(message);
         Serial.print(morseText.c_str());
-        if (!muteSound) {
+        if (globalConfiguration.playSound) {
             buzzer.playMessageSent();
         }
         receiverLed.signalMessageSent();
@@ -39,7 +39,7 @@ void MorseWalkieTalkie::onEmit(char character, std::string raw) {
             deleteLastKey();
             break;
         case '^':
-            if (!muteSound) {
+            if (globalConfiguration.playSound) {
                 buzzer.playError();
             }
             receiverLed.signalError();
@@ -69,7 +69,7 @@ void MorseWalkieTalkie::onCharStart() {
 }
 
 void MorseWalkieTalkie::onCharEnd(char dotOrDash, int length) {
-    if (!muteSound) {
+    if (globalConfiguration.playSound) {
         if (dotOrDash == '.') {
             buzzer.playDi();
         } else if (dotOrDash == '-') {
@@ -110,7 +110,7 @@ void MorseWalkieTalkie::readConfiguration() {
     preferences.begin("guidebeeit", false);
     globalConfiguration.deviceName = preferences.getString("deviceName", "Morse").c_str();
     globalConfiguration.playSound = preferences.getBool("playSound", true);
-    globalConfiguration.keyFastSpeed = preferences.getBool("keyFastSpeed", false);
+    globalConfiguration.inputSpeed = preferences.getBool("keyFastSpeed", false);
     globalConfiguration.bluetooth = preferences.getBool("bluetooth", false);
     globalConfiguration.channelIdValue = preferences.getInt("channelIdValue", 1234);
     globalConfiguration.channelId = preferences.getString("channelId", "<1234>").c_str();

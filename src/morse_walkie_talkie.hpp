@@ -62,7 +62,7 @@ private:
     std::string message;
     char lastChar = '^';
     int samplePeriod;
-    bool muteSound = false;
+
     int userIndex=0;
     Preferences preferences;
     std::map<std::string, UserInfo> users;
