@@ -352,6 +352,7 @@ void OptionMenu::handleLetterInputOk() {
                         if (deviceName.empty()) {
                             deviceName = DEFAULT_DEVICE_NAME;
                         }
+                        deviceName[0] = toupper(deviceName[0]);
                         globalConfiguration.deviceName = deviceName;
                         preferences.begin("guidebeeit", false);
                         preferences.putString("deviceName", deviceName.c_str());
