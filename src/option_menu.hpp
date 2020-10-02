@@ -9,6 +9,7 @@
 #include "oled_display.hpp"
 #include "screen.hpp"
 #include "base_view.hpp"
+
 #include "signal_led.hpp"
 #include <cstring>
 
@@ -23,8 +24,8 @@ private:
     SignalLed receiverLed;
     SignalLed blueToothLed;
 
-
     int currentSelect = 6;
+    int menuOption = -1;
     std::string options[7];
 
 
@@ -33,6 +34,7 @@ public:
     void setup() override;
 
     void loop() override;
+
 
     explicit OptionMenu() : receiverLed(SignalLed(RECEIVER_LED)),
                             blueToothLed(SignalLed(BLUETOOTH_LED)) {
@@ -43,6 +45,7 @@ public:
         options[4] = "Sync Word";
         options[5] = "Input Speed";
         options[6] = "Exit";
+
     }
 
 
@@ -58,6 +61,11 @@ public:
 
 
     void onOkReleased() override;
+
+private:
+    void onChooseOn();
+
+    void onChooseOff();
 
 };
 

@@ -28,16 +28,26 @@ void OptionMenu::onRightReleased() {
 void OptionMenu::onOkReleased() {
     switch (currentSelect) {
         case 0:
+            menuOption = 0;
+
             break;
         case 1:
+            menuOption = 1;
+//            playSoundToggleView.drawOptionMenus();
             break;
         case 2:
+            menuOption = 2;
+            // bluetoothToggleView.drawOptionMenus();
             break;
         case 3:
+            menuOption = 3;
             break;
         case 4:
+            menuOption = 4;
             break;
         case 5:
+            menuOption = 5;
+            // inputSpeedToggleView.drawOptionMenus();
             break;
         case 6:
             isOptionMode = false;
@@ -50,6 +60,14 @@ void OptionMenu::setup() {
     receiverLed.setup();
     blueToothLed.setup();
     blueToothLed.signalMorseText("Menu");
+//    playSoundToggleView.setup();
+//    bluetoothToggleView.setup();
+//    inputSpeedToggleView.setup();
+//    playSoundToggleView.addToggleListener(this);
+//    bluetoothToggleView.addToggleListener(this);
+//    inputSpeedToggleView.addToggleListener(this);
+
+
 }
 
 void OptionMenu::loop() {
@@ -60,11 +78,31 @@ void OptionMenu::loop() {
 
     current_mills = millis();
     unsigned long diff_task_mills = current_mills - last_task_mills;
-    if (diff_task_mills > 5000) {
-        blueToothLed.signalError();
-        receiverLed.signalError();
-        last_task_mills = current_mills;
+
+    switch (menuOption) {
+
+
+        case 0:
+            break;
+        case 1:
+            break;
+        case 2:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        default:
+            if (diff_task_mills > 5000) {
+                blueToothLed.signalError();
+                receiverLed.signalError();
+                last_task_mills = current_mills;
+            }
+            break;
+
+
     }
+
 
 }
 
@@ -74,7 +112,6 @@ void OptionMenu::drawOptionMenus() {
         int x = 0;
         int y = (i + 1) * CHAR_HEIGHT;
         if (currentSelect == i) {
-
             display.fillRect(x, y, SCREEN_WIDTH, CHAR_HEIGHT, WHITE);
             display.setTextColor(BLACK);
         } else {
@@ -85,4 +122,42 @@ void OptionMenu::drawOptionMenus() {
     }
     display.display();
 
+}
+
+void OptionMenu::onChooseOn() {
+    switch (menuOption) {
+        case 1:
+            printf("Play sound On");
+            break;
+        case 2:
+            printf("bluetooth On");
+            break;
+        case 5:
+            printf("fast speed");
+            break;
+        default:
+            break;
+
+    }
+    menuOption = 1;
+    drawOptionMenus();
+}
+
+void OptionMenu::onChooseOff() {
+    switch (menuOption) {
+        case 1:
+            printf("Play sound Off");
+            break;
+        case 2:
+            printf("bluetooth Off");
+            break;
+        case 5:
+            printf("normal speed");
+            break;
+        default:
+            break;
+
+    }
+    menuOption = -1;
+    drawOptionMenus();
 }
