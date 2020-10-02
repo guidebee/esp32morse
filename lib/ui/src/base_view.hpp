@@ -20,7 +20,7 @@ protected:
     unsigned long last_task_mills;
     unsigned long diff_mills;
 
-    std::list<int> topBarPattern = std::list<int>{9500, 500};
+    std::list<int> topBarPattern = std::list<int>{500, 500};
 
 public:
 

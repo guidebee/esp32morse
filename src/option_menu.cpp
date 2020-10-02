@@ -33,11 +33,16 @@ void OptionMenu::onOkReleased() {
             break;
         case 1:
             menuOption = 1;
+            topBar.displayText("    Play Sound", topBarPattern);
+            currentSelect = 0;
+            drawClientArea();
 
             break;
         case 2:
             menuOption = 2;
-
+            topBar.displayText("    Bluetooth", topBarPattern);
+            currentSelect = 1;
+            drawClientArea();
             break;
         case 3:
             menuOption = 3;
@@ -46,7 +51,11 @@ void OptionMenu::onOkReleased() {
             menuOption = 4;
             break;
         case 5:
+            topBar.displayText("   Input Speed", topBarPattern);
+            currentSelect = 1;
+
             menuOption = 5;
+            drawClientArea();
 
             break;
         case 6:
@@ -60,13 +69,6 @@ void OptionMenu::setup() {
     receiverLed.setup();
     blueToothLed.setup();
     blueToothLed.signalMorseText("Menu");
-//    playSoundToggleView.setup();
-//    bluetoothToggleView.setup();
-//    inputSpeedToggleView.setup();
-//    playSoundToggleView.addToggleListener(this);
-//    bluetoothToggleView.addToggleListener(this);
-//    inputSpeedToggleView.addToggleListener(this);
-
 
 }
 
@@ -75,54 +77,64 @@ void OptionMenu::loop() {
     BaseView::loop();
     receiverLed.loop();
     blueToothLed.loop();
-
     current_mills = millis();
     unsigned long diff_task_mills = current_mills - last_task_mills;
-
-    switch (menuOption) {
-
-
-        case 0:
-            break;
-        case 1:
-            break;
-        case 2:
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        default:
-            if (diff_task_mills > 5000) {
-                blueToothLed.signalError();
-                receiverLed.signalError();
-                last_task_mills = current_mills;
-            }
-            break;
-
-
+    if (diff_task_mills > 5000) {
+        blueToothLed.signalError();
+        receiverLed.signalError();
+        last_task_mills = current_mills;
     }
-
-
 }
 
-void OptionMenu::drawClientArea() {
-    clearClient();
-    switch (menuOption) {
-
-    }
+void OptionMenu::drawOptionMenus(int extraOffsetY) {
     for (int i = 0; i <= upperMenuIndex; i++) {
         int x = 0;
-        int y = (i + 1) * CHAR_HEIGHT;
+        int y = (i + 1) * CHAR_HEIGHT + extraOffsetY;
         if (currentSelect == i) {
             display.fillRect(x, y, SCREEN_WIDTH, CHAR_HEIGHT, WHITE);
             display.setTextColor(BLACK);
         } else {
             display.setTextColor(WHITE);
         }
-        display.setCursor(x, y);
+        display.setCursor(x + OFFSET_X, y);
         display.print((options[i] + "\n").c_str());
     }
+}
+
+void OptionMenu::drawClientArea() {
+    clearClient();
+    int extraOffsetY = 0;
+    switch (menuOption) {
+        case 1:
+        case 2:
+            options[0] = "On";
+            options[1] = "Off";
+            extraOffsetY = CHAR_HEIGHT;
+            upperMenuIndex = 1;
+            drawOptionMenus(extraOffsetY);
+            break;
+        case 5:
+            options[0] = "Fast";
+            options[1] = "Normal";
+            extraOffsetY = CHAR_HEIGHT;
+            upperMenuIndex = 1;
+            drawOptionMenus(extraOffsetY);
+            break;
+        default:
+            options[0] = "Device Name";
+            options[1] = "Play Sound";
+            options[2] = "Bluetooth";
+            options[3] = "Channel Id";
+            options[4] = "Sync Word";
+            options[5] = "Input Speed";
+            options[6] = "Exit";
+            upperMenuIndex = 6;
+            drawOptionMenus(extraOffsetY);
+            break;
+
+
+    }
+
     display.display();
 
 }

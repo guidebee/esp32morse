@@ -65,6 +65,8 @@ private:
 
     void onChooseOff();
 
+    void drawOptionMenus(int extraOffsetY);
+
 };
 
 #endif //ESP32MORSE_OPTION_MENU_HPP
