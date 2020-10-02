@@ -5,6 +5,7 @@
 #ifndef ESP32MORSE_OPTION_MENU_HPP
 #define ESP32MORSE_OPTION_MENU_HPP
 
+#include <Preferences.h>
 #include "keypad.hpp"
 #include "oled_display.hpp"
 #include "screen.hpp"
@@ -24,11 +25,30 @@ private:
     SignalLed receiverLed;
     SignalLed blueToothLed;
 
-    int currentSelect = 6;
+    int currentSelect = 0;
     int menuOption = -1;
     std::string options[7];
 
     int upperMenuIndex = 6;
+
+    char fullKeyboard[36] = {'a', 'b', 'c', 'd', 'e', 'f', 'g',
+                             'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                             'o', 'p', 'q', 'r', 's', 't', 'u',
+                             'v', 'w', 'x', 'y', 'z', '0', '1',
+                             '2', '3', '4', '5', '6', '7', '8',
+                             '9'};
+
+    char numberKeyboard[12] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1'};
+
+    std::string controlKeyboard[3] = {"sp", "bs", "ok"};
+
+    std::string deviceName;
+    bool playSound;
+    bool bluetooth;
+    int channelId;
+    int syncWord;
+    bool inputSpeed;
+    Preferences preferences;
 
 
 public:
@@ -66,6 +86,16 @@ private:
     void onChooseOff();
 
     void drawOptionMenus(int extraOffsetY);
+
+    void drawFullKeyboard();
+
+    void drawNumberKeyboard();
+
+    void drawControlKeyboard();
+
+    void saveConfiguration();
+
+    void drawInputValue(std::string value);
 
 };
 

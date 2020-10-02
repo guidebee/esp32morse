@@ -3,9 +3,10 @@
 //
 
 #include "option_menu.hpp"
+#include "configuration.hpp"
 
 extern bool isOptionMode;
-
+extern Configuration globalConfiguration;
 
 void OptionMenu::onMainReleased() {
 
@@ -14,13 +15,13 @@ void OptionMenu::onMainReleased() {
 
 void OptionMenu::onLeftReleased() {
     currentSelect -= 1;
-    if (currentSelect < 0) currentSelect = 0;
+    if (currentSelect < 0) currentSelect = upperMenuIndex;
     drawClientArea();
 }
 
 void OptionMenu::onRightReleased() {
     currentSelect += 1;
-    if (currentSelect > upperMenuIndex) currentSelect = upperMenuIndex;
+    if (currentSelect > upperMenuIndex) currentSelect = 0;
     drawClientArea();
 }
 
@@ -28,8 +29,9 @@ void OptionMenu::onRightReleased() {
 void OptionMenu::onOkReleased() {
     switch (currentSelect) {
         case 0:
+            topBar.displayText("   Device Name", topBarPattern);
             menuOption = 0;
-
+            drawClientArea();
             break;
         case 1:
             menuOption = 1;
@@ -46,9 +48,13 @@ void OptionMenu::onOkReleased() {
             break;
         case 3:
             menuOption = 3;
+            topBar.displayText("     Channel Id", topBarPattern);
+            drawClientArea();
             break;
         case 4:
             menuOption = 4;
+            topBar.displayText("     Sync Word", topBarPattern);
+            drawClientArea();
             break;
         case 5:
             topBar.displayText("   Input Speed", topBarPattern);
@@ -105,6 +111,11 @@ void OptionMenu::drawClientArea() {
     clearClient();
     int extraOffsetY = 0;
     switch (menuOption) {
+        case 0:
+            drawInputValue(globalConfiguration.deviceName);
+            drawFullKeyboard();
+            drawControlKeyboard();
+            break;
         case 1:
         case 2:
             options[0] = "On";
@@ -112,6 +123,19 @@ void OptionMenu::drawClientArea() {
             extraOffsetY = CHAR_HEIGHT;
             upperMenuIndex = 1;
             drawOptionMenus(extraOffsetY);
+            break;
+        case 3:
+            drawInputValue(globalConfiguration.channelId);
+            drawNumberKeyboard();
+            drawControlKeyboard();
+            break;
+        case 4: {
+            char buffer[64];
+            sprintf(buffer,"%d",globalConfiguration.syncWord);
+            drawInputValue(buffer);
+            drawNumberKeyboard();
+            drawControlKeyboard();
+        }
             break;
         case 5:
             options[0] = "Fast";
@@ -176,3 +200,58 @@ void OptionMenu::onChooseOff() {
     menuOption = -1;
     drawClientArea();
 }
+
+void OptionMenu::drawFullKeyboard() {
+    int x = OFFSET_X;
+    int y = CHAR_HEIGHT * 3;
+    for (int i = 0; i < 36; i++) {
+        int col = i % 12;
+        int row = static_cast<int>( i / 12 );
+
+        display.setCursor(x + col * 10 + 1, y + row * CHAR_HEIGHT);
+        display.print(fullKeyboard[i]);
+    }
+
+}
+
+void OptionMenu::drawNumberKeyboard() {
+    int x = OFFSET_X;
+    int y = CHAR_HEIGHT * 5;
+
+    for (int i = 0; i < 12; i++) {
+        display.setCursor(x + i * 10, y);
+        display.print(numberKeyboard[i]);
+    }
+}
+
+void OptionMenu::drawControlKeyboard() {
+    int x = OFFSET_X;
+    int y = CHAR_HEIGHT * 3 + 30;
+    for (int i = 0; i < 3; i++) {
+        display.setCursor(x + i * 20, y);
+        display.print(controlKeyboard[i].c_str());
+    }
+}
+
+
+void OptionMenu::saveConfiguration() {
+    preferences.begin("guidebeeit", false);
+    preferences.putString("deviceName", "Harry");
+    preferences.putString("channelId", "<1234>");
+    preferences.putBool("keyFastSpeed", false);
+    preferences.putUChar("syncWord", 0x34);
+    preferences.putBool("playSound", true);
+    preferences.end();
+}
+
+void OptionMenu::drawInputValue(std::string value) {
+    int x = OFFSET_X;
+    int y = CHAR_HEIGHT+3;
+    display.fillRect(0,y,SCREEN_WIDTH,CHAR_HEIGHT,WHITE);
+    display.setCursor(x,y);
+    display.setTextColor(BLACK);
+    display.print(value.c_str());
+    display.setTextColor(WHITE);
+}
+
+
