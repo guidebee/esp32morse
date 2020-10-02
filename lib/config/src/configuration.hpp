@@ -13,6 +13,7 @@ struct Configuration {
     bool keyFastSpeed; //true or false
     std::string loraFrequency;
     char encryptionKey[16];
+    bool bluetooth;
 
 };
 

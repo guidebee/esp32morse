@@ -40,7 +40,7 @@ private:
 
     char numberKeyboard[12] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1'};
 
-    std::string controlKeyboard[3] = {"sp", "bs", "ok"};
+    std::string controlKeyboard[4] = {"sp", "bs", "ok","cl"};
 
     std::string deviceName;
     bool playSound;
@@ -50,9 +50,9 @@ private:
     bool inputSpeed;
     Preferences preferences;
 
-    int numberSelected=0;
-    int letterSelected=0;
-    int controlSelected=0;
+    int numberSelected = 0;
+    int letterSelected = 0;
+    int controlSelected = -1;
 
 
 public:
@@ -85,9 +85,7 @@ public:
     void onOkReleased() override;
 
 private:
-    void onChooseOn();
 
-    void onChooseOff();
 
     void drawOptionMenus(int extraOffsetY);
 
@@ -100,6 +98,30 @@ private:
     void saveConfiguration();
 
     void drawInputValue(std::string value);
+
+    void handleToggleLeft();
+
+    void handleToggleRight();
+
+    void handleToggleOk();
+
+    void handleLetterInputLeft();
+
+    void handleLetterInputRight();
+
+    void handleLetterInputOk();
+
+    void handleNumberInputLeft();
+
+    void handleNumberInputRight();
+
+    void handleNumberInputOk();
+
+    void handleMainMenuLeft();
+
+    void handleMainMenuRight();
+
+    void handleMainMenuOk();
 
 };
 

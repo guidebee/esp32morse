@@ -14,58 +14,65 @@ void OptionMenu::onMainReleased() {
 
 
 void OptionMenu::onLeftReleased() {
-    currentSelect -= 1;
-    if (currentSelect < 0) currentSelect = upperMenuIndex;
-    drawClientArea();
+    switch (menuOption) {
+        case 0:
+            handleLetterInputLeft();
+            break;
+
+        case 3:
+        case 4:
+            handleNumberInputLeft();
+            break;
+        case 1:
+        case 2:
+        case 5:
+            handleToggleLeft();
+            break;
+
+        default:
+            handleMainMenuLeft();
+    }
 }
 
 void OptionMenu::onRightReleased() {
-    currentSelect += 1;
-    if (currentSelect > upperMenuIndex) currentSelect = 0;
-    drawClientArea();
+    switch (menuOption) {
+        case 0:
+            handleLetterInputRight();
+            break;
+
+        case 3:
+        case 4:
+            handleNumberInputRight();
+            break;
+        case 1:
+        case 2:
+        case 5:
+            handleToggleRight();
+            break;
+        default:
+            handleMainMenuRight();
+            break;
+    }
 }
 
 
 void OptionMenu::onOkReleased() {
-    switch (currentSelect) {
+    switch (menuOption) {
         case 0:
-            topBar.displayText("   Device Name", topBarPattern);
-            menuOption = 0;
-            drawClientArea();
-            break;
-        case 1:
-            menuOption = 1;
-            topBar.displayText("    Play Sound", topBarPattern);
-            currentSelect = 0;
-            drawClientArea();
-
-            break;
-        case 2:
-            menuOption = 2;
-            topBar.displayText("    Bluetooth", topBarPattern);
-            currentSelect = 1;
-            drawClientArea();
+            handleLetterInputOk();
             break;
         case 3:
-            menuOption = 3;
-            topBar.displayText("     Channel Id", topBarPattern);
-            drawClientArea();
-            break;
         case 4:
-            menuOption = 4;
-            topBar.displayText("     Sync Word", topBarPattern);
-            drawClientArea();
+            handleNumberInputOk();
             break;
+        case 1:
+        case 2:
         case 5:
-            topBar.displayText("   Input Speed", topBarPattern);
-            currentSelect = 1;
-
-            menuOption = 5;
-            drawClientArea();
-
+            handleToggleOk();
             break;
-        case 6:
-            isOptionMode = false;
+
+        default:
+            handleMainMenuOk();
             break;
     }
 }
@@ -113,20 +120,55 @@ void OptionMenu::drawClientArea() {
     char buffer[64];
     switch (menuOption) {
         case 0:
-            drawInputValue(globalConfiguration.deviceName);
+            deviceName = globalConfiguration.deviceName;
+            drawInputValue(deviceName);
             drawFullKeyboard();
             drawControlKeyboard();
             break;
         case 1:
-        case 2:
+            playSound = globalConfiguration.playSound;
             options[0] = "On";
             options[1] = "Off";
+            upperMenuIndex = 1;
+            if (playSound) {
+                currentSelect = 0;
+            } else {
+                currentSelect = 1;
+            }
+            extraOffsetY = CHAR_HEIGHT;
+            upperMenuIndex = 1;
+            drawOptionMenus(extraOffsetY);
+            break;
+
+        case 2:
+            bluetooth = globalConfiguration.bluetooth;
+            options[0] = "On";
+            options[1] = "Off";
+            upperMenuIndex = 1;
+            if (bluetooth) {
+                currentSelect = 0;
+            } else {
+                currentSelect = 1;
+            }
+            extraOffsetY = CHAR_HEIGHT;
+            upperMenuIndex = 1;
+            drawOptionMenus(extraOffsetY);
+            break;
+        case 5:
+            options[0] = "Fast";
+            options[1] = "Normal";
+            inputSpeed = globalConfiguration.keyFastSpeed;
+            if (inputSpeed) {
+                currentSelect = 0;
+            } else {
+                currentSelect = 1;
+            }
             extraOffsetY = CHAR_HEIGHT;
             upperMenuIndex = 1;
             drawOptionMenus(extraOffsetY);
             break;
         case 3:
-            sprintf(buffer, "<%04d>", globalConfiguration.channelIdValue);
+            sprintf(buffer, "%04d", globalConfiguration.channelIdValue);
             drawInputValue(buffer);
             drawNumberKeyboard();
             drawControlKeyboard();
@@ -139,13 +181,7 @@ void OptionMenu::drawClientArea() {
             drawControlKeyboard();
         }
             break;
-        case 5:
-            options[0] = "Fast";
-            options[1] = "Normal";
-            extraOffsetY = CHAR_HEIGHT;
-            upperMenuIndex = 1;
-            drawOptionMenus(extraOffsetY);
-            break;
+
         default:
             options[0] = "Device Name";
             options[1] = "Play Sound";
@@ -165,43 +201,6 @@ void OptionMenu::drawClientArea() {
 
 }
 
-void OptionMenu::onChooseOn() {
-    switch (menuOption) {
-        case 1:
-            printf("Play sound On");
-            break;
-        case 2:
-            printf("bluetooth On");
-            break;
-        case 5:
-            printf("fast speed");
-            break;
-        default:
-            break;
-
-    }
-    menuOption = 1;
-    drawClientArea();
-}
-
-void OptionMenu::onChooseOff() {
-    switch (menuOption) {
-        case 1:
-            printf("Play sound Off");
-            break;
-        case 2:
-            printf("bluetooth Off");
-            break;
-        case 5:
-            printf("normal speed");
-            break;
-        default:
-            break;
-
-    }
-    menuOption = -1;
-    drawClientArea();
-}
 
 void OptionMenu::drawFullKeyboard() {
     int x = OFFSET_X;
@@ -215,7 +214,7 @@ void OptionMenu::drawFullKeyboard() {
         } else {
             display.setTextColor(WHITE);
         }
-        display.setCursor(x + col * 10 + 1, y + row * CHAR_HEIGHT);
+        display.setCursor(x + col * 10 + 1, y + row * 10);
         display.print(fullKeyboard[i]);
     }
 
@@ -226,13 +225,14 @@ void OptionMenu::drawNumberKeyboard() {
     int y = CHAR_HEIGHT * 5;
 
     for (int i = 0; i < 12; i++) {
-        display.setCursor(x + i * 10, y);
+
         if (numberSelected == i) {
             display.fillRect(x + i * 10 - 2, y - 1, 10, 10, WHITE);
             display.setTextColor(BLACK);
         } else {
             display.setTextColor(WHITE);
         }
+        display.setCursor(x + i * 10, y);
         display.print(numberKeyboard[i]);
     }
 }
@@ -240,10 +240,10 @@ void OptionMenu::drawNumberKeyboard() {
 void OptionMenu::drawControlKeyboard() {
     int x = OFFSET_X;
     int y = CHAR_HEIGHT * 3 + 30;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         display.setCursor(x + i * 20, y);
         if (controlSelected == i) {
-            display.fillRect(x + i * 10 - 2, y - 1, 16, 10, WHITE);
+            display.fillRect(x + i * 20 - 2, y - 1, 16, 10, WHITE);
             display.setTextColor(BLACK);
         } else {
             display.setTextColor(WHITE);
@@ -266,11 +266,166 @@ void OptionMenu::saveConfiguration() {
 void OptionMenu::drawInputValue(std::string value) {
     int x = OFFSET_X;
     int y = CHAR_HEIGHT + 3;
-    display.fillRect(0, y, SCREEN_WIDTH, CHAR_HEIGHT, WHITE);
+    display.fillRect(0, y - 1, SCREEN_WIDTH, CHAR_HEIGHT + 2, WHITE);
     display.setCursor(x, y);
     display.setTextColor(BLACK);
     display.print(value.c_str());
     display.setTextColor(WHITE);
+}
+
+void OptionMenu::handleToggleLeft() {
+    handleMainMenuLeft();
+}
+
+void OptionMenu::handleToggleRight() {
+    handleMainMenuRight();
+}
+
+void OptionMenu::handleToggleOk() {
+    //save boolean options
+    menuOption = -1;
+    drawClientArea();
+}
+
+void OptionMenu::handleLetterInputLeft() {
+    if (letterSelected >= 0) {
+        letterSelected -= 1;
+        if (letterSelected < 0) {
+            letterSelected = -1;
+            controlSelected = 3;
+        } else {
+            controlSelected = -1;
+        }
+    } else {
+        controlSelected -= 1;
+        if (controlSelected < 0) {
+            controlSelected = -1;
+            letterSelected = 35;
+        }
+    }
+    drawClientArea();
+
+}
+
+void OptionMenu::handleLetterInputRight() {
+    if (letterSelected >= 0) {
+        letterSelected += 1;
+        if (letterSelected > 35) {
+            letterSelected = -1;
+            controlSelected = 0;
+        } else {
+            controlSelected = -1;
+        }
+    } else {
+        controlSelected += 1;
+        if (controlSelected > 3) {
+            controlSelected = -1;
+            letterSelected = 0;
+        }
+    }
+    drawClientArea();
+}
+
+void OptionMenu::handleLetterInputOk() {
+
+}
+
+void OptionMenu::handleNumberInputLeft() {
+    if (numberSelected >= 0) {
+        numberSelected -= 1;
+        if (numberSelected < 0) {
+            numberSelected = -1;
+            controlSelected = 3;
+        } else {
+            controlSelected = -1;
+        }
+    } else {
+        controlSelected -= 1;
+        if (controlSelected < 0) {
+            controlSelected = -1;
+            numberSelected = 11;
+        }
+    }
+    drawClientArea();
+}
+
+void OptionMenu::handleNumberInputRight() {
+    if (numberSelected >= 0) {
+        numberSelected += 1;
+        if (numberSelected > 11) {
+            numberSelected = -1;
+            controlSelected = 0;
+        } else {
+            controlSelected = -1;
+        }
+    } else {
+        controlSelected += 1;
+        if (controlSelected > 3) {
+            controlSelected = -1;
+            numberSelected = 0;
+        }
+    }
+    drawClientArea();
+}
+
+void OptionMenu::handleNumberInputOk() {
+
+}
+
+void OptionMenu::handleMainMenuLeft() {
+    currentSelect -= 1;
+    if (currentSelect < 0) currentSelect = upperMenuIndex;
+    drawClientArea();
+}
+
+void OptionMenu::handleMainMenuRight() {
+    currentSelect += 1;
+    if (currentSelect > upperMenuIndex) currentSelect = 0;
+    drawClientArea();
+}
+
+void OptionMenu::handleMainMenuOk() {
+    switch (currentSelect) {
+        case 0:
+            topBar.displayText("   Device Name", topBarPattern);
+            menuOption = 0;
+            drawClientArea();
+            break;
+        case 1:
+            menuOption = 1;
+            topBar.displayText("    Play Sound", topBarPattern);
+            currentSelect = 0;
+            drawClientArea();
+
+            break;
+        case 2:
+            menuOption = 2;
+            topBar.displayText("    Bluetooth", topBarPattern);
+            currentSelect = 1;
+            drawClientArea();
+            break;
+        case 3:
+            menuOption = 3;
+            topBar.displayText("     Channel Id", topBarPattern);
+            drawClientArea();
+            break;
+        case 4:
+            menuOption = 4;
+            topBar.displayText("     Sync Word", topBarPattern);
+            drawClientArea();
+            break;
+        case 5:
+            topBar.displayText("   Input Speed", topBarPattern);
+            currentSelect = 1;
+
+            menuOption = 5;
+            drawClientArea();
+
+            break;
+        case 6:
+            isOptionMode = false;
+            break;
+    }
 }
 
 
