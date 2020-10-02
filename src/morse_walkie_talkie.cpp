@@ -111,6 +111,7 @@ void MorseWalkieTalkie::readConfiguration() {
     globalConfiguration.deviceName = preferences.getString("deviceName", "Morse").c_str();
     globalConfiguration.playSound = preferences.getBool("playSound", true);
     globalConfiguration.keyFastSpeed = preferences.getBool("keyFastSpeed", false);
+    globalConfiguration.channelIdValue = preferences.getInt("channelIdValue", 1234);
     globalConfiguration.channelId = preferences.getString("channelId", "<1234>").c_str();
     globalConfiguration.syncWord = preferences.getUChar("syncWord", 0x34);
     preferences.end();

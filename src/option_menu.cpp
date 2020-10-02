@@ -110,6 +110,7 @@ void OptionMenu::drawOptionMenus(int extraOffsetY) {
 void OptionMenu::drawClientArea() {
     clearClient();
     int extraOffsetY = 0;
+    char buffer[64];
     switch (menuOption) {
         case 0:
             drawInputValue(globalConfiguration.deviceName);
@@ -125,12 +126,13 @@ void OptionMenu::drawClientArea() {
             drawOptionMenus(extraOffsetY);
             break;
         case 3:
-            drawInputValue(globalConfiguration.channelId);
+            sprintf(buffer, "<%04d>", globalConfiguration.channelIdValue);
+            drawInputValue(buffer);
             drawNumberKeyboard();
             drawControlKeyboard();
             break;
         case 4: {
-            char buffer[64];
+
             sprintf(buffer, "%d", globalConfiguration.syncWord);
             drawInputValue(buffer);
             drawNumberKeyboard();

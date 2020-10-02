@@ -7,6 +7,7 @@ struct Configuration {
     std::string channelId;
     std::string chipId;
     std::string deviceName;
+    int channelIdValue;
     byte syncWord;
     bool playSound;
     bool keyFastSpeed; //true or false
