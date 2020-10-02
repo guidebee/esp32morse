@@ -50,6 +50,10 @@ private:
     bool inputSpeed;
     Preferences preferences;
 
+    int numberSelected=0;
+    int letterSelected=0;
+    int controlSelected=0;
+
 
 public:
 

@@ -131,7 +131,7 @@ void OptionMenu::drawClientArea() {
             break;
         case 4: {
             char buffer[64];
-            sprintf(buffer,"%d",globalConfiguration.syncWord);
+            sprintf(buffer, "%d", globalConfiguration.syncWord);
             drawInputValue(buffer);
             drawNumberKeyboard();
             drawControlKeyboard();
@@ -207,7 +207,12 @@ void OptionMenu::drawFullKeyboard() {
     for (int i = 0; i < 36; i++) {
         int col = i % 12;
         int row = static_cast<int>( i / 12 );
-
+        if (letterSelected == i) {
+            display.fillRect(x + col * 10 - 1, y + row * 10 - 1, 10, 10, WHITE);
+            display.setTextColor(BLACK);
+        } else {
+            display.setTextColor(WHITE);
+        }
         display.setCursor(x + col * 10 + 1, y + row * CHAR_HEIGHT);
         display.print(fullKeyboard[i]);
     }
@@ -220,6 +225,12 @@ void OptionMenu::drawNumberKeyboard() {
 
     for (int i = 0; i < 12; i++) {
         display.setCursor(x + i * 10, y);
+        if (numberSelected == i) {
+            display.fillRect(x + i * 10 - 2, y - 1, 10, 10, WHITE);
+            display.setTextColor(BLACK);
+        } else {
+            display.setTextColor(WHITE);
+        }
         display.print(numberKeyboard[i]);
     }
 }
@@ -229,6 +240,12 @@ void OptionMenu::drawControlKeyboard() {
     int y = CHAR_HEIGHT * 3 + 30;
     for (int i = 0; i < 3; i++) {
         display.setCursor(x + i * 20, y);
+        if (controlSelected == i) {
+            display.fillRect(x + i * 10 - 2, y - 1, 16, 10, WHITE);
+            display.setTextColor(BLACK);
+        } else {
+            display.setTextColor(WHITE);
+        }
         display.print(controlKeyboard[i].c_str());
     }
 }
@@ -246,9 +263,9 @@ void OptionMenu::saveConfiguration() {
 
 void OptionMenu::drawInputValue(std::string value) {
     int x = OFFSET_X;
-    int y = CHAR_HEIGHT+3;
-    display.fillRect(0,y,SCREEN_WIDTH,CHAR_HEIGHT,WHITE);
-    display.setCursor(x,y);
+    int y = CHAR_HEIGHT + 3;
+    display.fillRect(0, y, SCREEN_WIDTH, CHAR_HEIGHT, WHITE);
+    display.setCursor(x, y);
     display.setTextColor(BLACK);
     display.print(value.c_str());
     display.setTextColor(WHITE);
