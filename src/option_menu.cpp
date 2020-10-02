@@ -133,24 +133,16 @@ void OptionMenu::drawClientArea() {
             drawControlKeyboard();
             break;
         case 1:
-
-            options[0] = "On";
-            options[1] = "Off";
-            upperMenuIndex = 1;
-            extraOffsetY = CHAR_HEIGHT;
-            upperMenuIndex = 1;
-            drawOptionMenus(extraOffsetY);
-            break;
-
         case 2:
 
             options[0] = "On";
             options[1] = "Off";
-            upperMenuIndex = 1;
             extraOffsetY = CHAR_HEIGHT;
             upperMenuIndex = 1;
             drawOptionMenus(extraOffsetY);
             break;
+
+
         case 5:
             options[0] = "Fast";
             options[1] = "Normal";
@@ -248,7 +240,7 @@ void OptionMenu::saveConfiguration() {
     preferences.begin("guidebeeit", false);
     preferences.putString("deviceName", "Harry");
     preferences.putString("channelId", "<1234>");
-    preferences.putBool("keyFastSpeed", false);
+    preferences.putBool("inputSpeed", false);
     preferences.putUChar("syncWord", 0x34);
     preferences.putBool("playSound", true);
     preferences.end();
@@ -289,7 +281,7 @@ void OptionMenu::handleToggleOk() {
             preferences.putBool("bluetooth", bluetooth);
             preferences.end();
             break;
-        case 3:
+        case 5:
 
             inputSpeed = currentSelect == 0;
             globalConfiguration.inputSpeed = inputSpeed;
@@ -539,14 +531,21 @@ void OptionMenu::handleMainMenuOk() {
         case 1:
             menuOption = 1;
             topBar.displayText("    Play Sound", topBarPattern);
-
+            if (playSound) {
+                currentSelect = 0;
+            } else {
+                currentSelect = 1;
+            }
             drawClientArea();
-
             break;
         case 2:
             menuOption = 2;
             topBar.displayText("    Bluetooth", topBarPattern);
-
+            if (bluetooth) {
+                currentSelect = 0;
+            } else {
+                currentSelect = 1;
+            }
             drawClientArea();
             break;
         case 3:
@@ -562,8 +561,12 @@ void OptionMenu::handleMainMenuOk() {
         case 5:
             topBar.displayText("   Input Speed", topBarPattern);
             menuOption = 5;
+            if (inputSpeed) {
+                currentSelect = 0;
+            } else {
+                currentSelect = 1;
+            }
             drawClientArea();
-
             break;
         case 6:
             isOptionMode = false;

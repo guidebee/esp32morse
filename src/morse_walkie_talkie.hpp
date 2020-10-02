@@ -25,7 +25,6 @@
 
 #define RECEIVER_LED 12
 #define BLUETOOTH_LED 13
-#define KEY_INTERVAL 150
 
 #define ENTER_MENU_COUNT 3
 
@@ -56,6 +55,7 @@ private:
     KeyboardMorseCodeDecoder morseCode;
     Keypad keypad;
     int enterMenuCounter=0;
+    int keyInterval=150;
 
 
     bool isDown = true;

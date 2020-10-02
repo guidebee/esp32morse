@@ -92,7 +92,7 @@ void MorseWalkieTalkie::saveConfiguration() {
     preferences.begin("guidebeeit", false);
     preferences.putString("deviceName", "Harry");
     preferences.putString("channelId", "<1234>");
-    preferences.putBool("keyFastSpeed", false);
+    preferences.putBool("inputSpeed", false);
     preferences.putUChar("syncWord", 0x34);
     preferences.putBool("playSound", true);
     preferences.end();
@@ -110,14 +110,18 @@ void MorseWalkieTalkie::readConfiguration() {
     preferences.begin("guidebeeit", false);
     globalConfiguration.deviceName = preferences.getString("deviceName", "Morse").c_str();
     globalConfiguration.playSound = preferences.getBool("playSound", true);
-    globalConfiguration.inputSpeed = preferences.getBool("keyFastSpeed", false);
+    globalConfiguration.inputSpeed = preferences.getBool("inputSpeed", false);
     globalConfiguration.bluetooth = preferences.getBool("bluetooth", false);
     globalConfiguration.channelIdValue = preferences.getInt("channelIdValue", 1234);
     globalConfiguration.channelId = preferences.getString("channelId", "<1234>").c_str();
     globalConfiguration.syncWord = preferences.getUChar("syncWord", 0x34);
     preferences.end();
     Serial.printf("%s\n", globalConfiguration.deviceName.c_str());
-
+    if (globalConfiguration.inputSpeed) {
+        keyInterval = 100;
+    } else {
+        keyInterval = 150;
+    }
     sprintf(globalConfiguration.encryptionKey, "guidebeeit202010");
     printf("Chip Id=%s\n", globalConfiguration.chipId.c_str());
 }
@@ -266,11 +270,16 @@ void MorseWalkieTalkie::onMainReleased() {
     isDown = false;
 
     diff_mills = millis() - last_mills;
+    if (globalConfiguration.inputSpeed) {
+        keyInterval = 100;
+    } else {
+        keyInterval = 150;
+    }
 
-    if (diff_mills <= KEY_INTERVAL) {
+    if (diff_mills <= keyInterval) {
 
         morseCode.processKey(false);
-    } else if (diff_mills < KEY_INTERVAL * 4) {
+    } else if (diff_mills < keyInterval * 4) {
 
         morseCode.processKey(true);
     }
