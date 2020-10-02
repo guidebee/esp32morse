@@ -307,7 +307,7 @@ void MorseWalkieTalkie::onOkReleased() {
         if (++enterMenuCounter >= ENTER_MENU_COUNT) {
             isOptionMode = true;
             enterMenuCounter = 0;
-            optionMenu.drawOptionMenus();
+            optionMenu.drawClientArea();
         }
 
     }

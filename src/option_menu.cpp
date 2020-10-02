@@ -15,13 +15,13 @@ void OptionMenu::onMainReleased() {
 void OptionMenu::onLeftReleased() {
     currentSelect -= 1;
     if (currentSelect < 0) currentSelect = 0;
-    drawOptionMenus();
+    drawClientArea();
 }
 
 void OptionMenu::onRightReleased() {
     currentSelect += 1;
-    if (currentSelect > 6) currentSelect = 6;
-    drawOptionMenus();
+    if (currentSelect > upperMenuIndex) currentSelect = upperMenuIndex;
+    drawClientArea();
 }
 
 
@@ -33,11 +33,11 @@ void OptionMenu::onOkReleased() {
             break;
         case 1:
             menuOption = 1;
-//            playSoundToggleView.drawOptionMenus();
+
             break;
         case 2:
             menuOption = 2;
-            // bluetoothToggleView.drawOptionMenus();
+
             break;
         case 3:
             menuOption = 3;
@@ -47,7 +47,7 @@ void OptionMenu::onOkReleased() {
             break;
         case 5:
             menuOption = 5;
-            // inputSpeedToggleView.drawOptionMenus();
+
             break;
         case 6:
             isOptionMode = false;
@@ -106,9 +106,12 @@ void OptionMenu::loop() {
 
 }
 
-void OptionMenu::drawOptionMenus() {
+void OptionMenu::drawClientArea() {
     clearClient();
-    for (int i = 0; i < options->size(); i++) {
+    switch (menuOption) {
+
+    }
+    for (int i = 0; i <= upperMenuIndex; i++) {
         int x = 0;
         int y = (i + 1) * CHAR_HEIGHT;
         if (currentSelect == i) {
@@ -140,7 +143,7 @@ void OptionMenu::onChooseOn() {
 
     }
     menuOption = 1;
-    drawOptionMenus();
+    drawClientArea();
 }
 
 void OptionMenu::onChooseOff() {
@@ -159,5 +162,5 @@ void OptionMenu::onChooseOff() {
 
     }
     menuOption = -1;
-    drawOptionMenus();
+    drawClientArea();
 }

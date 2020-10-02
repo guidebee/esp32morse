@@ -28,6 +28,8 @@ private:
     int menuOption = -1;
     std::string options[7];
 
+    int upperMenuIndex = 6;
+
 
 public:
 
@@ -48,17 +50,13 @@ public:
 
     }
 
-
-    void drawOptionMenus();
+    void drawClientArea();
 
     void onMainReleased() override;
 
-
     void onLeftReleased() override;
 
-
     void onRightReleased() override;
-
 
     void onOkReleased() override;
 
