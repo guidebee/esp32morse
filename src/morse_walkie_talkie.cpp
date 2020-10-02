@@ -179,6 +179,7 @@ void MorseWalkieTalkie::setup() {
 
     Serial.println(letter);
     readConfiguration();
+    loRaRadio.setSyncWord(globalConfiguration.syncWord);
     last_mills = millis();
     current_mills = last_mills;
     last_task_mills = last_mills;

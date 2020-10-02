@@ -7,6 +7,7 @@
 
 extern bool isOptionMode;
 extern Configuration globalConfiguration;
+#define DEFAULT_DEVICE_NAME "Morse User"
 
 void OptionMenu::onMainReleased() {
 
@@ -82,6 +83,12 @@ void OptionMenu::setup() {
     receiverLed.setup();
     blueToothLed.setup();
     blueToothLed.signalMorseText("Menu");
+    deviceName = globalConfiguration.deviceName;
+    playSound = globalConfiguration.playSound;
+    bluetooth = globalConfiguration.bluetooth;
+    inputSpeed = globalConfiguration.keyFastSpeed;
+    channelId = globalConfiguration.channelIdValue;
+    syncWord = globalConfiguration.syncWord;
 
 }
 
@@ -120,13 +127,13 @@ void OptionMenu::drawClientArea() {
     char buffer[64];
     switch (menuOption) {
         case 0:
-            deviceName = globalConfiguration.deviceName;
+
             drawInputValue(deviceName);
             drawFullKeyboard();
             drawControlKeyboard();
             break;
         case 1:
-            playSound = globalConfiguration.playSound;
+
             options[0] = "On";
             options[1] = "Off";
             upperMenuIndex = 1;
@@ -141,7 +148,7 @@ void OptionMenu::drawClientArea() {
             break;
 
         case 2:
-            bluetooth = globalConfiguration.bluetooth;
+
             options[0] = "On";
             options[1] = "Off";
             upperMenuIndex = 1;
@@ -157,7 +164,7 @@ void OptionMenu::drawClientArea() {
         case 5:
             options[0] = "Fast";
             options[1] = "Normal";
-            inputSpeed = globalConfiguration.keyFastSpeed;
+
             if (inputSpeed) {
                 currentSelect = 0;
             } else {
@@ -168,14 +175,14 @@ void OptionMenu::drawClientArea() {
             drawOptionMenus(extraOffsetY);
             break;
         case 3:
-            sprintf(buffer, "%04d", globalConfiguration.channelIdValue);
+            sprintf(buffer, "%04d", channelId);
             drawInputValue(buffer);
             drawNumberKeyboard();
             drawControlKeyboard();
             break;
         case 4: {
 
-            sprintf(buffer, "%d", globalConfiguration.syncWord);
+            sprintf(buffer, "%d", syncWord);
             drawInputValue(buffer);
             drawNumberKeyboard();
             drawControlKeyboard();
@@ -327,7 +334,135 @@ void OptionMenu::handleLetterInputRight() {
 }
 
 void OptionMenu::handleLetterInputOk() {
+    char buffer[64];
+    switch (menuOption) {
+        case 0:
+            if (letterSelected >= 0) {
+                deviceName += fullKeyboard[letterSelected];
+            } else {
+                switch (controlSelected) {
+                    case 0:
+                        deviceName += ' ';
+                        break;
+                    case 1:
+                        deviceName = deviceName.substr(0, deviceName.length() - 1);
+                        break;
+                    case 2:
+                        //save device name
+                        if (deviceName.empty()) {
+                            deviceName = DEFAULT_DEVICE_NAME;
+                        }
+                        globalConfiguration.deviceName = deviceName;
+                        preferences.begin("guidebeeit", false);
+                        preferences.putString("deviceName", deviceName.c_str());
+                        preferences.end();
+                        menuOption = -1;
+                        drawClientArea();
+                        break;
+                    case 3:
+                        deviceName = "";
+                        break;
 
+                }
+            }
+            break;
+
+        case 3: //channel id
+            if (numberSelected >= 0) {
+                sprintf(buffer, "%04d", channelId);
+                std::string channelIdString = buffer;
+                channelIdString += numberKeyboard[numberSelected];
+                channelId = std::atoi(channelIdString.c_str());
+                channelId = channelId % 10000;
+            } else {
+                switch (controlSelected) {
+                    case 0:
+
+                        break;
+                    case 1: {
+                        sprintf(buffer, "%04d", channelId);
+                        std::string channelIdString = buffer;
+                        channelIdString = channelIdString.substr(0, channelIdString.length() - 1);
+                        if (!channelIdString.empty()) {
+                            channelId = std::atoi(channelIdString.c_str());
+                        } else {
+                            channelId = 0;
+                        }
+
+                    }
+                        break;
+                    case 2:
+                        //save device name
+                        if (channelId == 0) {
+                            channelId = 1234;
+                        }
+                        globalConfiguration.channelIdValue = channelId;
+                        sprintf(buffer, "<%04d>", channelId);
+                        globalConfiguration.channelId = buffer;
+                        preferences.begin("guidebeeit", false);
+                        preferences.putString("channelId", globalConfiguration.channelId.c_str());
+                        preferences.putInt("channelIdValue", channelId);
+                        preferences.end();
+                        menuOption = -1;
+                        drawClientArea();
+                        break;
+                    case 3:
+                        channelId = 1234;
+                        break;
+
+                }
+            }
+            break;
+        case 4:
+            if (numberSelected >= 0) {
+                sprintf(buffer, "%d", syncWord);
+                std::string syncWordString = buffer;
+                syncWordString += numberKeyboard[numberSelected];
+                syncWord = std::atoi(syncWordString.c_str());
+                syncWord = syncWord % 255;
+            } else {
+                switch (controlSelected) {
+                    case 0:
+
+                        break;
+                    case 1: {
+                        sprintf(buffer, "%d", syncWord);
+                        std::string syncWordString = buffer;
+                        syncWordString = syncWordString.substr(0, syncWordString.length() - 1);
+                        if (!syncWordString.empty()) {
+                            syncWord = std::atoi(syncWordString.c_str());
+                        } else {
+                            syncWord = 0;
+                        }
+                        syncWord = syncWord % 255;
+                    }
+                        break;
+                    case 2:
+                        //save device name
+                        if (syncWord == 0) {
+                            channelId = 52;
+                        }
+                        globalConfiguration.syncWord = syncWord;
+
+                        preferences.begin("guidebeeit", false);
+                        preferences.putUChar("syncWord", globalConfiguration.syncWord);
+                        preferences.end();
+                        menuOption = -1;
+                        drawClientArea();
+                        break;
+                    case 3:
+                        syncWord = 52;
+                        break;
+
+                }
+            }
+            break;;
+        default:
+            break;
+
+    }
+
+    drawClientArea();
 }
 
 void OptionMenu::handleNumberInputLeft() {
@@ -369,7 +504,7 @@ void OptionMenu::handleNumberInputRight() {
 }
 
 void OptionMenu::handleNumberInputOk() {
-
+    handleLetterInputOk();
 }
 
 void OptionMenu::handleMainMenuLeft() {
