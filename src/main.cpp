@@ -4,11 +4,8 @@
 
 MorseWalkieTalkie morseWalkieTalkie;
 
-
-
 void setup() {
     morseWalkieTalkie.setup();
-
 }
 
 void loop() {
