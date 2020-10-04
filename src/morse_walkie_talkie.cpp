@@ -8,6 +8,7 @@
 
 #define BATTERY_LEVEL_PIN 35
 #define MAX_MESSAGE_LENGTH 36
+#define POWER_SWITCH_PIN 33
 bool isOptionMode = false;
 Configuration globalConfiguration;
 
@@ -156,6 +157,9 @@ void MorseWalkieTalkie::setup() {
 
     Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 
+    Serial.print("Enter deep sleep");
+
+
     display.setup();
     topScreen.clearScreen();
     bottomScreen.clearScreen();
@@ -191,6 +195,10 @@ void MorseWalkieTalkie::setup() {
     diff_mills = 0;
     samplePeriod = morseCode.getSamplePeriod();
     pinMode(BATTERY_LEVEL_PIN, INPUT);
+    pinMode(POWER_SWITCH_PIN, INPUT_PULLDOWN);
+
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_33,1); //1 = High, 0 = Low
+
     optionMenu.setup();
 }
 
@@ -275,6 +283,13 @@ void MorseWalkieTalkie::loop() {
 //    sprintf(battery, "vbat=%f volts\n", batteryLevel);
 //    loRaRadio.sendMessage(battery);
 //    topScreen.print(battery);
+     int value = digitalRead(POWER_SWITCH_PIN);
+    if(value==HIGH){
+        Serial.print("High\n");
+    }else{
+        Serial.print("Low\n");
+        esp_deep_sleep_start();
+    }
 
 
 }
