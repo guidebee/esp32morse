@@ -6,6 +6,7 @@
 
 #include "configuration.hpp"
 
+#define BATTERY_LEVEL_PIN 35
 #define MAX_MESSAGE_LENGTH 36
 bool isOptionMode = false;
 Configuration globalConfiguration;
@@ -189,6 +190,7 @@ void MorseWalkieTalkie::setup() {
     last_task_mills = last_mills;
     diff_mills = 0;
     samplePeriod = morseCode.getSamplePeriod();
+    pinMode(BATTERY_LEVEL_PIN, INPUT);
     optionMenu.setup();
 }
 
@@ -232,7 +234,9 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             String loRaData = (deviceIndex + ":" + message.payload).c_str();
             Serial.print(loRaData);
             topScreen.print(loRaData + '\n');
-            buzzer.playMessageReceived();
+            if (globalConfiguration.playSound) {
+                buzzer.playMessageReceived();
+            }
             receiverLed.signalMessageReceived();
         }
             break;
@@ -262,6 +266,15 @@ void MorseWalkieTalkie::loop() {
     } else {
         optionMenu.loop();
     }
+
+//    float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, 100);
+//    Serial.println("Vbat = ");
+//    Serial.print(batteryLevel);
+//    Serial.println(" Volts");
+//    char battery[64];
+//    sprintf(battery, "vbat=%f volts\n", batteryLevel);
+//    loRaRadio.sendMessage(battery);
+//    topScreen.print(battery);
 
 
 }
