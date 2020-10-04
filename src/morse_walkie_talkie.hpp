@@ -70,6 +70,7 @@ private:
     std::list<int> statusBarPattern = std::list<int>{300, 200, 300, 200, 500, 10};
 
     OptionMenu optionMenu;
+    int lastBatteryLevel=0;
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),

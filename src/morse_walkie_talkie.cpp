@@ -279,9 +279,9 @@ void MorseWalkieTalkie::loop() {
 
     int value = digitalRead(POWER_SWITCH_PIN);
     if (value == HIGH) {
-       // Serial.print("High\n");
+        // Serial.print("High\n");
     } else {
-       // Serial.print("Low\n");
+        // Serial.print("Low\n");
         esp_deep_sleep_start();
     }
 
@@ -375,20 +375,18 @@ void MorseWalkieTalkie::updateUserCounter(std::string chipId, int counter) {
 }
 
 void MorseWalkieTalkie::drawBatterLevel() {
-    int batteryBarWidth=10;
-    display.fillRect(128-batteryBarWidth,56,batteryBarWidth,8,BLACK);
+    int batteryBarWidth = 10;
     float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, 100);
-    display.drawRect(128-batteryBarWidth,57,batteryBarWidth,6,WHITE);
-    int barWidth=(int)(batteryLevel*batteryBarWidth/100.0);
+    int barWidth = (int) (batteryLevel * batteryBarWidth / 100.0);
     char battery[64];
     sprintf(battery, "v=%d volts\n", barWidth);
     Serial.printf(battery);
-    display.fillRect(128-batteryBarWidth,57,barWidth,6,WHITE);
-//    char battery[64];
-//    sprintf(battery, "v=%f volts\n", batteryLevel);
-//    //loRaRadio.sendMessage(battery);
-//    topScreen.print(battery);
-
+    if (lastBatteryLevel != barWidth) {
+        display.fillRect(128 - batteryBarWidth, 56, batteryBarWidth, 8, BLACK);
+        display.drawRect(128 - batteryBarWidth, 57, batteryBarWidth, 6, WHITE);
+        display.fillRect(128 - batteryBarWidth, 57, barWidth, 6, WHITE);
+        lastBatteryLevel = barWidth;
+    }
 
 }
 
