@@ -197,7 +197,7 @@ void MorseWalkieTalkie::setup() {
     pinMode(BATTERY_LEVEL_PIN, INPUT);
     pinMode(POWER_SWITCH_PIN, INPUT_PULLDOWN);
 
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_33,1); //1 = High, 0 = Low
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 1); //1 = High, 0 = Low
 
     optionMenu.setup();
 }
@@ -268,6 +268,7 @@ void MorseWalkieTalkie::loop() {
             if (!isDown) {
                 morseCode.process(false);
             }
+            drawBatterLevel();
             last_task_mills = current_mills;
         }
         loRaRadio.loop();
@@ -275,19 +276,12 @@ void MorseWalkieTalkie::loop() {
         optionMenu.loop();
     }
 
-//    float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, 100);
-//    Serial.println("Vbat = ");
-//    Serial.print(batteryLevel);
-//    Serial.println(" Volts");
-//    char battery[64];
-//    sprintf(battery, "vbat=%f volts\n", batteryLevel);
-//    loRaRadio.sendMessage(battery);
-//    topScreen.print(battery);
-     int value = digitalRead(POWER_SWITCH_PIN);
-    if(value==HIGH){
-        Serial.print("High\n");
-    }else{
-        Serial.print("Low\n");
+
+    int value = digitalRead(POWER_SWITCH_PIN);
+    if (value == HIGH) {
+       // Serial.print("High\n");
+    } else {
+       // Serial.print("Low\n");
         esp_deep_sleep_start();
     }
 
@@ -378,6 +372,24 @@ void MorseWalkieTalkie::updateUserCounter(std::string chipId, int counter) {
     if (users.count(chipId) > 0) {
         users[chipId].counter = counter;
     }
+}
+
+void MorseWalkieTalkie::drawBatterLevel() {
+    int batteryBarWidth=10;
+    display.fillRect(128-batteryBarWidth,56,batteryBarWidth,8,BLACK);
+    float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, 100);
+    display.drawRect(128-batteryBarWidth,57,batteryBarWidth,6,WHITE);
+    int barWidth=(int)(batteryLevel*batteryBarWidth/100.0);
+    char battery[64];
+    sprintf(battery, "v=%d volts\n", barWidth);
+    Serial.printf(battery);
+    display.fillRect(128-batteryBarWidth,57,barWidth,6,WHITE);
+//    char battery[64];
+//    sprintf(battery, "v=%f volts\n", batteryLevel);
+//    //loRaRadio.sendMessage(battery);
+//    topScreen.print(battery);
+
+
 }
 
 

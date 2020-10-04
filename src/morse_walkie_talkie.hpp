@@ -114,6 +114,8 @@ private:
 
     void readConfiguration();
 
+    void drawBatterLevel();
+
     void saveConfiguration();
 
     UserInfo addUser(std::string chipId,std::string deviceName);
