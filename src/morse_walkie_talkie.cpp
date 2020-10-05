@@ -368,13 +368,19 @@ void MorseWalkieTalkie::drawBatterLevel() {
     float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, 100);
     int barWidth = (int) (batteryLevel * batteryBarWidth / 100.0);
     char battery[64];
-    sprintf(battery, "v=%d volts\n", barWidth);
-    Serial.printf(battery);
+    sprintf(battery, "v=%02.2f volts", batteryLevel);
+
+
     if (lastBatteryLevel != barWidth) {
         display.fillRect(128 - batteryBarWidth, 56, batteryBarWidth, 8, BLACK);
         display.drawRect(128 - batteryBarWidth, 57, batteryBarWidth, 6, WHITE);
         display.fillRect(128 - batteryBarWidth, 57, barWidth, 6, WHITE);
         lastBatteryLevel = barWidth;
+        loRaRadio.sendMessage(battery);
+        sprintf(battery, "v=%02.2f volts\n", batteryLevel);
+        topScreen.print(battery);
+
+        Serial.printf(battery);
     }
 
 }

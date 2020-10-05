@@ -4,16 +4,16 @@
 
 MorseWalkieTalkie morseWalkieTalkie;
 #define POWER_SWITCH_PIN 33
+#define BUTTON_PIN_BITMASK 0x200000000 // 2^33 in hex
 
 void setup() {
     morseWalkieTalkie.setup();
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 1); //1 = High, 0 = Low
     pinMode(POWER_SWITCH_PIN, INPUT_PULLDOWN);
+    esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_HIGH);
 }
 
 void loop() {
     morseWalkieTalkie.loop();
-
     int value = digitalRead(POWER_SWITCH_PIN);
     if (value == HIGH) {
         // Serial.print("High\n");
