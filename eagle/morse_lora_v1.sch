@@ -3006,6 +3006,7 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <wire x1="-129.54" y1="177.8" x2="-139.7" y2="177.8" width="0.1524" layer="91"/>
 <junction x="-129.54" y="177.8"/>
 <junction x="-139.7" y="177.8"/>
+<label x="-139.7" y="177.8" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$13" class="0">
