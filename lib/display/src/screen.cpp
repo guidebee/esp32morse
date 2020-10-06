@@ -189,6 +189,13 @@ void DynamicScreen::loop() {
             }
         }
     }
+    if(_displayListener!= nullptr){
+        _displayListener->drawExtra();
+    }
     _last_time = current_mills;
     if (_remaining_period < 0) _remaining_period = 0;
+}
+
+void DynamicScreen::addDrawListener(ExtraDisplayListener *displayListener) {
+    _displayListener=displayListener;
 }

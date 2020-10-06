@@ -37,7 +37,8 @@ struct UserInfo {
 
 class MorseWalkieTalkie : public MorseCodeListener,
                           public KeypadListener,
-                          public LoraMessageListener {
+                          public LoraMessageListener,
+                          public ExtraDisplayListener{
 private:
     unsigned long last_mills;
     unsigned long current_mills;
@@ -71,7 +72,7 @@ private:
     std::list<int> statusBarPattern = std::list<int>{300, 200, 300, 200, 500, 10};
 
     OptionMenu optionMenu;
-    int lastBatteryLevel = 0;
+    int lastBatteryLevel = -1;
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
@@ -108,6 +109,8 @@ public:
     void onOkReleased() override;
 
     void onMessageReceived(LoraMessage message) override;
+
+    void drawExtra() override;
 
 private:
     void sendMessage(char character);

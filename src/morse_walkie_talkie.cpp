@@ -389,6 +389,11 @@ void MorseWalkieTalkie::updateUserCounter(std::string chipId, int counter) {
     }
 }
 
+void MorseWalkieTalkie::drawExtra() {
+    drawBatterLevel();
+}
+
+
 void MorseWalkieTalkie::drawBatterLevel() {
     int batteryBarWidth = 10;
     float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, 100);
@@ -430,3 +435,4 @@ bool MorseWalkieTalkie::isValidDevice() {
     Serial.printf("\n");
     return count > 8;
 }
+

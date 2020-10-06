@@ -29,11 +29,11 @@ private:
     int _old_cursor_x;
     int _old_cursor_y;
     bool _has_cursor = false;
-    int _offset_x=OFFSET_X;
+    int _offset_x = OFFSET_X;
 
 public:
     explicit Screen(OledDisplay *display, int start_page, int end_page,
-                    bool inverted_text, bool has_cursor = false,int offset_x=OFFSET_X);
+                    bool inverted_text, bool has_cursor = false, int offset_x = OFFSET_X);
 
     void print(char c);
 
@@ -63,6 +63,13 @@ private:
     void clearScreenIfNeeded();
 };
 
+
+class ExtraDisplayListener {
+public:
+    virtual void drawExtra() = 0;
+};
+
+
 class DynamicScreen : public Screen {
 private:
     std::string _displayMessage;
@@ -70,8 +77,9 @@ private:
     int _remaining_period;
     std::list<int> _periods = std::list<int>();
     std::list<int> _stored_pattern;
-    bool _show=false;
+    bool _show = false;
     bool _reload = true;
+    ExtraDisplayListener *_displayListener = nullptr;
 
 public:
     explicit DynamicScreen(OledDisplay *display, int start_page, int end_page,
@@ -82,7 +90,9 @@ public:
 
     void loop();
 
-    void displayText(std::string text,std::list<int> pattern,bool reload=true);
+    void displayText(std::string text, std::list<int> pattern, bool reload = true);
+
+    void addDrawListener(ExtraDisplayListener *displayListener);
 
 };
 
