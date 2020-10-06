@@ -35,8 +35,10 @@ void MorseWalkieTalkie::sendMessage(char character) {
 
 
 void MorseWalkieTalkie::deleteLastKey() {
-    bottomScreen.backspace();
-    message = message.substr(0, message.length() - 1);
+    bool deleted = bottomScreen.backspace();
+    if (deleted) {
+        message = message.substr(0, message.length() - 1);
+    }
 }
 
 

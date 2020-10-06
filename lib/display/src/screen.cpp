@@ -15,7 +15,8 @@ Screen::Screen(OledDisplay *display, int start_page, int end_page, bool inverted
     _offset_x=offset_x;
 }
 
-void Screen::backspace() {
+bool Screen::backspace() {
+    restoreCursor();
     int x = _display->getCursorX();
     int y = _display->getCursorY();
 
@@ -33,7 +34,9 @@ void Screen::backspace() {
 
         _display->display();
         saveCursor();
+        return true;
     }
+    return false;
 }
 
 void Screen::clearScreen() {

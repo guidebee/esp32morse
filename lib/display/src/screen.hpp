@@ -41,7 +41,7 @@ public:
 
     void print(const char str[]);
 
-    void backspace();
+    bool backspace();
 
     void clearScreen();
 
