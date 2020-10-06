@@ -104,7 +104,7 @@ void MorseWalkieTalkie::saveConfiguration() {
 void MorseWalkieTalkie::readConfiguration() {
     uint64_t chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
     char buffer[64];
-    sprintf(buffer, "%04X", (uint16_t) (chipId >> 32));//print High 2 bytes
+    sprintf(buffer, "%08X", (uint16_t) (chipId >> 32));//print High 2 bytes
     globalConfiguration.chipId = buffer;
     sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
     globalConfiguration.chipId += buffer;
@@ -195,6 +195,7 @@ void MorseWalkieTalkie::setup() {
     samplePeriod = morseCode.getSamplePeriod();
     pinMode(BATTERY_LEVEL_PIN, INPUT);
     optionMenu.setup();
+
 }
 
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {

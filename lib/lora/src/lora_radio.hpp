@@ -61,9 +61,11 @@ public:
 
     void loop();
 
-    void sendMessage(std::string message, int type = MESSAGE_TYPE_TEXT,bool encrypted=true);
+    void sendMessage(std::string message, int type = MESSAGE_TYPE_TEXT, bool encrypted = true);
 
     void addListener(LoraMessageListener *listener);
+
+
 
 private:
     LoraMessageListener *loraMessageListener = nullptr;
@@ -72,7 +74,7 @@ private:
 
     void sendAck();
 
-    std::string encodeMessage(int type, std::string message,bool encrypted=true);
+    std::string encodeMessage(int type, std::string message, bool encrypted = true);
 
     void decodeMessage(String message);
 
