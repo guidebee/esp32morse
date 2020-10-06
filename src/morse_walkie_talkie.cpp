@@ -217,12 +217,9 @@ void MorseWalkieTalkie::setup() {
             delay(5000);
             esp_deep_sleep_start();
         } else {
-
             Serial.printf("Device validation Ok\n");
         }
     }
-
-
 }
 
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
@@ -402,17 +399,15 @@ void MorseWalkieTalkie::drawBatterLevel() {
     char battery[64];
     sprintf(battery, "v=%02.2f volts", batteryLevel);
 
-
     if (lastBatteryLevel != barWidth) {
         display.fillRect(128 - batteryBarWidth, 56, batteryBarWidth, 8, BLACK);
         display.drawRect(128 - batteryBarWidth, 57, batteryBarWidth, 6, WHITE);
         display.fillRect(128 - batteryBarWidth, 57, barWidth, 6, WHITE);
         lastBatteryLevel = barWidth;
-        loRaRadio.sendMessage(battery);
+        //loRaRadio.sendMessage(battery);
         sprintf(battery, "v=%02.2f volts\n", batteryLevel);
-        topScreen.print(battery);
-
-        Serial.printf(battery);
+        //topScreen.print(battery);
+        //Serial.printf(battery);
     }
 
 }
