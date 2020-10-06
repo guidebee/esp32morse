@@ -28,7 +28,7 @@
 
 #define ENTER_MENU_COUNT 3
 
-struct UserInfo{
+struct UserInfo {
     int index;
     std::string deviceName;
     int counter;
@@ -54,29 +54,30 @@ private:
     LoraRadioClass loRaRadio;
     KeyboardMorseCodeDecoder morseCode;
     Keypad keypad;
-    int enterMenuCounter=0;
-    int keyInterval=150;
+    int enterMenuCounter = 0;
+    int keyInterval = 150;
 
+    bool needCheckDevice = false;
 
     bool isDown = true;
     std::string message;
     char lastChar = '^';
     int samplePeriod;
 
-    int userIndex=0;
+    int userIndex = 0;
     Preferences preferences;
     std::map<std::string, UserInfo> users;
     std::list<int> topBarPattern = std::list<int>{9500, 500};
     std::list<int> statusBarPattern = std::list<int>{300, 200, 300, 200, 500, 10};
 
     OptionMenu optionMenu;
-    int lastBatteryLevel=0;
+    int lastBatteryLevel = 0;
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
                                    blueToothLed(SignalLed(BLUETOOTH_LED)),
                                    topBar(DynamicScreen(&display, 0, 1, true)),
-                                   topScreen(Screen(&display, 1, 5, false,false,0)),
+                                   topScreen(Screen(&display, 1, 5, false, false, 0)),
                                    bottomScreen(Screen(&display, 5, 7, true, true)),
                                    statusBar(DynamicScreen(&display, 7, 8, false)) {}
 
@@ -119,11 +120,13 @@ private:
 
     void saveConfiguration();
 
-    UserInfo addUser(std::string chipId,std::string deviceName);
+    UserInfo addUser(std::string chipId, std::string deviceName);
 
     UserInfo getUser(std::string chipId);
 
-    void updateUserCounter(std::string chipId,int counter);
+    void updateUserCounter(std::string chipId, int counter);
+
+    bool isValidDevice();
 
 };
 

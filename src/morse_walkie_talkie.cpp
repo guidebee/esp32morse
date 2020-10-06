@@ -3,14 +3,20 @@
 //
 #include <string>
 #include "morse_walkie_talkie.hpp"
-
+#include <soc/efuse_reg.h>
 #include "configuration.hpp"
 
 #define BATTERY_LEVEL_PIN 35
 #define MAX_MESSAGE_LENGTH 36
+#define POWER_SWITCH_PIN 33
+#define BUTTON_PIN_BITMASK 0x200000000 // 2^33 in hex
 
 bool isOptionMode = false;
 Configuration globalConfiguration;
+union {
+    uint32_t parts[4];
+    unsigned char bytes[16];
+} encryptedChipId;
 
 void MorseWalkieTalkie::sendMessage(char character) {
     if (!message.empty()) {
@@ -149,17 +155,18 @@ void MorseWalkieTalkie::setup() {
 
     while (!Serial && !Serial.available()) {}
     randomSeed(analogRead(0));
-    // Pass log level, whether to show log level, and print interface.
-    // Available levels are:
-    // LOG_LEVEL_SILENT, LOG_LEVEL_FATAL, LOG_LEVEL_ERROR, LOG_LEVEL_WARNING, LOG_LEVEL_NOTICE, LOG_LEVEL_TRACE, LOG_LEVEL_VERBOSE
-    // Note: if you want to fully remove all logging code, uncomment #define DISABLE_LOGGING in Logging.h
-    //       this will significantly reduce your project size
-
+    pinMode(POWER_SWITCH_PIN, INPUT_PULLDOWN);
+    esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_HIGH);
     Log.begin(LOG_LEVEL_VERBOSE, &Serial);
-
     Serial.print("Enter deep sleep");
 
-
+    int value = digitalRead(POWER_SWITCH_PIN);
+    if (value == HIGH) {
+        // Serial.print("High\n");
+    } else {
+        // Serial.print("Low\n");
+        esp_deep_sleep_start();
+    }
     display.setup();
     topScreen.clearScreen();
     bottomScreen.clearScreen();
@@ -195,6 +202,18 @@ void MorseWalkieTalkie::setup() {
     samplePeriod = morseCode.getSamplePeriod();
     pinMode(BATTERY_LEVEL_PIN, INPUT);
     optionMenu.setup();
+
+    if (needCheckDevice) {
+        bool isValid = isValidDevice();
+        if (!isValid) {
+            topScreen.print("Not a valid device\n shutdown in 5 seconds\nCopyright Guidebee IT\n");
+            delay(5000);
+            esp_deep_sleep_start();
+        } else {
+
+            Serial.printf("Device validation Ok\n");
+        }
+    }
 }
 
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
@@ -270,10 +289,13 @@ void MorseWalkieTalkie::loop() {
     } else {
         optionMenu.loop();
     }
-
-
-
-
+    int value = digitalRead(POWER_SWITCH_PIN);
+    if (value == HIGH) {
+        // Serial.print("High\n");
+    } else {
+        // Serial.print("Low\n");
+        esp_deep_sleep_start();
+    }
 
 }
 
@@ -386,3 +408,21 @@ void MorseWalkieTalkie::drawBatterLevel() {
 }
 
 
+bool MorseWalkieTalkie::isValidDevice() {
+
+    unsigned char buffer[64];
+    ::encrypt(const_cast<char *>(globalConfiguration.chipId.c_str()), globalConfiguration.encryptionKey, buffer);
+    int count = 0;
+    encryptedChipId.parts[0] = REG_GET_FIELD(EFUSE_BLK3_RDATA4_REG, EFUSE_BLK3_DOUT4);
+    encryptedChipId.parts[1] = REG_GET_FIELD(EFUSE_BLK3_RDATA5_REG, EFUSE_BLK3_DOUT5);
+    encryptedChipId.parts[2] = REG_GET_FIELD(EFUSE_BLK3_RDATA6_REG, EFUSE_BLK3_DOUT6);
+    encryptedChipId.parts[3] = REG_GET_FIELD(EFUSE_BLK3_RDATA7_REG, EFUSE_BLK3_DOUT7);
+    for (int i = 0; i < 16; i++) {
+        Serial.printf("%02x", encryptedChipId.bytes[i]);
+        if (buffer[i] == encryptedChipId.bytes[i]) {
+            count++;
+        }
+    }
+    Serial.printf("\n");
+    return count > 8;
+}
