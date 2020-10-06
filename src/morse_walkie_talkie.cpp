@@ -3,21 +3,14 @@
 //
 #include <string>
 #include "morse_walkie_talkie.hpp"
-#include <soc/efuse_reg.h>
+
 #include "configuration.hpp"
 
 #define BATTERY_LEVEL_PIN 35
 #define MAX_MESSAGE_LENGTH 36
-#define POWER_SWITCH_PIN 33
-#define BUTTON_PIN_BITMASK 0x200000000 // 2^33 in hex
 
 bool isOptionMode = false;
 Configuration globalConfiguration;
-
-union {
-    uint32_t parts[4];
-    unsigned char bytes[16];
-} encryptedChipId;
 
 void MorseWalkieTalkie::sendMessage(char character) {
     if (!message.empty()) {
@@ -111,7 +104,7 @@ void MorseWalkieTalkie::saveConfiguration() {
 void MorseWalkieTalkie::readConfiguration() {
     uint64_t chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
     char buffer[64];
-    sprintf(buffer, "%08X", (uint16_t) (chipId >> 32));//print High 2 bytes
+    sprintf(buffer, "%04X", (uint16_t) (chipId >> 32));//print High 2 bytes
     globalConfiguration.chipId = buffer;
     sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
     globalConfiguration.chipId += buffer;
@@ -153,8 +146,7 @@ void MorseWalkieTalkie::setup() {
 
     printf("Minimum free heap size: %d bytes\n", esp_get_minimum_free_heap_size());
     Serial.begin(115200);
-    pinMode(POWER_SWITCH_PIN, INPUT_PULLDOWN);
-    esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_HIGH);
+
     while (!Serial && !Serial.available()) {}
     randomSeed(analogRead(0));
     // Pass log level, whether to show log level, and print interface.
@@ -165,13 +157,7 @@ void MorseWalkieTalkie::setup() {
 
     Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 
-    int value = digitalRead(POWER_SWITCH_PIN);
-    if (value == HIGH) {
-        // Serial.print("High\n");
-    } else {
-        // Serial.print("Low\n");
-        esp_deep_sleep_start();
-    }
+    Serial.print("Enter deep sleep");
 
 
     display.setup();
@@ -209,17 +195,6 @@ void MorseWalkieTalkie::setup() {
     samplePeriod = morseCode.getSamplePeriod();
     pinMode(BATTERY_LEVEL_PIN, INPUT);
     optionMenu.setup();
-
-    if (needCheckDevice) {
-        bool isValid = isValidDevice();
-        if (!isValid) {
-            topScreen.print("Not a valid device\n shutdown in 5 seconds\nCopyright Guidebee IT\n");
-            delay(5000);
-            esp_deep_sleep_start();
-        } else {
-            Serial.printf("Device validation Ok\n");
-        }
-    }
 }
 
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
@@ -295,13 +270,9 @@ void MorseWalkieTalkie::loop() {
     } else {
         optionMenu.loop();
     }
-    int value = digitalRead(POWER_SWITCH_PIN);
-    if (value == HIGH) {
-        // Serial.print("High\n");
-    } else {
-        // Serial.print("Low\n");
-        esp_deep_sleep_start();
-    }
+
+
+
 
 
 }
@@ -399,36 +370,19 @@ void MorseWalkieTalkie::drawBatterLevel() {
     char battery[64];
     sprintf(battery, "v=%02.2f volts", batteryLevel);
 
+
     if (lastBatteryLevel != barWidth) {
         display.fillRect(128 - batteryBarWidth, 56, batteryBarWidth, 8, BLACK);
         display.drawRect(128 - batteryBarWidth, 57, batteryBarWidth, 6, WHITE);
         display.fillRect(128 - batteryBarWidth, 57, barWidth, 6, WHITE);
         lastBatteryLevel = barWidth;
-        //loRaRadio.sendMessage(battery);
+        loRaRadio.sendMessage(battery);
         sprintf(battery, "v=%02.2f volts\n", batteryLevel);
-        //topScreen.print(battery);
-        //Serial.printf(battery);
+        topScreen.print(battery);
+
+        Serial.printf(battery);
     }
 
-}
-
-bool MorseWalkieTalkie::isValidDevice() {
-
-    unsigned char buffer[64];
-    ::encrypt(const_cast<char *>(globalConfiguration.chipId.c_str()), globalConfiguration.encryptionKey, buffer);
-    int count = 0;
-    encryptedChipId.parts[0] = REG_GET_FIELD(EFUSE_BLK3_RDATA4_REG, EFUSE_BLK3_DOUT4);
-    encryptedChipId.parts[1] = REG_GET_FIELD(EFUSE_BLK3_RDATA5_REG, EFUSE_BLK3_DOUT5);
-    encryptedChipId.parts[2] = REG_GET_FIELD(EFUSE_BLK3_RDATA6_REG, EFUSE_BLK3_DOUT6);
-    encryptedChipId.parts[3] = REG_GET_FIELD(EFUSE_BLK3_RDATA7_REG, EFUSE_BLK3_DOUT7);
-    for (int i = 0; i < 16; i++) {
-        Serial.printf("%02x", encryptedChipId.bytes[i]);
-        if (buffer[i] == encryptedChipId.bytes[i]) {
-            count++;
-        }
-    }
-    Serial.printf("\n");
-    return count > 8;
 }
 
 
