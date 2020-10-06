@@ -407,9 +407,9 @@ void MorseWalkieTalkie::drawBatterLevel() {
         display.drawRect(128 - batteryBarWidth, 57, batteryBarWidth, 6, WHITE);
         display.fillRect(128 - batteryBarWidth, 57, barWidth, 6, WHITE);
         lastBatteryLevel = barWidth;
-        loRaRadio.sendMessage(battery);
+        //loRaRadio.sendMessage(battery);
         sprintf(battery, "v=%02.2f volts\n", batteryLevel);
-        topScreen.print(battery);
+        //topScreen.print(battery);
 
         Serial.printf(battery);
     }
