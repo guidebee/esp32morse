@@ -111,12 +111,18 @@ void LoraRadioClass::addListener(LoraMessageListener *listener) {
     loraMessageListener = listener;
 }
 
+std::string tail(std::string const& source, size_t const length) {
+    if (length >= source.size()) { return source; }
+    return source.substr(source.size() - length);
+} // tail
+
 std::string LoraRadioClass::encodeMessage(int type, std::string message, bool encrypted) {
     char buffer[BUFFER_SIZE];
     int len = message.length();
+    std::string chipId=tail(globalConfiguration.chipId,12);
     sprintf(buffer, "%6s%12s%12s%05d%01d%02d%02d%8s%s",
             globalConfiguration.channelId.c_str(),
-            globalConfiguration.chipId.c_str(),
+            chipId.c_str(),
             "000000000000",
             _counter,
             encrypted,

@@ -110,7 +110,7 @@ void MorseWalkieTalkie::saveConfiguration() {
 void MorseWalkieTalkie::readConfiguration() {
     uint64_t chipId = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
     char buffer[64];
-    sprintf(buffer, "%04X", (uint16_t) (chipId >> 32));//print High 2 bytes
+    sprintf(buffer, "%08X", (uint16_t) (chipId >> 32));//print High 2 bytes
     globalConfiguration.chipId = buffer;
     sprintf(buffer, "%08X", (uint32_t) chipId);//print Low 4bytes.
     globalConfiguration.chipId += buffer;
@@ -167,6 +167,7 @@ void MorseWalkieTalkie::setup() {
         // Serial.print("Low\n");
         esp_deep_sleep_start();
     }
+    readConfiguration();
     display.setup();
     topScreen.clearScreen();
     bottomScreen.clearScreen();
@@ -193,7 +194,7 @@ void MorseWalkieTalkie::setup() {
     loRaRadio.addListener(this);
     char letter = morseCode.getMorseLetter("...");
     Serial.println(letter);
-    readConfiguration();
+
     loRaRadio.setSyncWord(globalConfiguration.syncWord);
     last_mills = millis();
     current_mills = last_mills;
@@ -206,14 +207,15 @@ void MorseWalkieTalkie::setup() {
     if (needCheckDevice) {
         bool isValid = isValidDevice();
         if (!isValid) {
-            topScreen.print("Not a valid device\n shutdown in 5 seconds\nCopyright Guidebee IT\n");
+            topScreen.print("Not a valid device\nReboot in 5s\n");
+            statusBar.displayText("Copyright Guidebee IT\n", statusBarPattern, true);
             delay(5000);
             esp_deep_sleep_start();
         } else {
-
             Serial.printf("Device validation Ok\n");
         }
     }
+
 }
 
 void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
