@@ -21,7 +21,8 @@
 #define MESSAGE_TYPE_TEXT_ACK 2
 
 #define DEFAULT_DEVICE_NAME "Morse User"
-
+void encrypt(char *plainText, char *key, unsigned char *outputBuffer);
+void decrypt(unsigned char *cipherText, char *key, unsigned char *outputBuffer);
 struct LoraMessage {
     //header: 48 bytes
     std::string channelId; //6 bytes

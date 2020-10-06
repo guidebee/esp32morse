@@ -56,6 +56,7 @@ private:
     Keypad keypad;
     int enterMenuCounter=0;
     int keyInterval=150;
+    bool needCheckDevice=false;
 
 
     bool isDown = true;
@@ -124,6 +125,8 @@ private:
     UserInfo getUser(std::string chipId);
 
     void updateUserCounter(std::string chipId,int counter);
+
+    bool isValidDevice();
 
 };
 
