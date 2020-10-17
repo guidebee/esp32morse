@@ -1938,84 +1938,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </deviceset>
 </devicesets>
 </library>
-<library name="smd-special" urn="urn:adsk.eagle:library:362">
-<description>&lt;b&gt;Special SMD Packages&lt;/b&gt;&lt;p&gt;
-&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
-<packages>
-<package name="SMS-001" urn="urn:adsk.eagle:footprint:26408/1" library_version="3">
-<description>&lt;b&gt;DIP SWITCH&lt;/b&gt;</description>
-<wire x1="-1.905" y1="-3.2004" x2="1.905" y2="-3.2004" width="0.1524" layer="21"/>
-<wire x1="1.905" y1="3.2004" x2="1.905" y2="-3.2004" width="0.1524" layer="21"/>
-<wire x1="1.905" y1="3.2004" x2="-1.905" y2="3.2004" width="0.1524" layer="21"/>
-<wire x1="-1.905" y1="-3.2004" x2="-1.905" y2="3.2004" width="0.1524" layer="21"/>
-<wire x1="-0.762" y1="2.032" x2="0.762" y2="2.032" width="0.1524" layer="21"/>
-<wire x1="0.762" y1="-2.032" x2="-0.762" y2="-2.032" width="0.1524" layer="21"/>
-<wire x1="0.762" y1="2.032" x2="0.762" y2="-2.032" width="0.1524" layer="21"/>
-<wire x1="-0.762" y1="-2.032" x2="-0.762" y2="2.032" width="0.1524" layer="21"/>
-<smd name="1" x="0" y="-4.4958" dx="1.0922" dy="2.0066" layer="1"/>
-<smd name="2" x="0" y="4.4958" dx="1.0922" dy="2.0066" layer="1"/>
-<text x="-0.127" y="-1.27" size="1.016" layer="21">1</text>
-<text x="-2.286" y="-3.175" size="1.27" layer="25" ratio="10" rot="R90">&gt;NAME</text>
-<text x="3.556" y="-3.175" size="1.27" layer="27" ratio="10" rot="R90">&gt;VALUE</text>
-<rectangle x1="-0.762" y1="0.508" x2="0.762" y2="2.032" layer="21"/>
-<rectangle x1="-0.7366" y1="-4.1148" x2="0.762" y2="-3.2004" layer="51"/>
-<rectangle x1="-0.3048" y1="-5.1816" x2="0.3048" y2="-4.1148" layer="51"/>
-<rectangle x1="-0.762" y1="3.2004" x2="0.7366" y2="4.1148" layer="51"/>
-<rectangle x1="-0.3048" y1="4.1148" x2="0.3048" y2="5.1816" layer="51"/>
-</package>
-</packages>
-<packages3d>
-<package3d name="SMS-001" urn="urn:adsk.eagle:package:26467/1" type="box" library_version="3">
-<description>DIP SWITCH</description>
-<packageinstances>
-<packageinstance name="SMS-001"/>
-</packageinstances>
-</package3d>
-</packages3d>
-<symbols>
-<symbol name="DIP01" urn="urn:adsk.eagle:symbol:26404/1" library_version="3">
-<wire x1="0.508" y1="0" x2="-0.508" y2="0" width="0.1524" layer="94"/>
-<wire x1="-0.508" y1="2.54" x2="0.508" y2="2.54" width="0.1524" layer="94"/>
-<wire x1="0.508" y1="2.54" x2="0.508" y2="0" width="0.1524" layer="94"/>
-<wire x1="-0.508" y1="0" x2="-0.508" y2="2.54" width="0.1524" layer="94"/>
-<wire x1="1.905" y1="5.08" x2="-1.905" y2="5.08" width="0.4064" layer="94"/>
-<wire x1="-1.905" y1="5.08" x2="-1.905" y2="-2.54" width="0.4064" layer="94"/>
-<wire x1="-1.905" y1="-2.54" x2="1.905" y2="-2.54" width="0.4064" layer="94"/>
-<wire x1="1.905" y1="-2.54" x2="1.905" y2="5.08" width="0.4064" layer="94"/>
-<text x="-2.54" y="-2.54" size="1.778" layer="95" rot="R90">&gt;NAME</text>
-<text x="4.445" y="-2.54" size="1.778" layer="96" rot="R90">&gt;VALUE</text>
-<text x="-0.635" y="3.175" size="0.9906" layer="94" ratio="14">ON</text>
-<text x="-0.254" y="-1.651" size="0.9906" layer="94" ratio="14">1</text>
-<rectangle x1="-0.254" y1="0.254" x2="0.254" y2="1.27" layer="94"/>
-<pin name="2" x="0" y="7.62" visible="pad" length="short" direction="pas" rot="R270"/>
-<pin name="1" x="0" y="-5.08" visible="pad" length="short" direction="pas" rot="R90"/>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="SWS001" urn="urn:adsk.eagle:component:26476/2" prefix="S" library_version="3">
-<description>&lt;b&gt;SMD Dip Switch 1 pol.&lt;/b&gt;</description>
-<gates>
-<gate name="G$1" symbol="DIP01" x="0" y="0"/>
-</gates>
-<devices>
-<device name="" package="SMS-001">
-<connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
-</connects>
-<package3dinstances>
-<package3dinstance package3d_urn="urn:adsk.eagle:package:26467/1"/>
-</package3dinstances>
-<technologies>
-<technology name="">
-<attribute name="POPULARITY" value="9" constant="no"/>
-</technology>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 <library name="SparkFun-Switches">
 <description>&lt;h3&gt;SparkFun Switches, Buttons, Encoders&lt;/h3&gt;
 In this library you'll find switches, buttons, joysticks, and anything that moves to create or disrupt an electrical connection.
@@ -2689,6 +2611,100 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 </deviceset>
 </devicesets>
 </library>
+<library name="adafruit" urn="urn:adsk.eagle:library:420">
+<packages>
+<package name="EG1218" urn="urn:adsk.eagle:footprint:6240003/1" library_version="2">
+<wire x1="-5.842" y1="2.032" x2="-0.254" y2="2.032" width="0.127" layer="21"/>
+<wire x1="-0.254" y1="2.032" x2="0" y2="1.778" width="0.127" layer="21"/>
+<wire x1="0" y1="1.778" x2="0.254" y2="2.032" width="0.127" layer="21"/>
+<wire x1="0.254" y1="2.032" x2="5.842" y2="2.032" width="0.127" layer="21"/>
+<wire x1="5.842" y1="2.032" x2="5.842" y2="1.524" width="0.127" layer="21"/>
+<wire x1="5.842" y1="1.524" x2="5.334" y2="1.524" width="0.127" layer="21"/>
+<wire x1="5.334" y1="1.524" x2="5.334" y2="-1.524" width="0.127" layer="21"/>
+<wire x1="5.334" y1="-1.524" x2="5.842" y2="-1.524" width="0.127" layer="21"/>
+<wire x1="5.842" y1="-1.524" x2="5.842" y2="-2.032" width="0.127" layer="21"/>
+<wire x1="5.842" y1="-2.032" x2="0.254" y2="-2.032" width="0.127" layer="21"/>
+<wire x1="0.254" y1="-2.032" x2="0" y2="-1.778" width="0.127" layer="21"/>
+<wire x1="0" y1="-1.778" x2="-0.254" y2="-2.032" width="0.127" layer="21"/>
+<wire x1="-0.254" y1="-2.032" x2="-5.842" y2="-2.032" width="0.127" layer="21"/>
+<wire x1="-5.842" y1="-2.032" x2="-5.842" y2="-1.524" width="0.127" layer="21"/>
+<wire x1="-5.842" y1="-1.524" x2="-5.334" y2="-1.524" width="0.127" layer="21"/>
+<wire x1="-5.334" y1="-1.524" x2="-5.334" y2="1.524" width="0.127" layer="21"/>
+<wire x1="-5.334" y1="1.524" x2="-5.842" y2="1.524" width="0.127" layer="21"/>
+<wire x1="-5.842" y1="1.524" x2="-5.842" y2="2.032" width="0.127" layer="21"/>
+<wire x1="-2.286" y1="1.016" x2="2.286" y2="1.016" width="0.127" layer="25"/>
+<wire x1="2.286" y1="1.016" x2="2.286" y2="-1.016" width="0.127" layer="25"/>
+<wire x1="2.286" y1="-1.016" x2="-2.286" y2="-1.016" width="0.127" layer="25"/>
+<wire x1="-2.286" y1="-1.016" x2="-2.286" y2="1.016" width="0.127" layer="25"/>
+<wire x1="-2.032" y1="1.016" x2="-2.032" y2="-1.016" width="0.127" layer="21"/>
+<wire x1="-1.778" y1="-1.016" x2="-1.778" y2="1.016" width="0.127" layer="21"/>
+<wire x1="-1.524" y1="1.016" x2="-1.524" y2="-1.016" width="0.127" layer="21"/>
+<wire x1="-1.27" y1="-1.016" x2="-1.27" y2="1.016" width="0.127" layer="21"/>
+<wire x1="-1.016" y1="1.016" x2="-1.016" y2="-1.016" width="0.127" layer="21"/>
+<wire x1="-0.762" y1="-1.016" x2="-0.762" y2="1.016" width="0.127" layer="21"/>
+<wire x1="-0.508" y1="1.016" x2="-0.508" y2="-1.016" width="0.127" layer="21"/>
+<pad name="P" x="0" y="0" drill="0.9" diameter="1.6764"/>
+<pad name="O" x="-2.54" y="0" drill="0.9" diameter="1.6764"/>
+<pad name="S" x="2.54" y="0" drill="0.9" diameter="1.6764"/>
+<text x="-2.794" y="2.54" size="1.27" layer="25" font="vector">&gt;NAME</text>
+</package>
+</packages>
+<packages3d>
+<package3d name="EG1218" urn="urn:adsk.eagle:package:6240649/1" type="box" library_version="2">
+<packageinstances>
+<packageinstance name="EG1218"/>
+</packageinstances>
+</package3d>
+</packages3d>
+<symbols>
+<symbol name="SIS" urn="urn:adsk.eagle:symbol:6239500/1" library_version="2">
+<wire x1="-3.81" y1="1.905" x2="-3.81" y2="0" width="0.254" layer="94"/>
+<wire x1="-3.81" y1="0" x2="-1.905" y2="0" width="0.1524" layer="94"/>
+<wire x1="-3.81" y1="0" x2="-3.81" y2="-1.905" width="0.254" layer="94"/>
+<wire x1="-1.27" y1="0" x2="-0.762" y2="0" width="0.1524" layer="94"/>
+<wire x1="0.254" y1="0" x2="0.635" y2="0" width="0.1524" layer="94"/>
+<wire x1="2.54" y1="-3.175" x2="2.54" y2="-1.905" width="0.254" layer="94"/>
+<wire x1="2.54" y1="-1.905" x2="0.635" y2="3.175" width="0.254" layer="94"/>
+<wire x1="3.81" y1="2.54" x2="5.08" y2="2.54" width="0.254" layer="94"/>
+<wire x1="5.08" y1="2.54" x2="5.08" y2="3.175" width="0.254" layer="94"/>
+<wire x1="0" y1="2.54" x2="1.27" y2="2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="2.54" x2="0" y2="3.175" width="0.254" layer="94"/>
+<wire x1="1.27" y1="0" x2="1.905" y2="0" width="0.1524" layer="94"/>
+<wire x1="-0.762" y1="0" x2="-0.254" y2="-0.762" width="0.1524" layer="94"/>
+<wire x1="-0.254" y1="-0.762" x2="0.254" y2="0" width="0.1524" layer="94"/>
+<text x="-6.35" y="-1.905" size="1.778" layer="95" rot="R90">&gt;NAME</text>
+<text x="-3.81" y="3.175" size="1.778" layer="96" rot="R90">&gt;VALUE</text>
+<pin name="P" x="2.54" y="-5.08" visible="pad" length="short" direction="pas" rot="R90"/>
+<pin name="S" x="5.08" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
+<pin name="O" x="0" y="5.08" visible="pad" length="short" direction="pas" rot="R270"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="EG1218" urn="urn:adsk.eagle:component:6240965/1" prefix="S" uservalue="yes" library_version="2">
+<description>&lt;b&gt;SLIDING SWITCH&lt;/b&gt;&lt;p&gt;
+0.1" spacing through hole, vertical SPDT slide switch
+&lt;p&gt;http://www.ladyada.net/library/pcb/eaglelibrary.html&lt;/p&gt;</description>
+<gates>
+<gate name="1" symbol="SIS" x="0" y="0"/>
+</gates>
+<devices>
+<device name="S" package="EG1218">
+<connects>
+<connect gate="1" pin="O" pad="O"/>
+<connect gate="1" pin="P" pad="P"/>
+<connect gate="1" pin="S" pad="S"/>
+</connects>
+<package3dinstances>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:6240649/1"/>
+</package3dinstances>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -2719,12 +2735,12 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <part name="R4" library="SparkFun-Resistors" deviceset="10KOHM" device="-HORIZ_KIT-1/4W-1%" value="10k"/>
 <part name="R5" library="SparkFun-Resistors" deviceset="10KOHM" device="-HORIZ_KIT-1/4W-1%" value="10k"/>
 <part name="R6" library="SparkFun-Resistors" deviceset="10KOHM" device="-HORIZ_KIT-1/4W-1%" value="10k"/>
-<part name="SLEEP" library="smd-special" library_urn="urn:adsk.eagle:library:362" deviceset="SWS001" device="" package3d_urn="urn:adsk.eagle:package:26467/1"/>
 <part name="GND3" library="SparkFun-PowerSymbols" deviceset="GND" device=""/>
 <part name="LEFT" library="SparkFun-Switches" deviceset="MOMENTARY-SWITCH-SPST" device="-PTH-6.0MM"/>
 <part name="RIGHT" library="SparkFun-Switches" deviceset="MOMENTARY-SWITCH-SPST" device="-PTH-6.0MM"/>
 <part name="OK" library="SparkFun-Switches" deviceset="MOMENTARY-SWITCH-SPST" device="-PTH-6.0MM"/>
 <part name="MAIN" library="SparkFun-Switches" deviceset="MOMENTARY-SWITCH-SPST" device="-PTH-12MM"/>
+<part name="SLEEP" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="EG1218" device="S" package3d_urn="urn:adsk.eagle:package:6240649/1"/>
 </parts>
 <sheets>
 <sheet>
@@ -2806,12 +2822,8 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <attribute name="NAME" x="-109.22" y="153.924" size="1.778" layer="95" font="vector" align="bottom-center"/>
 <attribute name="VALUE" x="-109.22" y="150.876" size="1.778" layer="96" font="vector" align="top-center"/>
 </instance>
-<instance part="SLEEP" gate="G$1" x="-132.08" y="147.32" smashed="yes" rot="R90">
-<attribute name="NAME" x="-129.54" y="144.78" size="1.778" layer="95" rot="R180"/>
-<attribute name="VALUE" x="-129.54" y="151.765" size="1.778" layer="96" rot="R180"/>
-</instance>
-<instance part="GND3" gate="1" x="-121.92" y="147.32" smashed="yes" rot="R90">
-<attribute name="VALUE" x="-120.396" y="147.32" size="1.778" layer="96" rot="R90" align="top-center"/>
+<instance part="GND3" gate="1" x="-121.92" y="144.78" smashed="yes" rot="R90">
+<attribute name="VALUE" x="-120.396" y="144.78" size="1.778" layer="96" rot="R90" align="top-center"/>
 </instance>
 <instance part="LEFT" gate="G$1" x="-88.9" y="160.02" smashed="yes">
 <attribute name="NAME" x="-88.9" y="161.544" size="1.778" layer="95" font="vector" align="bottom-center"/>
@@ -2828,6 +2840,10 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <instance part="MAIN" gate="G$1" x="-129.54" y="170.18" smashed="yes">
 <attribute name="NAME" x="-129.54" y="171.704" size="1.778" layer="95" font="vector" align="bottom-center"/>
 <attribute name="VALUE" x="-129.54" y="169.672" size="1.778" layer="96" font="vector" align="top-center"/>
+</instance>
+<instance part="SLEEP" gate="1" x="-134.62" y="147.32" smashed="yes" rot="R270">
+<attribute name="NAME" x="-136.525" y="153.67" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-131.445" y="151.13" size="1.778" layer="96"/>
 </instance>
 </instances>
 <busses>
@@ -2872,6 +2888,13 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <pinref part="LEFT" gate="G$1" pin="2"/>
 </segment>
 <segment>
+<pinref part="GND3" gate="1" pin="GND"/>
+<wire x1="-129.54" y1="142.24" x2="-124.46" y2="144.78" width="0.1524" layer="91"/>
+<pinref part="SLEEP" gate="1" pin="S"/>
+</segment>
+<segment>
+<pinref part="ESP32LORA" gate="G$1" pin="GND@1"/>
+<wire x1="-175.26" y1="177.8" x2="-190.5" y2="177.8" width="0.1524" layer="91"/>
 <pinref part="GND6" gate="1" pin="GND"/>
 <wire x1="-180.34" y1="139.7" x2="-180.34" y2="134.62" width="0.1524" layer="91"/>
 <pinref part="C4" gate="G$1" pin="1"/>
@@ -2879,16 +2902,17 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <wire x1="-185.42" y1="139.7" x2="-180.34" y2="139.7" width="0.1524" layer="91"/>
 <pinref part="OK" gate="G$1" pin="1"/>
 <junction x="-180.34" y="139.7"/>
-</segment>
-<segment>
+<wire x1="-190.5" y1="177.8" x2="-190.5" y2="134.62" width="0.1524" layer="91"/>
+<wire x1="-190.5" y1="134.62" x2="-180.34" y2="134.62" width="0.1524" layer="91"/>
+<junction x="-180.34" y="134.62"/>
+<wire x1="-180.34" y1="134.62" x2="-180.34" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="-180.34" y1="121.92" x2="-106.68" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="-106.68" y1="121.92" x2="-106.68" y2="134.62" width="0.1524" layer="91"/>
 <pinref part="GND2" gate="1" pin="GND"/>
 <pinref part="BUZZER" gate="G$1" pin="2"/>
 <wire x1="-111.76" y1="134.62" x2="-119.38" y2="134.62" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="SLEEP" gate="G$1" pin="1"/>
-<pinref part="GND3" gate="1" pin="GND"/>
-<wire x1="-127" y1="147.32" x2="-124.46" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="-106.68" y1="134.62" x2="-111.76" y2="134.62" width="0.1524" layer="91"/>
+<junction x="-111.76" y="134.62"/>
 </segment>
 </net>
 <net name="39" class="0">
@@ -2959,12 +2983,6 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 </net>
 <net name="3V3" class="0">
 <segment>
-<pinref part="R6" gate="G$1" pin="1"/>
-<wire x1="-114.3" y1="152.4" x2="-116.84" y2="152.4" width="0.1524" layer="91"/>
-<junction x="-116.84" y="152.4"/>
-<label x="-118.11" y="153.67" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="ESP32LORA" gate="G$1" pin="3V3@1"/>
 <wire x1="-185.42" y1="172.72" x2="-175.26" y2="172.72" width="0.1524" layer="91"/>
 <pinref part="R3" gate="G$1" pin="2"/>
@@ -2988,6 +3006,13 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <junction x="-116.84" y="195.58"/>
 <label x="-139.7" y="195.58" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="R6" gate="G$1" pin="1"/>
+<label x="-118.11" y="153.67" size="1.778" layer="95"/>
+<pinref part="SLEEP" gate="1" pin="O"/>
+<wire x1="-129.54" y1="147.32" x2="-129.54" y2="152.4" width="0.1524" layer="91"/>
+<wire x1="-129.54" y1="152.4" x2="-114.3" y2="152.4" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="36" class="0">
 <segment>
@@ -3000,7 +3025,6 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <pinref part="C1" gate="G$1" pin="2"/>
 <wire x1="-129.54" y1="180.34" x2="-129.54" y2="177.8" width="0.1524" layer="91"/>
 <pinref part="D-BUT" gate="D1" pin="C"/>
-<junction x="-139.7" y="170.18"/>
 <wire x1="-139.7" y1="182.88" x2="-139.7" y2="177.8" width="0.1524" layer="91"/>
 <wire x1="-139.7" y1="177.8" x2="-139.7" y2="170.18" width="0.1524" layer="91"/>
 <wire x1="-129.54" y1="177.8" x2="-139.7" y2="177.8" width="0.1524" layer="91"/>
@@ -3014,8 +3038,8 @@ SparkFun BigTime Watch Kit&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
 <pinref part="ESP32LORA" gate="G$1" pin="33"/>
 <wire x1="-144.78" y1="152.4" x2="-142.24" y2="152.4" width="0.1524" layer="91"/>
 <wire x1="-142.24" y1="152.4" x2="-142.24" y2="147.32" width="0.1524" layer="91"/>
-<pinref part="SLEEP" gate="G$1" pin="2"/>
-<wire x1="-142.24" y1="147.32" x2="-139.7" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="-142.24" y1="147.32" x2="-139.7" y2="144.78" width="0.1524" layer="91"/>
+<pinref part="SLEEP" gate="1" pin="P"/>
 </segment>
 </net>
 <net name="34" class="0">
