@@ -165,13 +165,13 @@
 <wire x1="98.786" y1="19.939" x2="98.913" y2="103.429" width="0" layer="20"/>
 <wire x1="98.913" y1="103.429" x2="33.528" y2="103.302" width="0" layer="20"/>
 <wire x1="33.528" y1="103.302" x2="33.528" y2="19.685" width="0" layer="20"/>
-<hole x="35.433" y="101.6" drill="1.016"/>
-<hole x="97.282" y="101.6" drill="1.016" grouprefs="HOLES"/>
-<hole x="97.282" y="21.971" drill="1.016" grouprefs="HOLES"/>
-<hole x="35.433" y="21.971" drill="1.016" grouprefs="HOLES"/>
+<hole x="35.433" y="101.346" drill="1.524"/>
+<hole x="97.282" y="101.346" drill="1.524" grouprefs="HOLES"/>
+<hole x="97.282" y="21.971" drill="1.524" grouprefs="HOLES"/>
+<hole x="35.433" y="21.971" drill="1.524" grouprefs="HOLES"/>
 <text x="73.406" y="21.082" size="1.778" layer="25">Morse Walkie Talkie</text>
 <text x="80.518" y="28.829" size="1.778" layer="25">GUIDEBEE IT</text>
-<hole x="50.419" y="80.391" drill="1.524"/>
+<hole x="50.419" y="80.391" drill="2.54"/>
 <text x="85.344" y="25.654" size="1.778" layer="25">2020</text>
 </plain>
 <libraries>
@@ -917,11 +917,11 @@ design rules under a new name.</description>
 <contactref element="LEFT" pad="3"/>
 <contactref element="BUZZER" pad="-"/>
 <polygon width="0.1524" layer="1">
-<vertex x="33.655" y="102.87"/>
+<vertex x="33.655" y="103.378"/>
 <vertex x="33.655" y="21.59"/>
 <vertex x="35.179" y="20.066"/>
-<vertex x="98.425" y="20.066"/>
-<vertex x="98.425" y="102.87"/>
+<vertex x="98.806" y="20.066"/>
+<vertex x="98.806" y="103.378"/>
 </polygon>
 <contactref element="ESP32LORA" pad="P$1"/>
 <contactref element="C4" pad="1"/>
@@ -931,9 +931,8 @@ design rules under a new name.</description>
 <vertex x="33.909" y="102.997"/>
 <vertex x="33.909" y="20.193"/>
 <vertex x="97.155" y="20.193"/>
-<vertex x="98.679" y="21.717"/>
-<vertex x="98.679" y="102.87"/>
-<vertex x="34.036" y="102.87"/>
+<vertex x="98.71075" y="21.74875"/>
+<vertex x="98.71075" y="102.997"/>
 </polygon>
 </signal>
 <signal name="39">
@@ -941,11 +940,11 @@ design rules under a new name.</description>
 <contactref element="R4" pad="P$1"/>
 <contactref element="C3" pad="1"/>
 <contactref element="RIGHT" pad="1"/>
-<wire x1="95.377" y1="33.02" x2="95.377" y2="100.838" width="0.1524" layer="1"/>
+<wire x1="94.615" y1="33.02" x2="94.615" y2="100.838" width="0.1524" layer="1"/>
 <wire x1="53.975" y1="100.838" x2="53.34" y2="100.203" width="0.1524" layer="1"/>
 <wire x1="53.34" y1="100.203" x2="53.34" y2="91.44" width="0.1524" layer="1"/>
-<wire x1="70.6628" y1="33.02" x2="95.377" y2="33.02" width="0.1524" layer="1"/>
-<wire x1="95.377" y1="100.838" x2="53.975" y2="100.838" width="0.1524" layer="1"/>
+<wire x1="70.6628" y1="33.02" x2="94.615" y2="33.02" width="0.1524" layer="1"/>
+<wire x1="94.615" y1="100.838" x2="53.975" y2="100.838" width="0.1524" layer="1"/>
 <wire x1="70.6628" y1="30.0736" x2="68.326" y2="30.0736" width="0.1524" layer="1"/>
 <wire x1="68.326" y1="30.0736" x2="68.326" y2="22.225" width="0.1524" layer="1"/>
 <wire x1="38.2296" y1="31.75" x2="38.2296" y2="22.225" width="0.1524" layer="1"/>
@@ -1097,9 +1096,9 @@ design rules under a new name.</description>
 <contactref element="LEFT" pad="1"/>
 <wire x1="57.8358" y1="30.0736" x2="58.2676" y2="30.0736" width="0.1524" layer="16"/>
 <wire x1="58.2676" y1="30.0736" x2="61.214" y2="33.02" width="0.1524" layer="16"/>
-<wire x1="61.214" y1="33.02" x2="95.377" y2="33.02" width="0.1524" layer="16"/>
-<wire x1="95.377" y1="33.02" x2="95.377" y2="100.711" width="0.1524" layer="16"/>
-<wire x1="95.377" y1="100.711" x2="82.423" y2="100.711" width="0.1524" layer="16"/>
+<wire x1="61.214" y1="33.02" x2="94.488" y2="33.02" width="0.1524" layer="16"/>
+<wire x1="94.488" y1="33.02" x2="94.488" y2="100.711" width="0.1524" layer="16"/>
+<wire x1="94.488" y1="100.711" x2="82.423" y2="100.711" width="0.1524" layer="16"/>
 <wire x1="82.423" y1="100.711" x2="78.994" y2="97.282" width="0.1524" layer="16"/>
 <via x="78.994" y="97.282" extent="1-16" drill="0.35"/>
 <wire x1="78.994" y1="97.282" x2="78.994" y2="97.155" width="0.1524" layer="1"/>
