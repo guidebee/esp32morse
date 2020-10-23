@@ -162,12 +162,14 @@ void MorseWalkieTalkie::setup() {
     Log.begin(LOG_LEVEL_VERBOSE, &Serial);
     Serial.print("Enter deep sleep");
 
-    int value = digitalRead(POWER_SWITCH_PIN);
-    if (value == HIGH) {
-        // Serial.print("High\n");
-    } else {
-        // Serial.print("Low\n");
-        esp_deep_sleep_start();
+    if (supportSleep) {
+        int value = digitalRead(POWER_SWITCH_PIN);
+        if (value == HIGH) {
+            // Serial.print("High\n");
+        } else {
+            // Serial.print("Low\n");
+            esp_deep_sleep_start();
+        }
     }
     readConfiguration();
     display.setup();
@@ -293,14 +295,16 @@ void MorseWalkieTalkie::loop() {
     } else {
         optionMenu.loop();
     }
-    int value = digitalRead(POWER_SWITCH_PIN);
-    if (value == HIGH) {
-        // Serial.print("High\n");
-    } else {
-        // Serial.print("Low\n");
-        esp_deep_sleep_start();
-    }
+    if (supportSleep) {
+        int value = digitalRead(POWER_SWITCH_PIN);
+        if (value == HIGH) {
+            // Serial.print("High\n");
+        } else {
+            // Serial.print("Low\n");
+            esp_deep_sleep_start();
+        }
 
+    }
 }
 
 void MorseWalkieTalkie::onMainReleased() {

@@ -38,7 +38,7 @@ struct UserInfo {
 class MorseWalkieTalkie : public MorseCodeListener,
                           public KeypadListener,
                           public LoraMessageListener,
-                          public ExtraDisplayListener{
+                          public ExtraDisplayListener {
 private:
     unsigned long last_mills;
     unsigned long current_mills;
@@ -58,8 +58,6 @@ private:
     int enterMenuCounter = 0;
     int keyInterval = 150;
 
-    bool needCheckDevice = false;
-
     bool isDown = true;
     std::string message;
     char lastChar = '^';
@@ -73,6 +71,9 @@ private:
 
     OptionMenu optionMenu;
     int lastBatteryLevel = -1;
+
+    bool supportSleep = false;
+    bool needCheckDevice = false;
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
