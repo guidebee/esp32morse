@@ -1,2 +1,2 @@
 # esp32morse
-Esp32 lora walkie takie
+Esp32 lora walkie talkie
