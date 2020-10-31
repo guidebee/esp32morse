@@ -68,7 +68,8 @@ void LoraRadioClass::loop() {
     }
     auto current_mills = millis();
     int diff = static_cast<int>(current_mills - _last_time);
-    if (diff > SEND_HELLO_PERIOD) {
+    int hello_period = getRandomPeriodForHello();
+    if (diff > hello_period) {
         _last_time = current_mills;
         sendHello();
     }
@@ -214,5 +215,9 @@ std::string LoraRadioClass::decryptPayload(std::string rawPayload) {
     } catch (std::exception) {
         return rawPayload;
     }
+}
+
+int LoraRadioClass::getRandomPeriodForHello() {
+    return 12000 + ( std::rand() % ( 5000 + 1 ) );
 }
 

@@ -84,6 +84,8 @@ private:
 
     std::string decryptPayload(std::string payload);
 
+    int getRandomPeriodForHello();
+
 };
 
 
