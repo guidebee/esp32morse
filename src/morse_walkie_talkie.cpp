@@ -232,6 +232,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex,
                                   statusBarPattern, false);
+            drawBatterLevel();
             receiverLed.signalMessageReceived();
         }
             break;
@@ -242,6 +243,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex + ":" + userInfo.deviceName + " OK",
                                   statusBarPattern, false);
+            drawBatterLevel();
             receiverLed.signalMessageReceived();
         }
             break;
@@ -257,6 +259,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
                 deviceIndex = buffer;
                 statusBar.displayText(deviceIndex + ":" + userInfo.deviceName,
                                       statusBarPattern, false);
+                drawBatterLevel();
                 userInfo.counter = message.counter;
             }
             String loRaData = (deviceIndex + ":" + message.payload).c_str();
@@ -409,7 +412,8 @@ void MorseWalkieTalkie::drawBatterLevel() {
     sprintf(battery, "v=%02.2f volts", batteryLevel);
 
 
-    if (lastBatteryLevel != barWidth) {
+    //if (lastBatteryLevel != barWidth)
+    {
         display.fillRect(128 - batteryBarWidth, 56, batteryBarWidth, 8, BLACK);
         display.drawRect(128 - batteryBarWidth, 57, batteryBarWidth, 6, WHITE);
         display.fillRect(128 - batteryBarWidth, 57, barWidth, 6, WHITE);
