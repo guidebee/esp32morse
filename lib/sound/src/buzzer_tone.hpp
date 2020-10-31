@@ -8,8 +8,6 @@
 #include <Arduino.h>
 #include <list>
 
-
-
 struct Tone{
     int frequency;
     int period;

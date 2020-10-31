@@ -7,6 +7,7 @@
 
 #include <LoRa.h>
 #include <string>
+#include <list>
 
 #define SCK 5
 #define MISO 19
@@ -42,6 +43,11 @@ struct LoraMessage {
 
 };
 
+struct ApplicationMessage{
+    std::string message;
+    int type;
+    bool encrypted;
+};
 
 class LoraMessageListener {
 public:
@@ -55,6 +61,7 @@ private:
     int _counter;
     LoraMessage _loraMessage;
     unsigned long _last_time;
+    std::list<ApplicationMessage> _messageQueue=std::list<ApplicationMessage>();
 public:
 
     explicit LoraRadioClass(byte syncWord = 0x34) : _syncWord(syncWord) {

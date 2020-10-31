@@ -66,6 +66,24 @@ void LoraRadioClass::loop() {
             }
         }
     }
+
+    if(!_messageQueue.empty()){
+        auto applicationMessage= _messageQueue.front();
+        _messageQueue.pop_front();
+        beginPacket();
+
+        std::string encryptedMessage;
+        if (applicationMessage.encrypted) {
+            encryptedMessage = encryptPayload(applicationMessage.message);
+        } else {
+            encryptedMessage = applicationMessage.message;
+        }
+        bool encryptedSuccessfully= !encryptedMessage.compare(applicationMessage.message) == 0;
+        std::string encodedMessage = encodeMessage(applicationMessage.type, encryptedMessage, encryptedSuccessfully);
+        print(encodedMessage.c_str());
+        endPacket();
+    }
+
     auto current_mills = millis();
     int diff = static_cast<int>(current_mills - _last_time);
     int hello_period = getRandomPeriodForHello();
@@ -77,19 +95,7 @@ void LoraRadioClass::loop() {
 
 
 void LoraRadioClass::sendMessage(std::string message, int type, bool encrypted) {
-    beginPacket();
-
-    std::string encryptedMessage;
-    if (encrypted) {
-        encryptedMessage = encryptPayload(message);
-    } else {
-        encryptedMessage = message;
-    }
-    bool encryptedSuccessfully=!encryptedMessage.compare(message)==0;
-    std::string encodedMessage = encodeMessage(type, encryptedMessage, encryptedSuccessfully);
-    print(encodedMessage.c_str());
-    endPacket();
-
+    _messageQueue.push_back(ApplicationMessage{message,type,encrypted});
 }
 
 void LoraRadioClass::sendHello() {
