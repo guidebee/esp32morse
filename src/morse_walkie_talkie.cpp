@@ -293,6 +293,7 @@ void MorseWalkieTalkie::loop() {
         }
         loRaRadio.loop();
     } else {
+
         optionMenu.loop();
     }
     if (supportSleep) {
@@ -359,6 +360,8 @@ void MorseWalkieTalkie::onOkReleased() {
     } else {
         if (++enterMenuCounter >= ENTER_MENU_COUNT) {
             isOptionMode = true;
+            buzzer.stop();
+            buzzer.stop();
             enterMenuCounter = 0;
             optionMenu.drawClientArea();
         }
