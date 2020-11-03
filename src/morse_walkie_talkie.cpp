@@ -220,11 +220,11 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             auto userInfo = addUser(message.chipId, message.payload);
             char buffer[64];
             int relativeRssi = (int) ((message.rssi + 200) / 40);
-            unsigned int startedTime = (millis() - start_mills) / 60000;
+            float startedTime = (float)((millis() - start_mills)) / 60000.0;
             if(startedTime>24*60){
                 start_mills=millis();
             }
-            sprintf(buffer, "%d:%s %.*s | %dm", userInfo.index, userInfo.deviceName.c_str(),
+            sprintf(buffer, "%d:%s %.*s | %.1fm", userInfo.index, userInfo.deviceName.c_str(),
                     relativeRssi, "-----",startedTime);
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex,
