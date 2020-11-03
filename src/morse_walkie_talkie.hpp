@@ -76,7 +76,7 @@ private:
     bool needCheckDevice = false;
 
     bool initialGreeting = false;
-    int start_mills=0;
+    unsigned long start_mills=0;
 
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),

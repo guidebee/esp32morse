@@ -181,9 +181,6 @@ void MorseWalkieTalkie::setup() {
     receiverLed.setup();
     blueToothLed.setup();
 
-    loRaRadio.setup();
-    Log.notice("LoRaRadio Initializing OK!");
-
     std::string app_name = "hi";
     auto morseText = morseCode.generateDitDashString(app_name);
     receiverLed.signalMorseText(morseText);
@@ -191,11 +188,9 @@ void MorseWalkieTalkie::setup() {
     keypad.setup();
     morseCode.addListener(this);
     keypad.addListener(this);
-    loRaRadio.addListener(this);
+
     char letter = morseCode.getMorseLetter("...");
     Serial.println(letter);
-
-    loRaRadio.setSyncWord(globalConfiguration.syncWord);
     last_mills = millis();
     start_mills = last_mills;
     current_mills = last_mills;
@@ -225,8 +220,11 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             auto userInfo = addUser(message.chipId, message.payload);
             char buffer[64];
             int relativeRssi = (int) ((message.rssi + 200) / 40);
-            unsigned int startedTime = (millis() - start_mills) / 1000;
-            sprintf(buffer, "%d:%s %.*s | %ds", userInfo.index, userInfo.deviceName.c_str(),
+            unsigned int startedTime = (millis() - start_mills) / 60000;
+            if(startedTime>24*60){
+                start_mills=millis();
+            }
+            sprintf(buffer, "%d:%s %.*s | %dm", userInfo.index, userInfo.deviceName.c_str(),
                     relativeRssi, "-----",startedTime);
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex,
@@ -297,6 +295,10 @@ void MorseWalkieTalkie::loop() {
         unsigned long initGreeting = current_mills - start_mills;
         if (initGreeting > 1000 && !initialGreeting) {
             initialGreeting = true;
+            loRaRadio.setup();
+            loRaRadio.addListener(this);
+            loRaRadio.setSyncWord(globalConfiguration.syncWord);
+            Log.notice("LoRaRadio Initializing OK!");
             topBar.displayText("Morse Walkie Talkie", topBarPattern);
             statusBar.displayText("     Guidebee IT", statusBarPattern, false);
             std::string app_name = "hi";
