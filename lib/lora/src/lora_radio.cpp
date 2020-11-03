@@ -224,6 +224,6 @@ std::string LoraRadioClass::decryptPayload(std::string rawPayload) {
 }
 
 int LoraRadioClass::getRandomPeriodForHello() {
-    return 12000 + ( std::rand() % ( 5000 + 1 ) );
+    return 15000 + ( std::rand() % ( 5000 + 1 ) );
 }
 

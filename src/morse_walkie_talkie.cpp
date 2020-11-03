@@ -185,13 +185,9 @@ void MorseWalkieTalkie::setup() {
     Log.notice("LoRaRadio Initializing OK!");
 
     std::string app_name = "hi";
-    topBar.displayText("Morse Walkie Talkie", topBarPattern);
-    statusBar.displayText("     Guidebee IT", statusBarPattern, false);
     auto morseText = morseCode.generateDitDashString(app_name);
-    buzzer.playMorseText(morseText);
     receiverLed.signalMorseText(morseText);
     blueToothLed.signalMorseText(morseText);
-
     keypad.setup();
     morseCode.addListener(this);
     keypad.addListener(this);
@@ -201,6 +197,7 @@ void MorseWalkieTalkie::setup() {
 
     loRaRadio.setSyncWord(globalConfiguration.syncWord);
     last_mills = millis();
+    start_mills = last_mills;
     current_mills = last_mills;
     last_task_mills = last_mills;
     diff_mills = 0;
@@ -228,7 +225,9 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             auto userInfo = addUser(message.chipId, message.payload);
             char buffer[64];
             int relativeRssi = (int) ((message.rssi + 200) / 40);
-            sprintf(buffer, "%d:%s %.*s", userInfo.index, userInfo.deviceName.c_str(), relativeRssi, "-----");
+            unsigned int startedTime = (millis() - start_mills) / 1000;
+            sprintf(buffer, "%d:%s %.*s | %ds", userInfo.index, userInfo.deviceName.c_str(),
+                    relativeRssi, "-----",startedTime);
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex,
                                   statusBarPattern, false);
@@ -241,6 +240,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             char buffer[16];
             sprintf(buffer, "%d", userInfo.index);
             std::string deviceIndex = buffer;
+
             statusBar.displayText(deviceIndex + ":" + userInfo.deviceName + " OK",
                                   statusBarPattern, false);
             drawBatterLevel();
@@ -293,6 +293,17 @@ void MorseWalkieTalkie::loop() {
             }
             drawBatterLevel();
             last_task_mills = current_mills;
+        }
+        unsigned long initGreeting = current_mills - start_mills;
+        if (initGreeting > 1000 && !initialGreeting) {
+            initialGreeting = true;
+            topBar.displayText("Morse Walkie Talkie", topBarPattern);
+            statusBar.displayText("     Guidebee IT", statusBarPattern, false);
+            std::string app_name = "hi";
+            auto morseText = morseCode.generateDitDashString(app_name);
+            buzzer.playMorseText(morseText);
+            receiverLed.signalMorseText(morseText);
+            blueToothLed.signalMorseText(morseText);
         }
         loRaRadio.loop();
     } else {

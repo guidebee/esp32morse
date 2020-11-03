@@ -75,6 +75,9 @@ private:
     bool supportSleep = false;
     bool needCheckDevice = false;
 
+    bool initialGreeting = false;
+    int start_mills=0;
+
 public:
     explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
                                    blueToothLed(SignalLed(BLUETOOTH_LED)),
