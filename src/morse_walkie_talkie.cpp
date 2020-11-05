@@ -220,7 +220,7 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             auto userInfo = addUser(message.chipId, message.payload);
             char buffer[64];
             int relativeRssi = (int) ((message.rssi + 200) / 40);
-            float startedTime = (float)((millis() - start_mills)) / 60000.0;
+            auto startedTime = (float)((millis() - start_mills)) / 60000.0;
             if(startedTime>24*60){
                 start_mills=millis();
             }
@@ -419,8 +419,12 @@ void MorseWalkieTalkie::drawExtra() {
 
 void MorseWalkieTalkie::drawBatterLevel() {
     int batteryBarWidth = 10;
-    float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, 100);
-    int barWidth = (int) (batteryLevel * batteryBarWidth / 100.0);
+    float maxBatteryLevel = 100.0f;
+    float minBatteryLevel = 70.0f;
+    float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, maxBatteryLevel)*2;
+    if(batteryLevel<minBatteryLevel) batteryLevel=1.0f;
+    if(batteryLevel>maxBatteryLevel-15) batteryLevel=maxBatteryLevel;
+    int barWidth = (int) ((batteryLevel-minBatteryLevel) * batteryBarWidth / (maxBatteryLevel-minBatteryLevel));
     char battery[64];
     sprintf(battery, "v=%02.2f volts", batteryLevel);
 
