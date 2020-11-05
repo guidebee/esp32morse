@@ -42,6 +42,10 @@ class MorseWalkieTalkie : public MorseCodeListener,
 private:
     unsigned long last_mills;
     unsigned long current_mills;
+
+    unsigned long last_top_bar_mills;
+    bool showLogo=false;
+
     unsigned long last_task_mills;
     unsigned long diff_mills;
     OledDisplay display;

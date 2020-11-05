@@ -176,6 +176,7 @@ void MorseWalkieTalkie::setup() {
     topScreen.clearScreen();
     bottomScreen.clearScreen();
     topBar.clearScreen();
+    topBar.addDrawListener(this);
     statusBar.clearScreen();
     buzzer.setup();
     receiverLed.setup();
@@ -195,6 +196,7 @@ void MorseWalkieTalkie::setup() {
     start_mills = last_mills;
     current_mills = last_mills;
     last_task_mills = last_mills;
+    last_top_bar_mills = last_mills;
     diff_mills = 0;
     samplePeriod = morseCode.getSamplePeriod();
     pinMode(BATTERY_LEVEL_PIN, INPUT);
@@ -220,17 +222,15 @@ void MorseWalkieTalkie::onMessageReceived(LoraMessage message) {
             auto userInfo = addUser(message.chipId, message.payload);
             char buffer[64];
             int relativeRssi = (int) ((message.rssi + 200) / 40);
-            auto startedTime = (float)((millis() - start_mills)) / 60000.0;
-            if(startedTime>24*60){
-                start_mills=millis();
-            }
-            sprintf(buffer, "%d:%s %.*s | %.1fm", userInfo.index, userInfo.deviceName.c_str(),
-                    relativeRssi, "-----",startedTime);
+
+            sprintf(buffer, "%d:%s %.*s", userInfo.index, userInfo.deviceName.c_str(),
+                    relativeRssi, "-----");
             std::string deviceIndex = buffer;
             statusBar.displayText(deviceIndex,
                                   statusBarPattern, false);
             drawBatterLevel();
             receiverLed.signalMessageReceived();
+
         }
             break;
         case MESSAGE_TYPE_TEXT_ACK: {
@@ -299,7 +299,7 @@ void MorseWalkieTalkie::loop() {
             loRaRadio.addListener(this);
             loRaRadio.setSyncWord(globalConfiguration.syncWord);
             Log.notice("LoRaRadio Initializing OK!");
-            topBar.displayText("Morse Walkie Talkie", topBarPattern);
+            topBar.displayText("Morse Walkie Talkie", topBarPattern, false);
             statusBar.displayText("     Guidebee IT", statusBarPattern, false);
             std::string app_name = "hi";
             auto morseText = morseCode.generateDitDashString(app_name);
@@ -307,6 +307,7 @@ void MorseWalkieTalkie::loop() {
             receiverLed.signalMorseText(morseText);
             blueToothLed.signalMorseText(morseText);
         }
+
         loRaRadio.loop();
     } else {
 
@@ -413,7 +414,27 @@ void MorseWalkieTalkie::updateUserCounter(std::string chipId, int counter) {
 }
 
 void MorseWalkieTalkie::drawExtra() {
-    drawBatterLevel();
+
+    unsigned long now = millis();
+    showLogo = !showLogo;
+    int diff = now - last_top_bar_mills;
+    if (diff > 10000) {
+        last_top_bar_mills = now;
+        if (showLogo) {
+            char buffer[64];
+            drawBatterLevel();
+            auto startedTime = (float) ((millis() - start_mills)) / 60000.0;
+            if (startedTime > 24 * 60) {
+                start_mills = millis();
+            }
+            sprintf(buffer, "  Uptime: %.1f m", startedTime);
+            topBar.displayText(buffer, topBarPattern, false);
+        } else {
+            topBar.displayText("Morse Walkie Talkie", topBarPattern, false);
+        }
+
+    }
+
 }
 
 
@@ -421,10 +442,10 @@ void MorseWalkieTalkie::drawBatterLevel() {
     int batteryBarWidth = 10;
     float maxBatteryLevel = 100.0f;
     float minBatteryLevel = 70.0f;
-    float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, maxBatteryLevel)*2;
-    if(batteryLevel<minBatteryLevel) batteryLevel=1.0f;
-    if(batteryLevel>maxBatteryLevel-15) batteryLevel=maxBatteryLevel;
-    int barWidth = (int) ((batteryLevel-minBatteryLevel) * batteryBarWidth / (maxBatteryLevel-minBatteryLevel));
+    float batteryLevel = map(analogRead(BATTERY_LEVEL_PIN), 0.0f, 4095.0f, 0, maxBatteryLevel) * 2;
+    if (batteryLevel < minBatteryLevel) batteryLevel = 1.0f;
+    if (batteryLevel > maxBatteryLevel - 15) batteryLevel = maxBatteryLevel;
+    int barWidth = (int) ((batteryLevel - minBatteryLevel) * batteryBarWidth / (maxBatteryLevel - minBatteryLevel));
     char battery[64];
     sprintf(battery, "v=%02.2f volts", batteryLevel);
 
