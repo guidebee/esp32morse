@@ -418,9 +418,9 @@ void MorseWalkieTalkie::drawExtra() {
     unsigned long now = millis();
     showLogo = !showLogo;
     int diff = now - last_top_bar_mills;
-    if (diff > 10000) {
+    if (diff >= 10000) {
         last_top_bar_mills = now;
-        if (showLogo) {
+        if (!showLogo) {
             char buffer[64];
             drawBatterLevel();
             auto startedTime = (float) ((millis() - start_mills)) / 60000.0;
