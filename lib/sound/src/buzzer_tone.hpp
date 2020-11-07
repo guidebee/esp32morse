@@ -18,8 +18,8 @@ class BuzzerTone {
 private:
     const int tonePeriod=100;
     const int keyTonePeriod=100;
-    const int keyToneFrequency=800;
-    const int toneFrequency=800;
+    const int keyToneFrequency=800 ;
+    const int toneFrequency=800 ;
     const int default_frequency=2000;
     unsigned long _last_time;
     int _remaining_period;

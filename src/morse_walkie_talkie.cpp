@@ -424,7 +424,7 @@ void MorseWalkieTalkie::drawExtra() {
             char buffer[64];
             drawBatterLevel();
             auto startedTime = (float) ((millis() - start_mills)) / 60000.0;
-            if (startedTime > 24 * 60) {
+            if (startedTime > 24 * 60 * 20) {
                 start_mills = millis();
             }
             sprintf(buffer, "  Uptime: %.1f m", startedTime);
