@@ -28,6 +28,10 @@
 
 #define ENTER_MENU_COUNT 3
 
+const bool startLow = true;
+const bool supportSleep = false;
+const bool needCheckDevice = false;
+
 struct UserInfo {
     int index;
     std::string deviceName;
@@ -44,7 +48,7 @@ private:
     unsigned long current_mills;
 
     unsigned long last_top_bar_mills;
-    bool showLogo=false;
+    bool showLogo = false;
 
     unsigned long last_task_mills;
     unsigned long diff_mills;
@@ -76,15 +80,13 @@ private:
     OptionMenu optionMenu;
     int lastBatteryLevel = -1;
 
-    bool supportSleep = false;
-    bool needCheckDevice = false;
 
     bool initialGreeting = false;
-    unsigned long start_mills=0;
+    unsigned long start_mills = 0;
 
 public:
-    explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED)),
-                                   blueToothLed(SignalLed(BLUETOOTH_LED)),
+    explicit MorseWalkieTalkie() : receiverLed(SignalLed(RECEIVER_LED, startLow)),
+                                   blueToothLed(SignalLed(BLUETOOTH_LED, startLow)),
                                    topBar(DynamicScreen(&display, 0, 1, true)),
                                    topScreen(Screen(&display, 1, 5, false, false, 0)),
                                    bottomScreen(Screen(&display, 5, 7, true, true)),

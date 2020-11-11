@@ -5,14 +5,18 @@
 #include "signal_led.hpp"
 #include "buzzer_tone.hpp"
 
-SignalLed::SignalLed(int pin) {
+SignalLed::SignalLed(int pin,bool startLow) {
     _led_pin = pin;
     _last_time = millis();
     _remaining_period = 0;
+    _startLow = startLow;
 }
 
 void SignalLed::setup() {
     pinMode(_led_pin, OUTPUT);
+    if(!_startLow){
+        digitalWrite(_led_pin, LOW);
+    }
 }
 
 void SignalLed::loop() {
@@ -37,12 +41,19 @@ void SignalLed::loop() {
 }
 
 void SignalLed::stop() {
-    digitalWrite(_led_pin, LOW);
+    if(!_startLow) {
+        digitalWrite(_led_pin, LOW);
+    }else{
+        digitalWrite(_led_pin, HIGH);
+    }
     _periods.clear();
 }
 
 
 void SignalLed::signal(bool on, int period) {
+    if(!_startLow){
+        on=!on;
+    }
     _periods.push_back(LedSignal{on, period});
 }
 

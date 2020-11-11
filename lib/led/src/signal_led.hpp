@@ -20,10 +20,11 @@ private:
     const int tonePeriod=100;
     unsigned long _last_time;
     int _remaining_period;
+    bool _startLow=false;
     std::list<LedSignal> _periods = std::list<LedSignal>();
 
 public:
-    explicit SignalLed(int pin);
+    explicit SignalLed(int pin, bool startLow=false);
 
     void setup();
 
