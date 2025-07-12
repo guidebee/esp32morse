@@ -2,6 +2,9 @@
 
 # 📡 Morse Code LoRa Walkie-Talkie
 
+![Morse Code Walkie Talkie](https://raw.githubusercontent.com/guidebee/esp32morse/refs/heads/master/images/1643360782152.jfif)
+
+
 A lightweight, battery-powered Morse code walkie-talkie powered by LoRa communication. Each device can operate as a **sender**, **receiver**, or **relay**, enabling long-range communication—up to several kilometers.
 
 
